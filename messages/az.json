@@ -1,0 +1,526 @@
+{
+    "common": {
+        "learnMore": "Ətraflı",
+        "viewAll": "Hamısına Bax",
+        "download": "Yüklə",
+        "submit": "Göndər",
+        "send": "Göndər",
+        "loading": "Yüklənir...",
+        "error": "Xəta baş verdi",
+        "tryAgain": "Yenidən Cəhd Edin",
+        "backToHome": "Əsas Səhifəyə Qayıt",
+        "readMore": "Daha Çox Oxu",
+        "close": "Bağla",
+        "open": "Aç",
+        "search": "Axtar",
+        "filter": "Filtr",
+        "all": "Hamısı",
+        "required": "Məcburi",
+        "optional": "İstəyə bağlı"
+    },
+    "aboutPage": {
+        "eyebrow": "Haqqımızda",
+        "headline": "Səhiyyəni Birləşdiririk",
+        "headlineAccent": "Sərhədlər Arasında",
+        "intro": "Qlobal səhiyyəyə çıxışı demokratikləşdirmək vizyonu ilə qurulan Silkbridge International, əczaçılıq şirkətləri və xəstələr üçün etibarlı tərəfdaşa çevrilmişdir.",
+        "story": {
+            "title": "Tariximiz",
+            "para1": "Silkbridge International sadə bir müşahidədən doğuldu: qlobal səhiyyə ekosistemi getdikcə daha çox bir-birinə bağlı olurdu, lakin onu naviqasiya etmək hələ də çox mürəkkəb olaraq qalırdı.",
+            "para2": "Əczaçılıq və səhiyyə sənayesi veteranları olan təsisçilərimiz körpüyə ehtiyacı dərk etdilər—innovativ əczaçılıq şirkətlərini yüksələn bazarlarla və coğrafiyadan asılı olmayaraq xəstələri dünya səviyyəli xidmətlə birləşdirə biləcək bir körpü.",
+            "para3": "Bu gün biz üç qitədə fəaliyyət göstəririk, bazara girişləri asanlaşdırır, tibbi səyahətləri koordinasiya edir və dünya üzrə səhiyyə nəticələrini yaxşılaşdıran tərəfdaşlıqlar qururuq."
+        },
+        "milestones": {
+            "milestone1": {
+                "year": "2015",
+                "event": "Nyu-Yorkda təsis edildi"
+            },
+            "milestone2": {
+                "year": "2017",
+                "event": "Sinqapur ofisi açıldı"
+            },
+            "milestone3": {
+                "year": "2019",
+                "event": "Sağlamlıq Turizmi bölməsi başladı"
+            },
+            "milestone4": {
+                "year": "2021",
+                "event": "50+ xəstəxana tərəfdaşlığına çatdı"
+            },
+            "milestone5": {
+                "year": "2023",
+                "event": "Dubay regional mərkəzi açıldı"
+            },
+            "milestone6": {
+                "year": "2025",
+                "event": "500+ uğurlu bazara giriş"
+            }
+        },
+        "values": {
+            "title": "Dəyərlərimiz",
+            "subtitle": "Verdiyimiz hər qərara rəhbərlik edən prinsiplər",
+            "excellence": {
+                "title": "Mükəmməllik",
+                "description": "Hər bir işdə ən yüksək standartlara riayət edir, gözləntiləri aşan nəticələr təmin edirik."
+            },
+            "integrity": {
+                "title": "Dürüstlük",
+                "description": "Şəffaf ünsiyyət və etik təcrübələr bütün tərəfdaşlıqlarımızın əsasını təşkil edir."
+            },
+            "innovation": {
+                "title": "İnnovasiya",
+                "description": "Sürətlə dəyişən səhiyyə mənzərələrində öndə qalmaq üçün yanaşmalarımızı daim inkişaf etdiririk."
+            },
+            "compassion": {
+                "title": "Şəfqət",
+                "description": "Əsasımızda qlobal miqyasda səhiyyəyə çıxışı və nəticələri yaxşılaşdırmaq istəyi dayanır."
+            }
+        },
+        "team": {
+            "title": "Rəhbərlik Komandası",
+            "subtitle": "Uğurunuza həsr olunmuş təcrübəli mütəxəssislər",
+            "member1": {
+                "name": "Dr. Sara Çen",
+                "role": "Baş İcraçı Direktor",
+                "bio": "Beynəlxalq bazar inkişafında 20+ illik təcrübəyə malik aparıcı əczaçılıq şirkətinin keçmiş vitse-prezidenti."
+            },
+            "member2": {
+                "name": "Ceyms Park",
+                "role": "Sağlamlıq Turizmi Rəhbəri",
+                "bio": "Asiya-Sakit Okean səhiyyə sistemlərində dərin şəbəkələri olan tibbi turizm koordinasiyasında pioner."
+            },
+            "member3": {
+                "name": "Mişel Vonq",
+                "role": "Tənzimləyici İşlər Direktoru",
+                "bio": "Qlobal əczaçılıq təsdiq proseslərində təcrübəsi olan keçmiş FDA rəyçisi."
+            },
+            "member4": {
+                "name": "David Müller",
+                "role": "Baş Strategiya Məsləhətçisi",
+                "bio": "Səhiyyə bazarına giriş strategiyalarında ixtisaslaşmış idarəetmə konsaltinqi təcrübəsi."
+            }
+        },
+        "cta": {
+            "headline": "Birlikdə İşləməyə Hazırsınız?",
+            "description": "İstər yeni bazarlar araşdırırsınız, istərsə də dünya səviyyəli səhiyyə axtarırsınız—biz səyahətinizə rəhbərlik etməyə hazırıq.",
+            "button": "Əlaqə Saxlayın"
+        }
+    },
+    "contactPage": {
+        "eyebrow": "Əlaqə",
+        "headline": "Söhbətə Başlayaq",
+        "intro": "İstər əczaçılıq bazarına girişi araşdırırsınız, istərsə də xaricdə dünya səviyyəli səhiyyə axtarırsınız—komandamız məqsədlərinizə çatmağınıza kömək etməyə hazırdır.",
+        "form": {
+            "title": "Bizə Mesaj Göndərin",
+            "nameLabel": "Ad Soyad",
+            "namePlaceholder": "Əli Əliyev",
+            "emailLabel": "E-poçt Ünvanı",
+            "emailPlaceholder": "eli@sirket.az",
+            "companyLabel": "Şirkət (İstəyə bağlı)",
+            "companyPlaceholder": "Şirkətinizin Adı",
+            "typeLabel": "Sorğu Növü",
+            "typePlaceholder": "Sorğu növünü seçin",
+            "typeMarketEntry": "Əczaçılıq Bazarına Giriş",
+            "typeHealthTourism": "Sağlamlıq Turizmi Xidmətləri",
+            "typePartnership": "Tərəfdaşlıq İmkanı",
+            "typeGeneral": "Ümumi Sorğu",
+            "messageLabel": "Mesajınız",
+            "messagePlaceholder": "Ehtiyaclarınız və necə kömək edə biləcəyimiz haqqında bizə məlumat verin...",
+            "submit": "Mesaj Göndər",
+            "submitting": "Göndərilir..."
+        },
+        "info": {
+            "title": "Əlaqə Saxlayın",
+            "description": "Komandamız suallarınıza cavab verməyə və səhiyyə və ya bazara giriş məqsədlərinizə necə dəstək verə biləcəyimizi müzakirə etməyə hazırdır.",
+            "emailTitle": "E-poçt Yazın",
+            "emailDesc": "Ümumi sorğular və dəstək üçün",
+            "phoneTitle": "Zəng Edin",
+            "phoneDesc": "B.e-Cümə 9:00-18:00 EST",
+            "officeTitle": "Ofisimizi Ziyarət Edin",
+            "officeDesc": "Nyu-York, ABŞ"
+        }
+    },
+    "partnersPage": {
+        "eyebrow": "Şəbəkəmiz",
+        "headline": "Etibarlı Qlobal",
+        "headlineAccent": "Səhiyyə Tərəfdaşları",
+        "intro": "Müştərilərimizin harada olursa olsunlar dünya səviyyəli xidmət almasını təmin etmək üçün dörd qitədə aparıcı səhiyyə müəssisələri ilə münasibətlər qurmuşuq.",
+        "stats": {
+            "hospitals": {
+                "value": "60+",
+                "label": "Tərəfdaş Xəstəxanalar"
+            },
+            "countries": {
+                "value": "15",
+                "label": "Ölkə"
+            },
+            "specialists": {
+                "value": "500+",
+                "label": "Mütəxəssis"
+            },
+            "patients": {
+                "value": "10K+",
+                "label": "Xidmət Edilən Xəstə"
+            }
+        },
+        "regions": {
+            "all": "Bütün Regionlar",
+            "asiaPacific": "Asiya Sakit Okean",
+            "middleEast": "Yaxın Şərq",
+            "europe": "Avropa",
+            "americas": "Amerika"
+        },
+        "noPartners": "Bu regionda tərəfdaş tapılmadı.",
+        "cta": {
+            "headline": "Tərəfdaş Olun",
+            "description": "Qlobal səhiyyə müəssisələri şəbəkəmizə qoşulun və beynəlxalq xəstələrə əhatənizi genişləndirin.",
+            "button": "Bizimlə Tərəfdaş Olun"
+        }
+    },
+    "nav": {
+        "home": "Ana Səhifə",
+        "about": "Haqqımızda",
+        "services": "Xidmətlər",
+        "marketInsights": "Bazar Araşdırmaları",
+        "insights": "Araşdırmalar",
+        "partners": "Tərəfdaşlar",
+        "contact": "Əlaqə",
+        "getConsultation": "Konsultasiya Alın",
+        "toggleMenu": "Menyunu aç/bağla"
+    },
+    "hero": {
+        "tagline": "Bazarları və\nSağlamlıq Turizmini Birləşdiririk",
+        "subtagline": "Farmasevtika, tibbi xidmət, sağlamlıq və istirahət—qlobal miqyasda dəqiqliklə təqdim edilir.",
+        "ctaPrimary": "Bazara Giriş Xidmətləri",
+        "ctaSecondary": "Sağlamlıq və Wellness Turizmi"
+    },
+    "heroFramed": {
+        "labelPill": "Qlobal Səhiyyə Mükəmməlliyi",
+        "headline": "Bazarları və\nSağlamlıq Turizmini\nBirləşdiririk",
+        "subline": "Əczaçılıq şirkətlərini yüksələn bazarlarla və xəstələri dünya səviyyəli xidmətlə birləşdiririk—dəqiqlik, uyğunluq və qayğı ilə təqdim edilir.",
+        "primaryCta": "Başlayın",
+        "secondaryCta": "Xidmətləri Kəşf Edin",
+        "secondaryRowText": "50+ Tərəfdaş Xəstəxana",
+        "scrollDownLabel": "Aşağı Sürüşdürün",
+        "playVideoLabel": "Video Oynat",
+        "navCta": "Əlaqə Saxlayın"
+    },
+    "about": {
+        "eyebrow": "Biz Kimik",
+        "headline": "Qlobal Təcrübə,",
+        "headlineAccent": "Fərdi Yanaşma",
+        "mission": "Biz beynəlxalq əczaçılıq şirkətlərinin bazar genişlənməsi axtarışı ilə dünya səviyyəli səhiyyə axtaran xəstələr arasında körpü qururuq. Təcrübəmiz tənzimləyici naviqasiya, bazar strategiyası və hərtərəfli sağlamlıq turizmi koordinasiyasını əhatə edir.",
+        "pillar1Title": "Tənzimləyici Dəstək",
+        "pillar1Desc": "Mürəkkəb uyğunluq mənzərələrində inamla hərəkət edin.",
+        "pillar2Title": "Bazara Giriş",
+        "pillar2Desc": "Davamlı artım üçün strateji mövqeləndirmə.",
+        "pillar3Title": "Sağlamlıq və Wellness Turizmi",
+        "pillar3Desc": "Sərhədlər arası premium müalicə təcrübələri."
+    },
+    "services": {
+        "eyebrow": "Xidmətlərimiz",
+        "headline": "Mükəmməlliyin İki Sütunu",
+        "learnMore": "Ətraflı",
+        "marketEntry": {
+            "title": "Bazara Giriş Xidmətləri",
+            "description": "Yeni bazarlara daxil olan əczaçılıq və səhiyyə şirkətləri üçün hərtərəfli dəstək.",
+            "feature1": "Tənzimləyici yol analizi və strategiya",
+            "feature2": "Yerli tərəfdaş müəyyənləşdirmə və yoxlama",
+            "feature3": "Bazar ölçüsü və rəqabət kəşfiyyatı",
+            "feature4": "Paylanma şəbəkəsinin qurulması",
+            "feature5": "Qiymətqoyma və geri ödəmə konsaltinqi"
+        },
+        "healthTourism": {
+            "title": "Sağlamlıq və Wellness Turizmi",
+            "description": "Xaricdə tibbi xidmət və sağlamlıq təcrübəsi axtaran xəstələr üçün başdan-başa koordinasiya.",
+            "feature1": "Xəstəxana və mütəxəssis seçimi",
+            "feature2": "Müalicə planlaması və koordinasiyası",
+            "feature3": "Səyahət və yerləşmə tənzimləmələri",
+            "feature4": "Tərcüməçi və konsyerj xidmətləri",
+            "feature5": "Müalicədən sonrakı izləmə"
+        }
+    },
+    "servicesPage": {
+        "eyebrow": "Xidmətlərimiz",
+        "headline": "İki Sütun",
+        "headlineAccent": "Qlobal Səhiyyə",
+        "intro": "İstər əczaçılıq əhatəsini genişləndirir, istərsə də dünya səviyyəli tibbi xidmət axtarırsınız—təcrübəmiz hər addımda sizə rəhbərlik edir.",
+        "marketEntry": {
+            "title": "Bazara Giriş Xidmətləri",
+            "description": "Yeni bazarlara daxil olan əczaçılıq və səhiyyə şirkətləri üçün hərtərəfli dəstək.",
+            "feature1": "Tənzimləyici yol analizi və strategiya",
+            "feature2": "Yerli tərəfdaş müəyyənləşdirmə və yoxlama",
+            "feature3": "Bazar ölçüsü və rəqabət kəşfiyyatı",
+            "feature4": "Paylanma şəbəkəsinin qurulması",
+            "feature5": "Qiymətqoyma və geri ödəmə konsaltinqi",
+            "cta": "Bazara Girişinizi Müzakirə Edin",
+            "details": {
+                "regulatory": {
+                    "title": "Tənzimləyici Strategiya",
+                    "description": "Tənzimləyici yollar, sənədləşdirmə tələbləri və təqdimetmə strategiyaları üzrə ekspert rəhbərliyimizlə mürəkkəb təsdiq proseslərini naviqasiya edin.",
+                    "tag1": "Ön-təqdimetmə görüşləri",
+                    "tag2": "Dosye hazırlanması",
+                    "tag3": "Agentlik əlaqəsi",
+                    "tag4": "Təsdiq sonrası dəyişikliklər"
+                },
+                "intelligence": {
+                    "title": "Bazar Kəşfiyyatı",
+                    "description": "Hərtərəfli bazar analizi, rəqabət mənzərəsinin qiymətləndirilməsi və tələb proqnozlaşdırması ilə məlumatlı qərarlar verin.",
+                    "tag1": "Bazar ölçüsü",
+                    "tag2": "Rəqabət analizi",
+                    "tag3": "Qiymət strategiyası",
+                    "tag4": "Paylanma xəritələməsi"
+                },
+                "partner": {
+                    "title": "Tərəfdaş İnkişafı",
+                    "description": "Davamlı bazar mövcudluğunu təmin etmək üçün yerli tərəfdaşları, distribyutorları və istehsal tərəfdaşlarını müəyyən edin və yoxlayın.",
+                    "tag1": "Tərəfdaş müəyyənləşdirmə",
+                    "tag2": "Lazımi yoxlama",
+                    "tag3": "Müqavilə danışıqları",
+                    "tag4": "Münasibət idarəetməsi"
+                }
+            }
+        },
+        "healthTourism": {
+            "title": "Sağlamlıq və Wellness Turizmi",
+            "description": "Xaricdə tibbi xidmət və sağlamlıq təcrübəsi axtaran xəstələr üçün başdan-başa koordinasiya.",
+            "feature1": "Xəstəxana və mütəxəssis seçimi",
+            "feature2": "Müalicə planlaması və koordinasiyası",
+            "feature3": "Səyahət və yerləşmə tənzimləmələri",
+            "feature4": "Tərcüməçi və konsyerj xidmətləri",
+            "feature5": "Müalicədən sonrakı izləmə",
+            "cta": "Səyahətinizə Başlayın",
+            "details": {
+                "medical": {
+                    "title": "Tibbi Koordinasiya",
+                    "description": "İlkin konsultasiyadan müalicə sonrası izləməyə qədər tibbi səyahətinizin başdan-başa koordinasiyası.",
+                    "tag1": "Xəstəxana seçimi",
+                    "tag2": "Mütəxəssis görüşləri",
+                    "tag3": "Müalicə planlaması",
+                    "tag4": "İkinci rəylər"
+                },
+                "travel": {
+                    "title": "Səyahət və Logistika",
+                    "description": "Uçuşlar, yerləşmə və yerüstü nəqliyyat daxil olmaqla qüsursuz səyahət tənzimləmələri.",
+                    "tag1": "Uçuş rezervasiyası",
+                    "tag2": "Tibbi vizalar",
+                    "tag3": "Yerləşmə",
+                    "tag4": "Hava limanı transferləri"
+                },
+                "concierge": {
+                    "title": "Konsyerj Xidmətləri",
+                    "description": "Tərcümə, müşayiət xidməti və wellness təcrübələri daxil olmaqla qalma müddətiniz boyunca fərdi dəstək.",
+                    "tag1": "Tibbi tərcüməçilər",
+                    "tag2": "Müşayiət xidmətləri",
+                    "tag3": "Bərpa kurortları",
+                    "tag4": "Yerli təcrübələr"
+                }
+            }
+        },
+        "process": {
+            "title": "Necə İşləyirik",
+            "subtitle": "Müstəsna nəticələr üçün sübut edilmiş proses",
+            "steps": {
+                "discovery": {
+                    "title": "Kəşf",
+                    "description": "Dərin konsultasiya vasitəsilə məqsədlərinizi, məhdudiyyətlərinizi və vizyonunuzu anlayırıq."
+                },
+                "strategy": {
+                    "title": "Strategiya",
+                    "description": "Ekspertlərimiz məqsədlərinizə uyğun fərdiləşdirilmiş yol xəritəsi hazırlayır."
+                },
+                "execution": {
+                    "title": "İcra",
+                    "description": "Hər bir mərhələdə sizi məlumatlandıraraq hər detalı idarə edirik."
+                },
+                "success": {
+                    "title": "Uğur",
+                    "description": "Davamlı dəstək davamlı uğur və tərəfdaşlıq inkişafını təmin edir."
+                }
+            }
+        },
+        "cta": {
+            "headline": "Başlamağa Hazırsınız?",
+            "description": "Səhiyyə məqsədlərinizə çatmağınıza necə kömək edə biləcəyimizi müzakirə edək.",
+            "button1": "Konsultasiya Planlaşdırın",
+            "button2": "Tərəfdaşlarımıza Baxın"
+        }
+    },
+    "insights": {
+        "eyebrow": "Bazar Kəşfiyyatı",
+        "headline": "Qlobal Səhiyyəyə Bir Baxış",
+        "subheadline": "Beynəlxalq səhiyyə bazarlarını formalaşdıran əsas göstəricilər",
+        "viewAll": "Bütün Araşdırmalara Bax",
+        "downloadReport": "Bazar Hesabatını Yüklə (PDF)"
+    },
+    "partners": {
+        "eyebrow": "Şəbəkəmiz",
+        "headline": "Aparıcı Səhiyyə Müəssisələri Tərəfindən Etibar Edilir",
+        "description": "Biz dünya üzrə premier xəstəxanalar, klinikalar və wellness mərkəzləri ilə tərəfdaşlıq edirik.",
+        "cta": "Tərəfdaş Şəbəkəsini Kəşf Edin"
+    },
+    "contact": {
+        "eyebrow": "Əlaqə",
+        "headline": "Söhbətə Başlayaq",
+        "description": "İstər bazara giriş axtarırsınız, istərsə də xaricdə səhiyyə xidməti—biz kömək etməyə hazırıq.",
+        "form": {
+            "nameLabel": "Ad Soyad",
+            "namePlaceholder": "Əli Əliyev",
+            "emailLabel": "E-poçt Ünvanı",
+            "emailPlaceholder": "eli@sirket.az",
+            "typeLabel": "Maraqlandığım...",
+            "typePlaceholder": "Sorğu növünü seçin",
+            "typeMarketEntry": "Əczaçılıq Bazarına Giriş",
+            "typeHealthTourism": "Sağlamlıq Turizmi Xidmətləri",
+            "typePartnership": "Paylanma Tərəfdaşlığı",
+            "typeGeneral": "Ümumi Sorğu",
+            "messageLabel": "Mesajınız",
+            "messagePlaceholder": "Ehtiyaclarınız haqqında bizə məlumat verin...",
+            "submit": "Başlayın"
+        },
+        "officeLabel": "Nyu-York Ofisi",
+        "viewOnMap": "Google Xəritələrdə Baxın",
+        "emailUs": "E-poçt Yazın",
+        "callUs": "Zəng Edin",
+        "visitUs": "Ziyarət Edin"
+    },
+    "footer": {
+        "tagline": "Qlobal səhiyyə bazarlarını dəqiqlik, uyğunluq və qayğı ilə birləşdiririk. Əczaçılıq bazarına giriş və sağlamlıq turizmində etibarlı tərəfdaşınız.",
+        "services": {
+            "title": "Xidmətlər",
+            "marketEntry": "Bazara Giriş",
+            "regulatory": "Tənzimləyici Dəstək",
+            "healthTourism": "Sağlamlıq Turizmi",
+            "wellness": "Wellness Proqramları"
+        },
+        "company": {
+            "title": "Şirkət",
+            "about": "Haqqımızda",
+            "partners": "Tərəfdaşlarımız",
+            "insights": "Bazar Araşdırmaları",
+            "contact": "Əlaqə"
+        },
+        "resources": {
+            "title": "Resurslar",
+            "reports": "Sənaye Hesabatları",
+            "portal": "Tərəfdaş Portalı",
+            "privacy": "Məxfilik Siyasəti",
+            "terms": "Xidmət Şərtləri"
+        },
+        "copyright": "© {year} {company}. Bütün hüquqlar qorunur.",
+        "privacyPolicy": "Məxfilik Siyasəti",
+        "termsOfService": "Xidmət Şərtləri"
+    },
+    "blog": {
+        "eyebrow": "Araşdırmalar və Təhlil",
+        "pageTitle": "Bazar Araşdırmaları",
+        "pageDescription": "Asiya-Sakit Okean və Yaxın Şərqdə əczaçılıq qaydaları, sağlamlıq turizmi trendləri və strateji bazara giriş üzrə ekspert təhlili.",
+        "searchPlaceholder": "Mövzu, teq və ya açar söz ilə axtarın...",
+        "featuredInsights": "Seçilmiş Araşdırmalar",
+        "latestInsights": "Ən Son Araşdırmalar",
+        "featured": "Seçilmiş",
+        "articleCount": "{count, plural, =0 {Məqalə yoxdur} =1 {1 məqalə} other {# məqalə}}",
+        "noArticlesFound": "Məqalə tapılmadı",
+        "noArticlesDescription": "Axtardığınızı tapmaq üçün axtarış və ya filtri dəyişdirməyə çalışın.",
+        "readingTime": "{minutes} dəq oxu",
+        "publishedOn": "{date} tarixində dərc edilib",
+        "by": "Müəllif",
+        "categories": {
+            "all": "Hamısı",
+            "pharma": "Farmasevtika",
+            "market-entry": "Bazara Giriş",
+            "health-tourism": "Sağlamlıq Turizmi",
+            "wellness": "Wellness"
+        },
+        "toc": {
+            "title": "Mündəricat",
+            "showToc": "Mündəricatı Göstər",
+            "hideToc": "Mündəricatı Gizlət"
+        },
+        "relatedPosts": {
+            "title": "Əlaqəli Araşdırmalar",
+            "subtitle": "Kəşf etməyə davam edin"
+        },
+        "newsletter": {
+            "title": "Məlumatlı Olun",
+            "description": "Ən son bazar araşdırmalarını və sənaye yeniliklərini e-poçtunuza alın.",
+            "placeholder": "E-poçtunuzu daxil edin",
+            "subscribe": "Abunə Olun",
+            "privacyNote": "Məxfiliyinizə hörmət edirik. İstənilən vaxt abunəlikdən çıxa bilərsiniz."
+        },
+        "resource": {
+            "title": "2026 Bazar Hesabatı",
+            "description": "Yüksələn səhiyyə bazarlarının hərtərəfli təhlilini yükləyin.",
+            "downloadPdf": "PDF Yüklə"
+        },
+        "consultation": {
+            "headline": "Yeni Bazarlara Girməyə Hazırsınız?",
+            "description": "Ekspert komandamız mürəkkəb tənzimləyici mənzərələri keçməyinizə və uğurlu bazar mövcudluğu qurmağınıza kömək etməyə hazırdır.",
+            "cta": "Konsultasiya Planlaşdırın"
+        },
+        "tags": {
+            "title": "Populyar Mövzular"
+        },
+        "share": {
+            "title": "Bu məqaləni paylaşın"
+        },
+        "keyTakeaways": "Əsas Nəticələr"
+    },
+    "seo": {
+        "home": {
+            "title": "Bazarları və Sağlamlıq Turizmini Birləşdiririk",
+            "description": "Qlobal bazarları birləşdirən premium əczaçılıq bazarına giriş və sağlamlıq & wellness turizmi xidmətləri. Beynəlxalq səhiyyədə etibarlı tərəfdaşınız."
+        },
+        "about": {
+            "title": "Haqqımızda",
+            "description": "Silkbridge International haqqında öyrənin - əczaçılıq bazarına giriş və sağlamlıq turizmində təcrübə ilə qlobal səhiyyə bazarlarını birləşdiririk."
+        },
+        "services": {
+            "title": "Xidmətlər",
+            "description": "Hərtərəfli əczaçılıq bazarına giriş və sağlamlıq turizmi xidmətlərimizi kəşf edin. Strateji tərəfdaşlıqlar, tənzimləyici dəstək və premium səhiyyə koordinasiyası."
+        },
+        "marketInsights": {
+            "title": "Bazar Araşdırmaları",
+            "description": "Asiya-Sakit Okean və Yaxın Şərqdə əczaçılıq qaydaları, sağlamlıq turizmi trendləri və strateji bazara giriş üzrə ekspert təhlili."
+        },
+        "partners": {
+            "title": "Tərəfdaşlar",
+            "description": "Dünya üzrə dünya səviyyəli xəstəxanalar, wellness mərkəzləri və səhiyyə müəssisələri şəbəkəmizi kəşf edin."
+        },
+        "contact": {
+            "title": "Əlaqə",
+            "description": "Silkbridge International ilə əlaqə saxlayın. İstər bazara giriş axtarırsınız, istərsə də xaricdə səhiyyə—biz kömək etməyə hazırıq."
+        },
+        "notFound": {
+            "title": "Səhifə Tapılmadı",
+            "description": "Axtardığınız səhifə mövcud deyil və ya köçürülüb."
+        }
+    },
+    "errors": {
+        "notFound": {
+            "title": "Səhifə Tapılmadı",
+            "description": "Axtardığınız səhifə mövcud deyil və ya köçürülüb.",
+            "backHome": "Əsas Səhifəyə Qayıt"
+        },
+        "serverError": {
+            "title": "Xəta baş verdi",
+            "description": "Bu səhifəni yükləməkdə problem yaşayırıq. Zəhmət olmasa sonra yenidən cəhd edin."
+        }
+    },
+    "stats": {
+        "globalHealthcareMarket": "Qlobal Səhiyyə Bazarı 2025",
+        "medicalTouristsAnnually": "İllik Tibbi Turistlər",
+        "emergingMarketCagr": "Yüksələn Bazar CAGR",
+        "wellnessTourismGrowth": "Wellness Turizmi Artımı",
+        "source": "Mənbə"
+    },
+    "accessibility": {
+        "skipToContent": "Məzmuna keç",
+        "openMenu": "Menyunu aç",
+        "closeMenu": "Menyunu bağla",
+        "languageSwitcher": "Dili dəyiş",
+        "currentLanguage": "Cari dil: {language}",
+        "switchTo": "{language} dilinə keç",
+        "externalLink": "Yeni tabda açılır",
+        "readingProgress": "Oxu irəliləyişi: {percent}%"
+    }
+}

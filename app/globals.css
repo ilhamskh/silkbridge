@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+    }
+
+    body {
+        @apply bg-surface text-ink;
+    }
+
+    ::selection {
+        @apply bg-primary-500/20 text-primary-800;
+    }
+
+    /* Custom focus ring */
+    :focus-visible {
+        @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+    }
+}
+
+@layer utilities {
+
+    /* Safe area for mobile bottom bar */
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* Text balance for headings */
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    /* Hide scrollbar but keep functionality */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Gradient text */
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-500;
+    }
+
+    /* Animated underline */
+    .animated-underline {
+        @apply relative;
+    }
+
+    .animated-underline::after {
+        @apply content-[''] absolute left-0 bottom-0 w-0 h-px bg-current transition-all duration-300;
+    }
+
+    .animated-underline:hover::after {
+        @apply w-full;
+    }
+}
+
+/* Smooth page transitions */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-page-enter {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Custom scrollbar for supported browsers */
+@supports (scrollbar-width: thin) {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: theme('colors.primary.300') transparent;
+    }
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: theme('colors.primary.300');
+    border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: theme('colors.primary.400');
+}
+
+/* Premium prose styling for blog articles */
+.prose-silkbridge {
+    @apply text-ink/90;
+}
+
+.prose-silkbridge>*:first-child {
+    @apply mt-0;
+}
+
+.prose-silkbridge>*:last-child {
+    @apply mb-0;
+}
+
+/* Callout first-child special styling */
+.prose-silkbridge>div:first-child {
+    @apply mt-0;
+}
+
+/* Smooth anchor scrolling offset */
+.prose-silkbridge h2,
+.prose-silkbridge h3 {
+    scroll-margin-top: 7rem;
+}

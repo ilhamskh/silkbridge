@@ -1,0 +1,45 @@
+import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
+import { siteConfig } from '@/content/site-config';
+import ContactPageContent from './ContactPageContent';
+
+type Props = {
+    params: Promise<{ locale: string }>;
+};
+
+export function generateStaticParams() {
+    return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'seo' });
+
+    return {
+        title: t('contact.title'),
+        description: t('contact.description'),
+        alternates: {
+            canonical: `/${locale}/contact`,
+            languages: {
+                en: '/en/contact',
+                az: '/az/contact',
+            },
+        },
+        openGraph: {
+            title: `${t('contact.title')} | ${siteConfig.name}`,
+            description: t('contact.description'),
+            url: `/${locale}/contact`,
+            siteName: siteConfig.name,
+            locale: locale === 'az' ? 'az_AZ' : 'en_US',
+            type: 'website',
+        },
+    };
+}
+
+export default async function ContactPage({ params }: Props) {
+    const { locale } = await params;
+    setRequestLocale(locale);
+
+    return <ContactPageContent />;
+}
