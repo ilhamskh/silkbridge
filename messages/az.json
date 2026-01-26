@@ -185,7 +185,11 @@
         "partners": "Tərəfdaşlar",
         "contact": "Əlaqə",
         "getConsultation": "Konsultasiya Alın",
-        "toggleMenu": "Menyunu aç/bağla"
+        "toggleMenu": "Menyunu aç/bağla",
+        "closeMenu": "Menyunu bağla",
+        "menu": "Menyu",
+        "language": "Dil",
+        "selectLanguage": "Dil seçin"
     },
     "hero": {
         "tagline": "Bazarları və\nSağlamlıq Turizmini Birləşdiririk",

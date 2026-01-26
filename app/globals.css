@@ -31,9 +31,34 @@
 
 @layer utilities {
 
-    /* Safe area for mobile bottom bar */
+    /* Safe area for mobile devices */
     .pb-safe {
         padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* Performance: Reduce paint operations on mobile */
+    @media (pointer: coarse) {
+        .mobile-no-backdrop-blur {
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+    }
+
+    /* Content visibility for below-the-fold sections */
+    .content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 500px;
+    }
+
+    /* GPU acceleration for smooth animations */
+    .gpu-accelerated {
+        transform: translateZ(0);
+        will-change: transform;
+    }
+
+    /* Remove will-change when not animating */
+    .gpu-idle {
+        will-change: auto;
     }
 
     /* Text balance for headings */

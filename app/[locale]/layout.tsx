@@ -7,7 +7,6 @@ import { routing } from '@/i18n/routing';
 import { locales, type Locale } from '@/i18n/config';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
-import MobileTabBar from '@/components/layout/MobileTabBar';
 import '../globals.css';
 
 const inter = Inter({
@@ -119,7 +118,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
                     <Header />
                     <main className="min-h-screen">{children}</main>
                     <Footer />
-                    <MobileTabBar />
                 </NextIntlClientProvider>
             </body>
         </html>

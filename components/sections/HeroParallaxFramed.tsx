@@ -1,61 +1,63 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion, useSpring, useMotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValue } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import Button from '@/components/ui/button';
 import { Icons } from '@/components/ui/Icons';
 import Image from 'next/image';
+import { shouldReduceAnimations, isTouchDevice } from '@/lib/device-detection';
 
 export default function HeroParallaxFramed() {
     const t = useTranslations('heroFramed');
     const tNav = useTranslations('nav');
     const frameRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const shouldReduceMotion = useReducedMotion();
+    const parallaxElementRef = useRef<HTMLDivElement>(null);
+
     const [isMounted, setIsMounted] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [reduceMotion, setReduceMotion] = useState(true);
+    const [isMobile, setIsMobile] = useState(true);
 
-    // Mouse position for pointer parallax
+    // Mouse position for pointer parallax (desktop only)
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
-    // Spring animation for smooth mouse tracking
-    const springConfig = { damping: 25, stiffness: 150 };
-    const smoothMouseX = useSpring(mouseX, springConfig);
-    const smoothMouseY = useSpring(mouseY, springConfig);
-
-    // Transform mouse position to parallax values
-    const imageX = useTransform(smoothMouseX, [-1, 1], shouldReduceMotion ? [0, 0] : [-8, 8]);
-    const imageY = useTransform(smoothMouseY, [-1, 1], shouldReduceMotion ? [0, 0] : [-8, 8]);
-    const imageRotate = useTransform(smoothMouseX, [-1, 1], shouldReduceMotion ? [0, 0] : [-1.5, 1.5]);
-
     useEffect(() => {
         setIsMounted(true);
+        setReduceMotion(shouldReduceAnimations());
+        setIsMobile(isTouchDevice());
     }, []);
 
-    // Scroll parallax
+    // Scroll parallax - reduced range on mobile
     const { scrollYProgress } = useScroll({
         target: contentRef,
         offset: ['start start', 'end start'],
     });
 
+    // Mobile: 0-12px, Desktop: 0-40px
+    const scrollParallaxRange = isMobile ? [0, 12] : [0, 40];
     const imageScrollY = useTransform(
         scrollYProgress,
         [0, 1],
-        shouldReduceMotion ? [0, 0] : [0, 40]
+        reduceMotion ? [0, 0] : scrollParallaxRange
     );
 
     const glowY = useTransform(
         scrollYProgress,
         [0, 1],
-        shouldReduceMotion ? [0, 0] : [0, 20]
+        reduceMotion ? [0, 0] : isMobile ? [0, 6] : [0, 20]
     );
 
-    // Mouse move handler
+    // Pointer parallax (desktop only, disabled on mobile)
     useEffect(() => {
-        if (shouldReduceMotion) return;
+        if (reduceMotion || isMobile) return;
+
+        let rafId: number;
+        let lastX = 0;
+        let lastY = 0;
 
         const handleMouseMove = (e: MouseEvent) => {
             if (!frameRef.current) return;
@@ -68,37 +70,75 @@ export default function HeroParallaxFramed() {
             const x = (e.clientX - centerX) / (rect.width / 2);
             const y = (e.clientY - centerY) / (rect.height / 2);
 
-            // Use RAF for performance
-            requestAnimationFrame(() => {
-                mouseX.set(x);
-                mouseY.set(y);
-            });
+            // Quantize - only update if delta > threshold (performance optimization)
+            const deltaX = Math.abs(x - lastX);
+            const deltaY = Math.abs(y - lastY);
+
+            if (deltaX > 0.05 || deltaY > 0.05) {
+                if (rafId) cancelAnimationFrame(rafId);
+
+                rafId = requestAnimationFrame(() => {
+                    mouseX.set(x);
+                    mouseY.set(y);
+                    lastX = x;
+                    lastY = y;
+                });
+            }
         };
 
         const frame = frameRef.current;
         if (frame) {
-            frame.addEventListener('mousemove', handleMouseMove);
-            return () => frame.removeEventListener('mousemove', handleMouseMove);
+            frame.addEventListener('mousemove', handleMouseMove, { passive: true });
+            return () => {
+                frame.removeEventListener('mousemove', handleMouseMove);
+                if (rafId) cancelAnimationFrame(rafId);
+            };
         }
-    }, [shouldReduceMotion, mouseX, mouseY]);
+    }, [reduceMotion, isMobile, mouseX, mouseY]);
+
+    // Apply parallax directly to element style (avoids re-renders)
+    useEffect(() => {
+        if (reduceMotion || isMobile || !parallaxElementRef.current) return;
+
+        const unsubscribeX = mouseX.on('change', (latest) => {
+            if (!parallaxElementRef.current) return;
+            const translateX = latest * -8; // Max 8px translation
+            const rotateY = latest * -1.5; // Max 1.5deg rotation
+            parallaxElementRef.current.style.transform = `translateX(${translateX}px) rotateY(${rotateY}deg)`;
+        });
+
+        const unsubscribeY = mouseY.on('change', (latest) => {
+            if (!parallaxElementRef.current) return;
+            const translateY = latest * -8;
+            const currentTransform = parallaxElementRef.current.style.transform;
+            const translateXMatch = currentTransform.match(/translateX\([^)]+\)/);
+            const rotateYMatch = currentTransform.match(/rotateY\([^)]+\)/);
+            parallaxElementRef.current.style.transform = `${translateXMatch?.[0] || 'translateX(0px)'} translateY(${translateY}px) ${rotateYMatch?.[0] || 'rotateY(0deg)'}`;
+        });
+
+        return () => {
+            unsubscribeX();
+            unsubscribeY();
+        };
+    }, [reduceMotion, isMobile, mouseX, mouseY]);
 
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.12,
-                delayChildren: 0.2,
+                staggerChildren: reduceMotion ? 0 : 0.12,
+                delayChildren: reduceMotion ? 0 : 0.2,
             },
         },
     };
 
     const itemVariants = {
-        hidden: { opacity: 0, y: 24 },
+        hidden: { opacity: 0, y: reduceMotion ? 0 : 24 },
         visible: {
             opacity: 1,
             y: 0,
-            transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+            transition: { duration: reduceMotion ? 0.3 : 0.6, ease: [0.22, 1, 0.36, 1] },
         },
     };
 
@@ -275,19 +315,20 @@ export default function HeroParallaxFramed() {
 
                                 {/* Right Visual */}
                                 <div className="relative lg:absolute lg:right-0 lg:top-0 lg:bottom-0 lg:w-1/2 flex items-center justify-center">
-                                    {/* Glow Effect */}
+                                    {/* Glow Effect - reduced on mobile */}
                                     <motion.div
                                         style={{ y: glowY }}
-                                        className="absolute inset-0 bg-gradient-radial from-primary-400/20 via-primary-300/10 to-transparent blur-3xl"
+                                        className={`absolute inset-0 bg-gradient-radial from-primary-400/20 via-primary-300/10 to-transparent ${isMobile ? 'blur-2xl' : 'blur-3xl'
+                                            }`}
                                     />
 
                                     {/* 3D Object with Parallax */}
                                     <motion.div
+                                        ref={parallaxElementRef}
                                         style={{
-                                            x: imageX,
-                                            y: useTransform([imageScrollY, imageY], ([scroll, mouse]) => (scroll as number) + (mouse as number)),
-                                            rotateY: imageRotate,
+                                            y: imageScrollY,
                                             transformStyle: 'preserve-3d',
+                                            willChange: reduceMotion || isMobile ? 'auto' : 'transform',
                                         }}
                                         className="relative w-full h-full flex items-center justify-center px-8 lg:px-0"
                                     >
@@ -297,29 +338,39 @@ export default function HeroParallaxFramed() {
                                                 <div className="absolute inset-0 bg-gradient-to-br from-primary-400 via-primary-500 to-primary-600 opacity-90" />
                                                 <div className="absolute inset-0 flex items-center justify-center">
                                                     <div className="relative w-3/4 h-3/4">
-                                                        {/* Abstract ribbon shapes */}
-                                                        <motion.div
-                                                            animate={{
-                                                                rotate: [0, 360],
-                                                            }}
-                                                            transition={{
-                                                                duration: 20,
-                                                                repeat: Infinity,
-                                                                ease: 'linear',
-                                                            }}
-                                                            className="absolute inset-0 rounded-full border-8 border-white/20"
-                                                        />
-                                                        <motion.div
-                                                            animate={{
-                                                                rotate: [360, 0],
-                                                            }}
-                                                            transition={{
-                                                                duration: 25,
-                                                                repeat: Infinity,
-                                                                ease: 'linear',
-                                                            }}
-                                                            className="absolute inset-8 rounded-full border-8 border-white/10"
-                                                        />
+                                                        {/* Abstract ribbon shapes - reduced animation on mobile */}
+                                                        {!reduceMotion && (
+                                                            <>
+                                                                <motion.div
+                                                                    animate={{
+                                                                        rotate: [0, 360],
+                                                                    }}
+                                                                    transition={{
+                                                                        duration: isMobile ? 30 : 20,
+                                                                        repeat: Infinity,
+                                                                        ease: 'linear',
+                                                                    }}
+                                                                    className="absolute inset-0 rounded-full border-8 border-white/20"
+                                                                />
+                                                                <motion.div
+                                                                    animate={{
+                                                                        rotate: [360, 0],
+                                                                    }}
+                                                                    transition={{
+                                                                        duration: isMobile ? 35 : 25,
+                                                                        repeat: Infinity,
+                                                                        ease: 'linear',
+                                                                    }}
+                                                                    className="absolute inset-8 rounded-full border-8 border-white/10"
+                                                                />
+                                                            </>
+                                                        )}
+                                                        {reduceMotion && (
+                                                            <>
+                                                                <div className="absolute inset-0 rounded-full border-8 border-white/20" />
+                                                                <div className="absolute inset-8 rounded-full border-8 border-white/10" />
+                                                            </>
+                                                        )}
                                                         <div className="absolute inset-0 flex items-center justify-center">
                                                             <Icons.globe className="w-32 h-32 text-white/40" />
                                                         </div>
@@ -327,17 +378,20 @@ export default function HeroParallaxFramed() {
                                                 </div>
                                             </div>
 
-                                            {/* Edge Fade Mask */}
-                                            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-white/60 lg:to-white/80 pointer-events-none" />
+                                            {/* Edge Fade Mask - solid on mobile for performance */}
+                                            <div className={`absolute inset-0 pointer-events-none ${isMobile
+                                                    ? 'bg-gradient-to-l from-transparent via-transparent to-white/70'
+                                                    : 'bg-gradient-to-l from-transparent via-transparent to-white/60 lg:to-white/80'
+                                                }`} />
                                         </div>
                                     </motion.div>
 
-                                    {/* Floating Play Video Button */}
+                                    {/* Floating Play Video Button - hidden on mobile */}
                                     <motion.button
                                         initial={{ opacity: 0, scale: 0.8 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.8, duration: 0.5 }}
-                                        whileHover={{ scale: 1.05, y: -2 }}
+                                        transition={{ delay: reduceMotion ? 0 : 0.8, duration: reduceMotion ? 0.3 : 0.5 }}
+                                        whileHover={reduceMotion ? {} : { scale: 1.05, y: -2 }}
                                         className="hidden lg:flex absolute bottom-8 right-8 items-center gap-2 px-5 py-3 rounded-full bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-all text-sm font-medium text-ink"
                                     >
                                         <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center">

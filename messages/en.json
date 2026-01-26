@@ -185,7 +185,11 @@
         "partners": "Partners",
         "contact": "Contact",
         "getConsultation": "Get Consultation",
-        "toggleMenu": "Toggle menu"
+        "toggleMenu": "Toggle menu",
+        "closeMenu": "Close menu",
+        "menu": "Menu",
+        "language": "Language",
+        "selectLanguage": "Select language"
     },
     "hero": {
         "tagline": "Connecting Markets &\nHealth Tourism Across Borders",

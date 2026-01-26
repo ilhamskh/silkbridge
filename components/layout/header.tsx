@@ -3,13 +3,14 @@
 import { useState, useEffect, useTransition } from 'react';
 import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Link, useRouter } from '@/i18n/routing';
 import { locales, localeNames, localeFlags, type Locale } from '@/i18n/config';
 import { navigationConfig } from '@/content/site-config';
 import Logo from '@/components/ui/Logo';
 import Button from '@/components/ui/button';
 import { Icons } from '@/components/ui/Icons';
+import MobileMenu from '@/components/layout/MobileMenu';
 
 export default function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -28,10 +29,6 @@ export default function Header() {
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
-    useEffect(() => {
-        setIsMobileMenuOpen(false);
-    }, [pathname]);
 
     // Check if we're on a page with a dark hero (homepage)
     const isHomePage = pathname === `/${locale}` || pathname === '/';
@@ -113,7 +110,7 @@ export default function Header() {
                                             ? 'text-muted hover:text-primary-600 hover:bg-primary-50'
                                             : 'text-white/80 hover:text-white hover:bg-white/10'}
                   `}
-                                    aria-label={t('toggleMenu')}
+                                    aria-label={t('selectLanguage')}
                                 >
                                     <span className="text-base">{localeFlags[locale]}</span>
                                     <span className="uppercase">{locale}</span>
@@ -153,96 +150,44 @@ export default function Header() {
                             </Link>
                         </div>
 
-                        {/* Mobile Menu Button */}
-                        <button
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className={`lg:hidden p-2 -mr-2 transition-colors ${isScrolled || !hasDarkHero ? 'text-ink' : 'text-white'
-                                }`}
-                            aria-label={t('toggleMenu')}
-                        >
-                            {isMobileMenuOpen ? (
-                                <Icons.close className="w-6 h-6" />
-                            ) : (
-                                <Icons.menu className="w-6 h-6" />
-                            )}
-                        </button>
+                        {/* Mobile Right Side: CTA Pill + Menu Button */}
+                        <div className="flex lg:hidden items-center gap-2">
+                            {/* Compact CTA Pill */}
+                            <Link href="/contact">
+                                <button
+                                    className={`
+                                        px-3 py-2 rounded-full text-xs font-medium transition-all
+                                        ${isScrolled || !hasDarkHero
+                                            ? 'bg-primary-600 text-white hover:bg-primary-700'
+                                            : 'bg-white/90 text-primary-700 hover:bg-white'}
+                                    `}
+                                >
+                                    {t('contact')}
+                                </button>
+                            </Link>
+
+                            {/* Hamburger Menu Button */}
+                            <button
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                className={`p-2 transition-colors rounded-lg
+                                    ${isScrolled || !hasDarkHero ? 'text-ink hover:bg-surface' : 'text-white hover:bg-white/10'}
+                                `}
+                                aria-label={t('toggleMenu')}
+                                aria-expanded={isMobileMenuOpen}
+                            >
+                                {isMobileMenuOpen ? (
+                                    <Icons.close className="w-6 h-6" />
+                                ) : (
+                                    <Icons.menu className="w-6 h-6" />
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>
 
-            {/* Mobile Menu */}
-            <AnimatePresence>
-                {isMobileMenuOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="fixed inset-0 z-40 lg:hidden"
-                    >
-                        <div
-                            className="absolute inset-0 bg-ink/50 backdrop-blur-sm"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        />
-                        <motion.nav
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="absolute top-20 left-4 right-4 bg-white rounded-2xl shadow-card-hover p-6"
-                        >
-                            <div className="space-y-1">
-                                {navigationConfig.main.map((item) => {
-                                    const isActive = pathname === `/${locale}${item.href}` ||
-                                        (item.href === '/' && (pathname === `/${locale}` || pathname === `/${locale}/`));
-                                    return (
-                                        <Link
-                                            key={item.href}
-                                            href={item.href}
-                                            className={`
-                        block px-4 py-3 rounded-xl text-base font-medium transition-colors
-                        ${isActive
-                                                    ? 'bg-primary-50 text-primary-700'
-                                                    : 'text-ink hover:bg-surface'
-                                                }
-                      `}
-                                        >
-                                            {t(item.labelKey)}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
-
-                            {/* Mobile Language Switcher */}
-                            <div className="mt-4 pt-4 border-t border-border-light">
-                                <div className="flex gap-2">
-                                    {locales.map((loc) => (
-                                        <button
-                                            key={loc}
-                                            onClick={() => switchLocale(loc)}
-                                            disabled={isPending}
-                                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors
-                        ${loc === locale ? 'bg-primary-50 text-primary-700' : 'bg-surface text-ink hover:bg-primary-50'}
-                        ${isPending ? 'opacity-50' : ''}
-                      `}
-                                        >
-                                            <span>{localeFlags[loc]}</span>
-                                            <span>{localeNames[loc]}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="mt-6">
-                                <Link href="/contact">
-                                    <Button className="w-full" size="lg">
-                                        {t('getConsultation')}
-                                    </Button>
-                                </Link>
-                            </div>
-                        </motion.nav>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Mobile Menu Component */}
+            <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
         </>
     );
 }
