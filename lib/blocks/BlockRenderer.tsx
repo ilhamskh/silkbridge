@@ -70,7 +70,7 @@ function HeroBlockRenderer({ block }: { block: HeroBlock }) {
         >
             {/* Background Gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950" />
-            
+
             {/* Content */}
             <motion.div
                 initial="hidden"
@@ -213,7 +213,7 @@ function ServicesBlockRenderer({ block }: { block: ServicesBlock }) {
                         >
                             <h3 className="font-heading text-2xl text-ink">{service.title}</h3>
                             <p className="mt-4 text-muted">{service.description}</p>
-                            
+
                             {service.features && service.features.length > 0 && (
                                 <ul className="mt-6 space-y-3">
                                     {service.features.map((feature, i) => (
@@ -647,7 +647,7 @@ function ServiceDetailsBlockRenderer({ block }: { block: ServiceDetailsBlock }) 
                     >
                         <h2 className="font-heading text-3xl text-ink">{block.title}</h2>
                         <p className="mt-4 text-muted text-lg leading-relaxed">{block.description}</p>
-                        
+
                         {block.features && block.features.length > 0 && (
                             <ul className="mt-6 space-y-3">
                                 {block.features.map((feature, i) => (
@@ -801,7 +801,7 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
         <>
             {blocks.map((block, index) => {
                 const key = `block-${index}-${block.type}`;
-                
+
                 switch (block.type) {
                     case 'hero':
                         return <HeroBlockRenderer key={key} block={block} />;

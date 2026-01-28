@@ -393,13 +393,13 @@ export default function PageEditorWrapper({
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                 {/* Tabs */}
                 <AdminTabs
-                        tabs={[
-                            { id: 'content', label: 'Content', icon: <AdminIcon name="edit" className="w-4 h-4" /> },
-                            { id: 'seo', label: 'SEO', icon: <AdminIcon name="search" className="w-4 h-4" /> },
-                        ]}
-                        activeTab={activeTab}
-                        onChange={setActiveTab}
-                    />
+                    tabs={[
+                        { id: 'content', label: 'Content', icon: <AdminIcon name="edit" className="w-4 h-4" /> },
+                        { id: 'seo', label: 'SEO', icon: <AdminIcon name="search" className="w-4 h-4" /> },
+                    ]}
+                    activeTab={activeTab}
+                    onChange={setActiveTab}
+                />
 
                 {/* Tab Content */}
                 <div className="flex-1 overflow-y-auto mt-4 pr-2">
