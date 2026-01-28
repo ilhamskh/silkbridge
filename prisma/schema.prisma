@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// User & Authentication
+// ============================================
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(EDITOR)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
+// ============================================
+// Localization
+// ============================================
+
+model Locale {
+  id         String   @id @default(cuid())
+  code       String   @unique // e.g., "en", "az", "tr"
+  name       String // e.g., "English", "Azerbaijani"
+  nativeName String // e.g., "English", "Azərbaycan"
+  flag       String? // e.g., "🇺🇸", "🇦🇿"
+  isRTL      Boolean  @default(false)
+  isDefault  Boolean  @default(false)
+  isEnabled  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  pageTranslations         PageTranslation[]
+  siteSettingsTranslations SiteSettingsTranslation[]
+
+  @@map("locales")
+}
+
+// ============================================
+// Pages
+// ============================================
+
+model Page {
+  id        String   @id @default(cuid())
+  slug      String   @unique // e.g., "home", "about", "services", "partners", "contact"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  translations PageTranslation[]
+
+  @@map("pages")
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model PageTranslation {
+  id             String     @id @default(cuid())
+  pageId         String
+  localeCode     String
+  title          String
+  seoTitle       String?
+  seoDescription String?
+  ogImage        String?
+  blocks         Json       @default("[]") // Array of content blocks
+  status         PageStatus @default(DRAFT)
+  updatedAt      DateTime   @updatedAt
+  updatedBy      String? // User ID who last updated
+
+  // Relations
+  page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  locale Locale @relation(fields: [localeCode], references: [code], onDelete: Cascade)
+
+  @@unique([pageId, localeCode])
+  @@map("page_translations")
+}
+
+// ============================================
+// Site Settings
+// ============================================
+
+model SiteSettings {
+  id             String   @id @default("1") // Singleton pattern - always ID "1"
+  siteName       String?
+  logoUrl        String?
+  faviconUrl     String?
+  defaultLocale  String   @default("en")
+  contactEmail   String?
+  contactPhone   String?
+  contactAddress String?
+  socialLinks    Json     @default("{}") // { linkedin: "...", twitter: "..." }
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  translations SiteSettingsTranslation[]
+
+  @@map("site_settings")
+}
+
+model SiteSettingsTranslation {
+  id         String  @id @default(cuid())
+  settingsId String
+  localeCode String
+  tagline    String?
+  footerText String?
+
+  // Relations
+  settings SiteSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+  locale   Locale       @relation(fields: [localeCode], references: [code], onDelete: Cascade)
+
+  @@unique([settingsId, localeCode])
+  @@map("site_settings_translations")
+}

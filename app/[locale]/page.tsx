@@ -1,10 +1,8 @@
 import { setRequestLocale } from 'next-intl/server';
-import HeroParallax from '@/components/sections/HeroParallax';
-import About from '@/components/sections/About';
-import Services from '@/components/sections/Services';
-import InsightsSnapshot from '@/components/sections/InsightsSnapshot';
-import Partners from '@/components/sections/Partners';
-import Contact from '@/components/sections/Contact';
+import { notFound } from 'next/navigation';
+import { getPageContent } from '@/lib/blocks/content';
+import BlockRenderer from '@/lib/blocks/BlockRenderer';
+import type { ContentBlock } from '@/lib/blocks/schema';
 
 interface PageProps {
     params: Promise<{ locale: string }>;
@@ -14,14 +12,12 @@ export default async function HomePage({ params }: PageProps) {
     const { locale } = await params;
     setRequestLocale(locale);
 
-    return (
-        <>
-            <HeroParallax />
-            <About />
-            <Services />
-            <InsightsSnapshot />
-            <Partners />
-            <Contact />
-        </>
-    );
+    // Fetch page content from database
+    const pageContent = await getPageContent('home', locale as 'en' | 'az');
+
+    if (!pageContent) {
+        notFound();
+    }
+
+    return <BlockRenderer blocks={pageContent.blocks as ContentBlock[]} />;
 }
