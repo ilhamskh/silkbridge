@@ -231,3 +231,48 @@ model PartnerTranslation {
   @@unique([partnerId, localeCode])
   @@map("partner_translations")
 }
+
+// ============================================
+// FAQ System
+// ============================================
+
+model FaqGroup {
+  id        String   @id @default(cuid())
+  key       String   @unique // "home", "services", "partners", "contact"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  items FaqItem[]
+
+  @@map("faq_groups")
+}
+
+model FaqItem {
+  id        String   @id @default(cuid())
+  groupId   String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  group        FaqGroup             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  translations FaqItemTranslation[]
+
+  @@map("faq_items")
+}
+
+model FaqItemTranslation {
+  id         String @id @default(cuid())
+  faqItemId  String
+  localeCode String
+  question   String
+  answer     String @db.Text
+
+  // Relations
+  faqItem FaqItem @relation(fields: [faqItemId], references: [id], onDelete: Cascade)
+
+  @@unique([faqItemId, localeCode])
+  @@map("faq_item_translations")
+}

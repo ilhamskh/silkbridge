@@ -32,7 +32,34 @@ export default async function EditPagePage({ params, searchParams }: Props) {
     const currentLocale = locale || locales[0]?.code || 'en';
 
     // Get the translation for the selected locale
-    const translation = await getPageTranslation(slug, currentLocale);
+    let translation = await getPageTranslation(slug, currentLocale);
+
+    // If translation doesn't exist, auto-create it from default locale
+    if (!translation) {
+        const defaultLocale = locales.find(l => l.isDefault) || locales[0];
+        const defaultTranslation = await getPageTranslation(slug, defaultLocale.code);
+
+        if (defaultTranslation) {
+            // Create a new translation by copying from default
+            const { prisma } = await import('@/lib/db');
+            translation = await prisma.pageTranslation.create({
+                data: {
+                    pageId: page.id,
+                    localeCode: currentLocale,
+                    title: defaultTranslation.title,
+                    seoTitle: defaultTranslation.seoTitle,
+                    seoDescription: defaultTranslation.seoDescription,
+                    ogImage: defaultTranslation.ogImage,
+                    blocks: defaultTranslation.blocks as object,
+                    status: 'DRAFT', // New translations start as draft
+                },
+                include: {
+                    page: true,
+                    locale: true,
+                },
+            });
+        }
+    }
 
     return (
         <div>

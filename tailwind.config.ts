@@ -34,8 +34,8 @@ const config: Config = {
                 'border-subtle': '#CBD5E1',    // Subtle borders
             },
             fontFamily: {
-                sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-                heading: ['var(--font-sora)', 'system-ui', 'sans-serif'],
+                sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
+                heading: ['var(--font-manrope)', 'system-ui', '-apple-system', 'sans-serif'],
             },
             fontSize: {
                 // Display sizes (heroes, page titles)

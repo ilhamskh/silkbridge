@@ -257,42 +257,69 @@ function PartnersBlockRenderer({ block }: { block: PartnersBlock }) {
     const isInView = useInView(ref, { once: true, margin: '-100px' });
 
     return (
-        <section ref={ref} className="py-24 lg:py-32 bg-surface">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section ref={ref} className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-b from-white via-surface to-white">
+            {/* Decorative background elements */}
+            <div className="absolute inset-0 opacity-30">
+                <div className="absolute top-20 left-10 w-72 h-72 bg-primary-200 rounded-full blur-3xl" />
+                <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary-100 rounded-full blur-3xl" />
+            </div>
+
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.6 }}
-                    className="text-center max-w-2xl mx-auto mb-16"
+                    className="text-center max-w-3xl mx-auto mb-16"
                 >
                     {block.eyebrow && (
-                        <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-4">
+                        <span className="inline-block text-primary-600 text-sm font-semibold tracking-wider uppercase mb-4">
                             {block.eyebrow}
                         </span>
                     )}
-                    <h2 className="font-heading text-3xl sm:text-4xl text-ink">{block.headline}</h2>
+                    <h2 className="font-heading text-4xl sm:text-5xl font-bold text-ink mb-4">
+                        {block.headline}
+                    </h2>
                     {block.description && (
-                        <p className="mt-4 text-muted text-lg">{block.description}</p>
+                        <p className="text-lg text-muted leading-relaxed">{block.description}</p>
                     )}
                 </motion.div>
 
                 {block.partners && block.partners.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {block.partners.map((partner, index) => (
                             <motion.div
                                 key={index}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 30 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.4, delay: index * 0.05 }}
-                                className="p-6 bg-white rounded-xl border border-border-light"
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                className="group relative"
                             >
-                                <h4 className="font-heading font-semibold text-ink">{partner.name}</h4>
-                                {partner.location && (
-                                    <p className="text-sm text-muted mt-1">{partner.location}</p>
-                                )}
-                                {partner.specialty && (
-                                    <p className="text-sm text-primary-600 mt-2">{partner.specialty}</p>
-                                )}
+                                {/* Glassmorphism card with gradient border */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+
+                                <div className="relative bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-border-light shadow-soft hover:shadow-lg transition-all duration-300 h-full">
+                                    {/* Accent line */}
+                                    <div className="w-12 h-1 bg-gradient-to-r from-primary-500 to-primary-700 rounded-full mb-6" />
+
+                                    <h4 className="font-heading text-xl font-bold text-ink mb-2 group-hover:text-primary-700 transition-colors">
+                                        {partner.name}
+                                    </h4>
+
+                                    {partner.location && (
+                                        <p className="flex items-center gap-2 text-sm text-muted mb-3">
+                                            <Icons.mapPin className="w-4 h-4 text-primary-500" />
+                                            {partner.location}
+                                        </p>
+                                    )}
+
+                                    {partner.specialty && (
+                                        <div className="mt-4 pt-4 border-t border-border-light">
+                                            <p className="text-sm font-medium text-primary-700">
+                                                {partner.specialty}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
                             </motion.div>
                         ))}
                     </div>
@@ -302,13 +329,13 @@ function PartnersBlockRenderer({ block }: { block: PartnersBlock }) {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={isInView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        className="mt-12 text-center"
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="mt-16 text-center"
                     >
                         <Link href={block.ctaHref}>
-                            <Button size="lg">
+                            <Button size="lg" className="group">
                                 {block.ctaText}
-                                <Icons.arrowRight className="ml-2 w-4 h-4" />
+                                <Icons.arrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </Button>
                         </Link>
                     </motion.div>
@@ -584,28 +611,54 @@ function CtaBlockRenderer({ block }: { block: CtaBlock }) {
     const isInView = useInView(ref, { once: true, margin: '-100px' });
 
     return (
-        <section ref={ref} className="py-20 lg:py-28 bg-primary-950">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <section ref={ref} className="relative py-24 lg:py-32 overflow-hidden">
+            {/* Premium gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950" />
+
+            {/* Decorative elements */}
+            <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-300 rounded-full blur-3xl transform translate-x-1/2 translate-y-1/2" />
+            </div>
+
+            <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.6 }}
+                    className="space-y-8"
                 >
-                    <h2 className="font-heading text-3xl sm:text-4xl text-white">{block.headline}</h2>
+                    {/* Large, bold headline */}
+                    <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+                        {block.headline}
+                    </h2>
+
                     {block.description && (
-                        <p className="mt-4 text-xl text-white/80">{block.description}</p>
+                        <p className="text-xl sm:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+                            {block.description}
+                        </p>
                     )}
-                    <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+
+                    {/* High-contrast buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                         {block.primaryButton && (
                             <Link href={block.primaryButton.href}>
-                                <Button size="lg" variant="secondary">
+                                <Button
+                                    size="lg"
+                                    className="bg-white text-primary-900 hover:bg-primary-50 text-lg px-8 py-6 h-auto font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all"
+                                >
                                     {block.primaryButton.text}
+                                    <Icons.arrowRight className="ml-2 w-5 h-5" />
                                 </Button>
                             </Link>
                         )}
                         {block.secondaryButton && (
                             <Link href={block.secondaryButton.href}>
-                                <Button size="lg" variant="ghost" className="border-white/30 text-white hover:bg-white/10">
+                                <Button
+                                    size="lg"
+                                    variant="ghost"
+                                    className="border-2 border-white text-white hover:bg-white hover:text-primary-900 text-lg px-8 py-6 h-auto font-semibold transition-all"
+                                >
                                     {block.secondaryButton.text}
                                 </Button>
                             </Link>
@@ -845,61 +898,99 @@ function PartnersEmptyBlockRenderer({ block }: { block: PartnersEmptyBlock }) {
     const isInView = useInView(ref, { once: true, margin: '-80px' });
 
     return (
-        <section ref={ref} className="py-16 lg:py-24 bg-surface">
+        <section ref={ref} className="py-20 lg:py-28 bg-gradient-to-b from-white via-surface to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.5 }}
-                    className="text-center max-w-xl mx-auto"
+                    transition={{ duration: 0.6 }}
+                    className="relative overflow-hidden"
                 >
-                    {/* Icon */}
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 mb-6">
-                        <Icons.regulatory className="w-10 h-10 text-primary-600" />
+                    {/* Gradient border glow */}
+                    <div className="absolute -inset-0.5 bg-gradient-to-br from-primary-400 via-primary-600 to-primary-800 rounded-3xl opacity-20 blur-sm" />
+
+                    <div className="relative bg-white rounded-2xl border border-primary-100 overflow-hidden">
+                        {/* Subtle inner gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 to-transparent" />
+
+                        <div className="relative p-8 lg:p-12">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                                {/* Left: Content */}
+                                <div>
+                                    {/* Eyebrow with accent line */}
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-8 h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 rounded-full" />
+                                        <span className="text-sm font-semibold tracking-wider uppercase text-primary-600">
+                                            {block.eyebrow || 'PARTNERSHIPS'}
+                                        </span>
+                                    </div>
+
+                                    <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
+                                        {block.headline}
+                                    </h2>
+
+                                    <p className="mt-4 text-lg text-muted leading-relaxed">
+                                        {block.description}
+                                    </p>
+
+                                    {/* Benefits list */}
+                                    <ul className="mt-6 space-y-3">
+                                        <li className="flex items-start gap-3">
+                                            <div className="mt-1.5 w-2 h-2 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex-shrink-0" />
+                                            <span className="text-muted">Access to international client network</span>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <div className="mt-1.5 w-2 h-2 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex-shrink-0" />
+                                            <span className="text-muted">Premium partnership benefits</span>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <div className="mt-1.5 w-2 h-2 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex-shrink-0" />
+                                            <span className="text-muted">Marketing and promotional support</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* Right: CTA Card */}
+                                <div className="lg:pl-8">
+                                    <div className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950 rounded-2xl p-8 text-center relative overflow-hidden">
+                                        {/* Decorative glow */}
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-400/20 rounded-full blur-2xl" />
+                                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
+
+                                        <div className="relative">
+                                            {/* Icon */}
+                                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 mb-6">
+                                                <Icons.regulatory className="w-8 h-8 text-white" />
+                                            </div>
+
+                                            <p className="text-white/90 text-lg mb-6">
+                                                Ready to join our network?
+                                            </p>
+
+                                            {/* Primary CTA - High contrast white button */}
+                                            {block.ctaText && block.ctaHref && (
+                                                <Link
+                                                    href={block.ctaHref}
+                                                    className="inline-flex items-center justify-center w-full px-8 py-4 text-lg font-semibold rounded-xl bg-white text-primary-900 hover:bg-primary-50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white/50"
+                                                >
+                                                    {block.ctaText}
+                                                    <Icons.arrowRight className="ml-2 w-5 h-5" />
+                                                </Link>
+                                            )}
+
+                                            {/* Secondary link */}
+                                            <a
+                                                href="/contact"
+                                                className="inline-flex items-center justify-center w-full mt-4 px-8 py-3 text-white/80 hover:text-white transition-colors underline-offset-4 hover:underline"
+                                            >
+                                                Contact us directly
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    {/* Eyebrow */}
-                    {block.eyebrow && (
-                        <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-3">
-                            {block.eyebrow}
-                        </span>
-                    )}
-
-                    {/* Headline */}
-                    <h2 className="font-heading text-display-sm text-ink mb-4 text-balance">
-                        {block.headline}
-                    </h2>
-
-                    {/* Description */}
-                    <p className="text-body-lg text-muted mb-8 max-w-prose mx-auto">
-                        {block.description}
-                    </p>
-
-                    {/* CTA */}
-                    {block.ctaText && block.ctaHref && (
-                        <Link
-                            href={block.ctaHref}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-medium rounded-full shadow-button hover:bg-primary-700 hover:shadow-button-hover transition-all duration-200"
-                        >
-                            {block.ctaText}
-                        </Link>
-                    )}
-                </motion.div>
-
-                {/* Decorative placeholder boxes */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={isInView ? { opacity: 0.4 } : {}}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    className="mt-12 flex justify-center gap-4"
-                >
-                    {[...Array(5)].map((_, i) => (
-                        <div
-                            key={i}
-                            className="w-16 h-16 rounded-lg bg-border-subtle"
-                            style={{ opacity: 1 - i * 0.15 }}
-                        />
-                    ))}
                 </motion.div>
             </div>
         </section>
@@ -959,7 +1050,19 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
                     case 'howItWorks':
                         return <HowItWorksSection key={key} block={block} />;
                     case 'faq':
-                        return <FaqSection key={key} block={block} />;
+                        // Transform FaqBlock to FaqSection props
+                        return (
+                            <FaqSection
+                                key={key}
+                                faqs={block.items?.map((item, idx) => ({
+                                    id: `faq-${idx}`,
+                                    question: item.question,
+                                    answer: item.answer,
+                                })) || []}
+                                title={block.headline}
+                                subtitle={block.description}
+                            />
+                        );
                     case 'interactiveServices':
                         return <InteractiveServices key={key} block={block} />;
                     case 'areas':

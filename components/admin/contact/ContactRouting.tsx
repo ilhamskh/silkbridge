@@ -147,7 +147,7 @@ export default function ContactRouting() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-semibold text-slate-900
+                    <h2 className="text-xl font-semibold text-slate-900">
                         Email Routing Rules
                     </h2>
                     <p className="mt-1 text-sm text-slate-500">
@@ -190,14 +190,14 @@ export default function ContactRouting() {
 
             {/* No recipients warning */}
             {activeRecipients.length === 0 && (
-                <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4
+                <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4">
                     <div className="flex items-center gap-3">
-                        <AlertCircle className="h-5 w-5 text-yellow-600 />
+                        <AlertCircle className="h-5 w-5 text-yellow-600" />
                         <div>
-                            <p className="font-medium text-yellow-800
+                            <p className="font-medium text-yellow-800">
                                 No active recipients
                             </p>
-                            <p className="text-sm text-yellow-600
+                            <p className="text-sm text-yellow-600">
                                 Add recipients in the Recipients tab before configuring routing.
                             </p>
                         </div>
@@ -214,16 +214,15 @@ export default function ContactRouting() {
                     const isOpen = openDropdown === config.type;
 
                     const colorClasses = {
-                        blue: 'bg-primary-100 text-primary-600
-                        rose: 'bg-rose-100 text-rose-600
-                        emerald:
-                            'bg-emerald-100 text-emerald-600
+                        blue: 'bg-primary-100 text-primary-600',
+                        rose: 'bg-rose-100 text-rose-600',
+                        emerald: 'bg-emerald-100 text-emerald-600',
                     };
 
                     return (
                         <div
                             key={config.type}
-                            className="rounded-xl border border-slate-200 bg-white p-5
+                            className="rounded-xl border border-slate-200 bg-white p-5"
                         >
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 {/* Type Info */}
@@ -234,7 +233,7 @@ export default function ContactRouting() {
                                         <Icon className="h-6 w-6" />
                                     </div>
                                     <div>
-                                        <h3 className="font-medium text-slate-900
+                                        <h3 className="font-medium text-slate-900">
                                             {config.label}
                                         </h3>
                                         <p className="text-sm text-slate-500">{config.description}</p>
@@ -247,12 +246,12 @@ export default function ContactRouting() {
                                         onClick={() =>
                                             setOpenDropdown(isOpen ? null : config.type)
                                         }
-                                        className="flex w-full items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-left transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
+                                        className="flex w-full items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-left transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                         disabled={activeRecipients.length === 0}
                                     >
                                         {selectedRecipient ? (
                                             <div>
-                                                <p className="font-medium text-slate-900
+                                                <p className="font-medium text-slate-900">
                                                     {selectedRecipient.label}
                                                 </p>
                                                 <p className="text-sm text-slate-500">
@@ -268,7 +267,7 @@ export default function ContactRouting() {
                                     </button>
 
                                     {isOpen && activeRecipients.length > 0 && (
-                                        <div className="absolute z-10 mt-2 w-full rounded-lg border border-slate-200 bg-white shadow-xl
+                                        <div className="absolute z-10 mt-2 w-full rounded-lg border border-slate-200 bg-white shadow-xl">
                                             {activeRecipients.map((recipient) => (
                                                 <button
                                                     key={recipient.id}
@@ -279,7 +278,7 @@ export default function ContactRouting() {
                                                         )
                                                     }
                                                     className={`flex w-full items-center justify-between px-4 py-3 text-left transition-colors first:rounded-t-lg last:rounded-b-lg hover:bg-slate-50 ${selectedId === recipient.id
-                                                            ? 'bg-primary-50
+                                                            ? 'bg-primary-50'
                                                             : ''
                                                         }`}
                                                 >
@@ -287,7 +286,7 @@ export default function ContactRouting() {
                                                         <p
                                                             className={`font-medium ${selectedId === recipient.id
                                                                     ? 'text-primary-600'
-                                                                    : 'text-slate-900
+                                                                    : 'text-slate-900'
                                                                 }`}
                                                         >
                                                             {recipient.label}
@@ -311,11 +310,11 @@ export default function ContactRouting() {
             </div>
 
             {/* Help Text */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-start gap-3">
                     <GitBranch className="mt-0.5 h-5 w-5 text-slate-400" />
-                    <div className="text-sm text-slate-600
-                        <p className="font-medium text-slate-900
+                    <div className="text-sm text-slate-600">
+                        <p className="font-medium text-slate-900">
                             How routing works
                         </p>
                         <p className="mt-1">

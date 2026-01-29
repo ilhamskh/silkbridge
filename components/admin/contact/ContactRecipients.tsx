@@ -110,7 +110,7 @@ export default function ContactRecipients() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-semibold text-slate-900
+                    <h2 className="text-xl font-semibold text-slate-900">
                         Email Recipients
                     </h2>
                     <p className="mt-1 text-sm text-slate-500">
@@ -132,27 +132,27 @@ export default function ContactRecipients() {
                     <div
                         key={recipient.id}
                         className={`rounded-xl border p-5 transition-all ${recipient.isActive
-                                ? 'border-slate-200 bg-white
-                                : 'border-slate-200 bg-slate-50 opacity-60
+                                ? 'border-slate-200 bg-white'
+                                : 'border-slate-200 bg-slate-50 opacity-60'
                             }`}
                     >
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-3">
                                 <div
                                     className={`flex h-10 w-10 items-center justify-center rounded-lg ${recipient.isActive
-                                            ? 'bg-primary-100
-                                            : 'bg-slate-100
+                                            ? 'bg-primary-100'
+                                            : 'bg-slate-100'
                                         }`}
                                 >
                                     <Users
                                         className={`h-5 w-5 ${recipient.isActive
-                                                ? 'text-primary-600
+                                                ? 'text-primary-600'
                                                 : 'text-slate-400'
                                             }`}
                                     />
                                 </div>
                                 <div>
-                                    <h3 className="font-medium text-slate-900
+                                    <h3 className="font-medium text-slate-900">
                                         {recipient.label}
                                     </h3>
                                     <p className="text-sm text-slate-500">{recipient.email}</p>
@@ -183,7 +183,7 @@ export default function ContactRecipients() {
                             </div>
                             <button
                                 onClick={() => handleEdit(recipient)}
-                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700
+                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
                             >
                                 <Edit2 className="h-3.5 w-3.5" />
                                 Edit
@@ -194,8 +194,8 @@ export default function ContactRecipients() {
 
                 {/* Empty state */}
                 {recipients.length === 0 && (
-                    <div className="col-span-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-12
-                        <Users className="h-12 w-12 text-slate-300 />
+                    <div className="col-span-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-12">
+                        <Users className="h-12 w-12 text-slate-300" />
                         <p className="mt-4 text-slate-500">No recipients configured</p>
                         <button
                             onClick={handleAddNew}
@@ -215,16 +215,16 @@ export default function ContactRecipients() {
                     onClick={() => setIsModalOpen(false)}
                 >
                     <div
-                        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl
+                        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-slate-900
+                            <h3 className="text-lg font-semibold text-slate-900">
                                 {editingRecipient ? 'Edit Recipient' : 'Add Recipient'}
                             </h3>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100
+                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -233,7 +233,7 @@ export default function ContactRecipients() {
                         <div className="mt-6 space-y-4">
                             {/* Label */}
                             <div>
-                                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700
+                                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
                                     <Tag className="h-4 w-4" />
                                     Label
                                 </label>
@@ -244,13 +244,13 @@ export default function ContactRecipients() {
                                         setFormData((f) => ({ ...f, label: e.target.value }))
                                     }
                                     placeholder="e.g., General Inquiries, Pharma Team"
-                                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
+                                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                 />
                             </div>
 
                             {/* Email */}
                             <div>
-                                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700
+                                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
                                     <Mail className="h-4 w-4" />
                                     Email Address
                                 </label>
@@ -261,20 +261,20 @@ export default function ContactRecipients() {
                                         setFormData((f) => ({ ...f, email: e.target.value }))
                                     }
                                     placeholder="team@silkbridge.az"
-                                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
+                                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                 />
                             </div>
 
                             {/* Error */}
                             {error && (
-                                <p className="text-sm text-red-600
+                                <p className="text-sm text-red-600">{error}</p>
                             )}
 
                             {/* Actions */}
                             <div className="flex justify-end gap-3 pt-4">
                                 <button
                                     onClick={() => setIsModalOpen(false)}
-                                    className="rounded-lg px-4 py-2 font-medium text-slate-600 transition-colors hover:bg-slate-100
+                                    className="rounded-lg px-4 py-2 font-medium text-slate-600 transition-colors hover:bg-slate-100"
                                 >
                                     Cancel
                                 </button>

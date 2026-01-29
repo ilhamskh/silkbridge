@@ -423,6 +423,25 @@ export async function getNavigationData(locale: string): Promise<NavigationData>
             privacyPolicy: 'Məxfilik Siyasəti',
             termsOfService: 'Xidmət Şərtləri',
         },
+        ru: {
+            home: 'Главная',
+            about: 'О нас',
+            services: 'Услуги',
+            partners: 'Партнёры',
+            contact: 'Контакты',
+            marketInsights: 'Аналитика рынка',
+            servicesTitle: 'Услуги',
+            companyTitle: 'Компания',
+            resourcesTitle: 'Ресурсы',
+            marketEntry: 'Выход на рынок',
+            regulatory: 'Регуляторная поддержка',
+            healthTourism: 'Медицинский туризм',
+            wellness: 'Велнес программы',
+            industryReports: 'Отраслевые отчёты',
+            partnerPortal: 'Портал партнёров',
+            privacyPolicy: 'Политика конфиденциальности',
+            termsOfService: 'Условия использования',
+        },
     };
 
     const labels = navLabels[locale] || navLabels.en;

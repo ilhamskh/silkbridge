@@ -28,9 +28,9 @@ import type { InquiryType, SubmissionStatus, ContactSubmission } from '@prisma/c
 
 // Type badge colors
 const typeBadgeColors: Record<InquiryType, string> = {
-    PHARMA: 'bg-primary-100 text-primary-700
-    PATIENT: 'bg-rose-100 text-rose-700
-    WELLNESS: 'bg-emerald-100 text-emerald-700
+    PHARMA: 'bg-primary-100 text-primary-700',
+    PATIENT: 'bg-rose-100 text-rose-700',
+    WELLNESS: 'bg-emerald-100 text-emerald-700',
 };
 
 const typeIcons: Record<InquiryType, typeof Briefcase> = {
@@ -47,9 +47,9 @@ const typeLabels: Record<InquiryType, string> = {
 
 // Status badge colors
 const statusBadgeColors: Record<SubmissionStatus, string> = {
-    NEW: 'bg-primary-100 text-primary-700
-    ARCHIVED: 'bg-slate-100 text-slate-600
-    SPAM: 'bg-red-100 text-red-700
+    NEW: 'bg-primary-100 text-primary-700',
+    ARCHIVED: 'bg-slate-100 text-slate-600',
+    SPAM: 'bg-red-100 text-red-700',
 };
 
 export default function ContactSubmissions() {
@@ -115,16 +115,16 @@ export default function ContactSubmissions() {
                 <div
                     onClick={() => setFilters({})}
                     className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${!filters.status
-                            ? 'border-primary-300 bg-primary-50
-                            : 'border-slate-200 bg-white
+                            ? 'border-primary-300 bg-primary-50'
+                            : 'border-slate-200 bg-white'
                         }`}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100
-                            <Inbox className="h-5 w-5 text-slate-600 />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
+                            <Inbox className="h-5 w-5 text-slate-600" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-slate-900
+                            <p className="text-2xl font-bold text-slate-900">
                                 {stats.total}
                             </p>
                             <p className="text-sm text-slate-500">All</p>
@@ -135,16 +135,16 @@ export default function ContactSubmissions() {
                 <div
                     onClick={() => setFilters({ status: 'NEW' })}
                     className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${filters.status === 'NEW'
-                            ? 'border-primary-300 bg-primary-50
-                            : 'border-slate-200 bg-white
+                            ? 'border-primary-300 bg-primary-50'
+                            : 'border-slate-200 bg-white'
                         }`}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-100
-                            <Mail className="h-5 w-5 text-primary-600 />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-100">
+                            <Mail className="h-5 w-5 text-primary-600" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-slate-900
+                            <p className="text-2xl font-bold text-slate-900">
                                 {stats.new}
                             </p>
                             <p className="text-sm text-slate-500">New</p>
@@ -155,16 +155,16 @@ export default function ContactSubmissions() {
                 <div
                     onClick={() => setFilters({ status: 'ARCHIVED' })}
                     className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${filters.status === 'ARCHIVED'
-                            ? 'border-primary-300 bg-primary-50
-                            : 'border-slate-200 bg-white
+                            ? 'border-primary-300 bg-primary-50'
+                            : 'border-slate-200 bg-white'
                         }`}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100
-                            <Archive className="h-5 w-5 text-slate-600 />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
+                            <Archive className="h-5 w-5 text-slate-600" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-slate-900
+                            <p className="text-2xl font-bold text-slate-900">
                                 {stats.archived}
                             </p>
                             <p className="text-sm text-slate-500">Archived</p>
@@ -175,16 +175,16 @@ export default function ContactSubmissions() {
                 <div
                     onClick={() => setFilters({ status: 'SPAM' })}
                     className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${filters.status === 'SPAM'
-                            ? 'border-primary-300 bg-primary-50
-                            : 'border-slate-200 bg-white
+                            ? 'border-primary-300 bg-primary-50'
+                            : 'border-slate-200 bg-white'
                         }`}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100
-                            <AlertTriangle className="h-5 w-5 text-red-600 />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100">
+                            <AlertTriangle className="h-5 w-5 text-red-600" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-slate-900
+                            <p className="text-2xl font-bold text-slate-900">
                                 {stats.spam}
                             </p>
                             <p className="text-sm text-slate-500">Spam</p>
@@ -202,8 +202,8 @@ export default function ContactSubmissions() {
                 <button
                     onClick={() => setFilters((f) => ({ ...f, type: undefined }))}
                     className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${!filters.type
-                            ? 'bg-slate-900 text-white
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200
+                            ? 'bg-slate-900 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                         }`}
                 >
                     All Types
@@ -215,8 +215,8 @@ export default function ContactSubmissions() {
                             key={type}
                             onClick={() => setFilters((f) => ({ ...f, type }))}
                             className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${filters.type === type
-                                    ? 'bg-slate-900 text-white
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200
+                                    ? 'bg-slate-900 text-white'
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                 }`}
                         >
                             <Icon className="h-4 w-4" />
@@ -226,7 +226,7 @@ export default function ContactSubmissions() {
                 })}
                 <button
                     onClick={() => loadSubmissions(pagination.page)}
-                    className="ml-auto flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-200
+                    className="ml-auto flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-200"
                 >
                     <RefreshCw className={`h-4 w-4 ${isPending ? 'animate-spin' : ''}`} />
                     Refresh
@@ -234,17 +234,17 @@ export default function ContactSubmissions() {
             </div>
 
             {/* Submissions Table */}
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                 {submissions.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16">
-                        <Inbox className="h-12 w-12 text-slate-300 />
+                        <Inbox className="h-12 w-12 text-slate-300" />
                         <p className="mt-4 text-slate-500">No submissions found</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-slate-200 bg-slate-50
+                                <tr className="border-b border-slate-200 bg-slate-50">
                                     <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
                                         Date
                                     </th>
@@ -262,14 +262,14 @@ export default function ContactSubmissions() {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-200
+                            <tbody className="divide-y divide-slate-200">
                                 {submissions.map((submission) => {
                                     const TypeIcon = typeIcons[submission.type];
                                     return (
                                         <tr
                                             key={submission.id}
                                             onClick={() => setSelectedSubmission(submission)}
-                                            className="cursor-pointer transition-colors hover:bg-slate-50
+                                            className="cursor-pointer transition-colors hover:bg-slate-50"
                                         >
                                             <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-500">
                                                 {formatDistanceToNow(new Date(submission.createdAt), {
@@ -278,11 +278,11 @@ export default function ContactSubmissions() {
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100
+                                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100">
                                                         <User className="h-4 w-4 text-slate-500" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-slate-900
+                                                        <p className="font-medium text-slate-900">
                                                             {submission.name}
                                                         </p>
                                                         <p className="text-sm text-slate-500">
@@ -317,7 +317,7 @@ export default function ContactSubmissions() {
                                                                     'ARCHIVED'
                                                                 );
                                                             }}
-                                                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600
+                                                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
                                                             title="Archive"
                                                         >
                                                             <Archive className="h-4 w-4" />
@@ -332,7 +332,7 @@ export default function ContactSubmissions() {
                                                                     'SPAM'
                                                                 );
                                                             }}
-                                                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-100 hover:text-red-600
+                                                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-100 hover:text-red-600"
                                                             title="Mark as spam"
                                                         >
                                                             <AlertTriangle className="h-4 w-4" />
@@ -344,7 +344,7 @@ export default function ContactSubmissions() {
                                                                 e.stopPropagation();
                                                                 handleStatusChange(submission.id, 'NEW');
                                                             }}
-                                                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-primary-100 hover:text-primary-600
+                                                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-primary-100 hover:text-primary-600"
                                                             title="Mark as new"
                                                         >
                                                             <Mail className="h-4 w-4" />
@@ -362,7 +362,7 @@ export default function ContactSubmissions() {
 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (
-                    <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3
+                    <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
                         <p className="text-sm text-slate-500">
                             Showing {(pagination.page - 1) * 10 + 1} to{' '}
                             {Math.min(pagination.page * 10, pagination.total)} of {pagination.total}
@@ -371,17 +371,17 @@ export default function ContactSubmissions() {
                             <button
                                 onClick={() => loadSubmissions(pagination.page - 1)}
                                 disabled={pagination.page === 1}
-                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 disabled:opacity-50
+                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 disabled:opacity-50"
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </button>
-                            <span className="text-sm text-slate-600
+                            <span className="text-sm text-slate-600">
                                 Page {pagination.page} of {pagination.totalPages}
                             </span>
                             <button
                                 onClick={() => loadSubmissions(pagination.page + 1)}
                                 disabled={pagination.page === pagination.totalPages}
-                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 disabled:opacity-50
+                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 disabled:opacity-50"
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </button>
@@ -400,13 +400,13 @@ export default function ContactSubmissions() {
                         className="absolute bottom-0 right-0 top-0 w-full max-w-lg overflow-y-auto bg-white shadow-xl sm:max-w-xl"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white p-4
-                            <h3 className="text-lg font-semibold text-slate-900
+                        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white p-4">
+                            <h3 className="text-lg font-semibold text-slate-900">
                                 Submission Details
                             </h3>
                             <button
                                 onClick={() => setSelectedSubmission(null)}
-                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100
+                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -433,7 +433,7 @@ export default function ContactSubmissions() {
                                     <User className="h-5 w-5 text-slate-400" />
                                     <div>
                                         <p className="text-sm text-slate-500">Name</p>
-                                        <p className="font-medium text-slate-900
+                                        <p className="font-medium text-slate-900">
                                             {selectedSubmission.name}
                                         </p>
                                     </div>
@@ -459,7 +459,7 @@ export default function ContactSubmissions() {
                                             <p className="text-sm text-slate-500">Phone</p>
                                             <a
                                                 href={`tel:${selectedSubmission.phone}`}
-                                                className="font-medium text-slate-900
+                                                className="font-medium text-slate-900"
                                             >
                                                 {selectedSubmission.phone}
                                             </a>
@@ -471,7 +471,7 @@ export default function ContactSubmissions() {
                                     <Calendar className="h-5 w-5 text-slate-400" />
                                     <div>
                                         <p className="text-sm text-slate-500">Submitted</p>
-                                        <p className="font-medium text-slate-900
+                                        <p className="font-medium text-slate-900">
                                             {new Date(selectedSubmission.createdAt).toLocaleString()}
                                         </p>
                                     </div>
@@ -481,15 +481,15 @@ export default function ContactSubmissions() {
                             {/* Message */}
                             <div>
                                 <p className="mb-2 text-sm font-medium text-slate-500">Message</p>
-                                <div className="rounded-lg bg-slate-50 p-4
-                                    <p className="whitespace-pre-wrap text-slate-900
+                                <div className="rounded-lg bg-slate-50 p-4">
+                                    <p className="whitespace-pre-wrap text-slate-900">
                                         {selectedSubmission.message}
                                     </p>
                                 </div>
                             </div>
 
                             {/* Actions */}
-                            <div className="flex gap-3 border-t border-slate-200 pt-6
+                            <div className="flex gap-3 border-t border-slate-200 pt-6">
                                 <a
                                     href={`mailto:${selectedSubmission.email}?subject=Re: Your inquiry to SILKBRIDGE`}
                                     className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-primary-700"
@@ -503,7 +503,7 @@ export default function ContactSubmissions() {
                                         onClick={() =>
                                             handleStatusChange(selectedSubmission.id, 'ARCHIVED')
                                         }
-                                        className="flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 font-medium text-slate-700 transition-colors hover:bg-slate-50
+                                        className="flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 font-medium text-slate-700 transition-colors hover:bg-slate-50"
                                     >
                                         <Archive className="h-4 w-4" />
                                         Archive

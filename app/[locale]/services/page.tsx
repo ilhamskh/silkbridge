@@ -5,6 +5,8 @@ import { routing } from '@/i18n/routing';
 import { siteConfig } from '@/content/site-config';
 import { getPageContent } from '@/lib/blocks/content';
 import BlockRenderer from '@/lib/blocks/BlockRenderer';
+import { FaqSection } from '@/components/sections/FaqSection';
+import { getFaqsByGroup } from '@/lib/data/faqs';
 import type { ContentBlock } from '@/lib/blocks/schema';
 
 type Props = {
@@ -51,9 +53,24 @@ export default async function ServicesPage({ params }: Props) {
         notFound();
     }
 
+    // Fetch FAQs for services from database
+    const faqs = await getFaqsByGroup('services', locale);
+
     return (
         <div className="pt-24 lg:pt-32">
             <BlockRenderer blocks={pageContent.blocks as ContentBlock[]} />
+
+            {/* Database-driven FAQ Section */}
+            {faqs && faqs.length > 0 && (
+                <FaqSection
+                    faqs={faqs}
+                    title={locale === 'az' ? 'Tez-tez Verilən Suallar' : 'Frequently Asked Questions'}
+                    subtitle={locale === 'az'
+                        ? 'Xidmətlərimiz haqqında ən çox verilən sualların cavabları'
+                        : 'Find answers to common questions about our services'
+                    }
+                />
+            )}
         </div>
     );
 }

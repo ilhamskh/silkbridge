@@ -1,117 +1,104 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { ChevronDown, HelpCircle } from 'lucide-react';
-import type { FaqBlock } from '@/lib/blocks/schema';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 
-interface FaqSectionProps {
-    block: FaqBlock;
+export interface FaqItem {
+    id: string;
+    question: string;
+    answer: string;
 }
 
-export function FaqSection({ block }: FaqSectionProps) {
-    const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
-    const ref = useRef<HTMLDivElement>(null);
-    const isInView = useInView(ref, { once: true, margin: '-80px' });
+interface FaqSectionProps {
+    faqs: FaqItem[];
+    title?: string;
+    subtitle?: string;
+}
+
+export function FaqSection({ faqs, title, subtitle }: FaqSectionProps) {
+    const [openId, setOpenId] = useState<string | null>(null);
+
+    if (!faqs || faqs.length === 0) {
+        return null;
+    }
 
     return (
-        <section ref={ref} className="py-16 lg:py-24 bg-white">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.5 }}
-                    className="text-center mb-12 lg:mb-16"
-                >
-                    {block.eyebrow && (
-                        <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-3">
-                            {block.eyebrow}
-                        </span>
-                    )}
-                    <h2 className="font-heading text-display-sm lg:text-display text-ink text-balance">
-                        {block.headline}
-                    </h2>
-                    {block.description && (
-                        <p className="mt-4 text-body-lg text-muted max-w-2xl mx-auto">
-                            {block.description}
-                        </p>
-                    )}
-                </motion.div>
+        <section className="py-16 md:py-24 bg-surface">
+            <div className="container mx-auto px-4 max-w-4xl">
+                {(title || subtitle) && (
+                    <div className="text-center mb-12">
+                        {title && (
+                            <h2 className="text-3xl md:text-4xl font-heading font-bold text-ink mb-4">
+                                {title}
+                            </h2>
+                        )}
+                        {subtitle && (
+                            <p className="text-lg text-muted max-w-2xl mx-auto">
+                                {subtitle}
+                            </p>
+                        )}
+                    </div>
+                )}
 
-                {/* FAQ Items */}
-                <div className="space-y-3">
-                    {block.items.map((item, index) => {
-                        const isExpanded = expandedIndex === index;
-
-                        return (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 16 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.4, delay: 0.1 + index * 0.05 }}
-                                className={`
-                                    rounded-card-lg border overflow-hidden transition-all duration-200
-                                    ${isExpanded
-                                        ? 'bg-white border-primary-200 shadow-card'
-                                        : 'bg-surface border-border-light hover:border-primary-100'
-                                    }
-                                `}
-                            >
-                                <button
-                                    onClick={() => setExpandedIndex(isExpanded ? null : index)}
-                                    className="w-full px-6 py-5 flex items-start gap-4 text-left"
-                                    aria-expanded={isExpanded}
-                                >
-                                    {/* Question icon */}
-                                    <div className={`
-                                        mt-0.5 w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center transition-colors duration-200
-                                        ${isExpanded
-                                            ? 'bg-primary-600 text-white'
-                                            : 'bg-primary-50 text-primary-600'
-                                        }
-                                    `}>
-                                        <HelpCircle className="w-4 h-4" />
-                                    </div>
-
-                                    {/* Question text */}
-                                    <div className="flex-1">
-                                        <h3 className={`
-                                            font-medium text-body transition-colors duration-200
-                                            ${isExpanded ? 'text-ink' : 'text-ink'}
-                                        `}>
-                                            {item.question}
-                                        </h3>
-                                    </div>
-
-                                    {/* Expand icon */}
-                                    <ChevronDown className={`
-                                        w-5 h-5 text-muted flex-shrink-0 mt-0.5 transition-transform duration-200
-                                        ${isExpanded ? 'rotate-180' : ''}
-                                    `} />
-                                </button>
-
-                                <AnimatePresence initial={false}>
-                                    {isExpanded && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: 'auto', opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.2, ease: 'easeOut' }}
-                                        >
-                                            <div className="px-6 pb-5 pl-[4.5rem]">
-                                                <p className="text-body text-muted max-w-prose">
-                                                    {item.answer}
-                                                </p>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </motion.div>
-                        );
-                    })}
+                <div className="space-y-4">
+                    {faqs.map((faq) => (
+                        <FaqItem
+                            key={faq.id}
+                            faq={faq}
+                            isOpen={openId === faq.id}
+                            onToggle={() => setOpenId(openId === faq.id ? null : faq.id)}
+                        />
+                    ))}
                 </div>
             </div>
         </section>
+    );
+}
+
+interface FaqItemProps {
+    faq: FaqItem;
+    isOpen: boolean;
+    onToggle: () => void;
+}
+
+function FaqItem({ faq, isOpen, onToggle }: FaqItemProps) {
+    return (
+        <div className="bg-white rounded-lg shadow-soft border border-border-light overflow-hidden transition-shadow hover:shadow-md">
+            <button
+                onClick={onToggle}
+                className="w-full flex items-start justify-between p-6 text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                aria-expanded={isOpen}
+            >
+                <span className="text-lg font-heading font-semibold text-ink pr-4 flex-1">
+                    {faq.question}
+                </span>
+                <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex-shrink-0 mt-1"
+                >
+                    <ChevronDown className="w-5 h-5 text-primary-600" />
+                </motion.div>
+            </button>
+
+            <AnimatePresence initial={false}>
+                {isOpen && (
+                    <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: 'auto' }}
+                        exit={{ height: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                    >
+                        <div className="px-6 pb-6 pt-0">
+                            <div className="text-base text-muted leading-relaxed">
+                                {faq.answer}
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     );
 }

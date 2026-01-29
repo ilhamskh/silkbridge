@@ -122,9 +122,16 @@
             "phoneLabel": "Phone Number",
             "phonePlaceholder": "+1 (555) 000-0000",
             "phoneOptional": "Optional",
+            "companyLabel": "Company",
+            "companyPlaceholder": "Your company name",
+            "companyOptional": "Optional",
             "typeLabel": "Inquiry Type",
             "typePlaceholder": "Select inquiry type",
             "typeRequired": "Please select an inquiry type",
+            "typeMarketEntry": "Pharmaceutical Market Entry",
+            "typeHealthTourism": "Health Tourism Services",
+            "typePartnership": "Distribution Partnership",
+            "typeGeneral": "General Inquiry",
             "typePharma": "Pharmaceutical Services",
             "typePharmaDesc": "Market entry, regulatory, distribution",
             "typePatient": "Patient / Health Tourism",
@@ -145,7 +152,8 @@
         "success": {
             "title": "Message Sent Successfully!",
             "description": "Thank you for reaching out. Our team will get back to you within 1-2 business days.",
-            "anotherMessage": "Send Another Message"
+            "anotherMessage": "Send Another Message",
+            "toast": "Your request is submitted"
         },
         "error": {
             "title": "Unable to Send Message",

@@ -7,6 +7,7 @@ import { categories, categoryTranslations, popularTags } from './types';
 const postsByLocale: Record<Locale, Post[]> = {
     en: postsEn,
     az: postsAz,
+    ru: postsEn, // Fallback to English until Russian posts are created
 };
 
 export function getPosts(locale: Locale): Post[] {

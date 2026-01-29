@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import Button from '@/components/ui/button';
 import { AdminInput } from '@/components/admin/ui/AdminInput';
 import { AdminTextarea } from '@/components/admin/ui/AdminTextarea';
@@ -13,13 +14,17 @@ interface ContactFormProps {
 
 export default function ContactForm({ locale }: ContactFormProps) {
     const t = useTranslations('contactPage.form');
+    const tSuccess = useTranslations('contactPage.success');
+    const tError = useTranslations('contactPage.error');
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
-        subject: '',
+        type: 'PHARMA' as 'PHARMA' | 'PATIENT' | 'WELLNESS',
         message: '',
     });
+    const [formTimestamp] = useState(Date.now());
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -35,15 +40,24 @@ export default function ContactForm({ locale }: ContactFormProps) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    ...formData,
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone || undefined,
+                    type: formData.type,
+                    message: formData.message,
                     locale,
+                    pagePath: window.location.pathname,
+                    _timestamp: formTimestamp,
                 }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to send message');
+                if (response.status === 429) {
+                    throw new Error(tError('rateLimit'));
+                }
+                throw new Error(data.error || tError('description'));
             }
 
             setStatus('success');
@@ -51,15 +65,28 @@ export default function ContactForm({ locale }: ContactFormProps) {
                 name: '',
                 email: '',
                 phone: '',
-                subject: '',
+                type: 'PHARMA',
                 message: '',
+            });
+
+            // Show success toast
+            toast.success(tSuccess('title'), {
+                description: tSuccess('description'),
+                duration: 5000,
             });
 
             // Reset success message after 5 seconds
             setTimeout(() => setStatus('idle'), 5000);
         } catch (error) {
             setStatus('error');
-            setErrorMessage(error instanceof Error ? error.message : 'An error occurred');
+            const errorMsg = error instanceof Error ? error.message : tError('description');
+            setErrorMessage(errorMsg);
+
+            // Show error toast
+            toast.error(tError('title'), {
+                description: errorMsg,
+                duration: 5000,
+            });
         }
     };
 
@@ -142,21 +169,28 @@ export default function ContactForm({ locale }: ContactFormProps) {
                     />
                 </div>
 
-                {/* Subject */}
+                {/* Inquiry Type */}
                 <div>
-                    <label htmlFor="subject" className="mb-2 block text-sm font-medium text-slate-700">
-                        {t('subjectLabel') || 'Subject'} <span className="text-red-500">*</span>
+                    <label htmlFor="type" className="mb-2 block text-sm font-medium text-slate-700">
+                        {t('typeLabel') || 'Inquiry Type'} <span className="text-red-500">*</span>
                     </label>
-                    <AdminInput
-                        id="subject"
-                        type="text"
-                        value={formData.subject}
-                        onChange={(e) => handleChange('subject', e.target.value)}
-                        placeholder={t('subjectPlaceholder') || 'How can we help?'}
+                    <select
+                        id="type"
+                        value={formData.type}
+                        onChange={(e) => handleChange('type', e.target.value)}
                         required
                         disabled={status === 'loading'}
-                        className="w-full"
-                    />
+                        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                        <option value="PHARMA">{t('typePharma') || 'Pharmaceutical Services'}</option>
+                        <option value="PATIENT">{t('typePatient') || 'Patient / Health Tourism'}</option>
+                        <option value="WELLNESS">{t('typeWellness') || 'Wellness & Spa'}</option>
+                    </select>
+                    <p className="mt-1 text-xs text-slate-500">
+                        {formData.type === 'PHARMA' && (t('typePharmaDesc') || 'Market entry, regulatory, distribution')}
+                        {formData.type === 'PATIENT' && (t('typePatientDesc') || 'Medical treatments, hospital coordination')}
+                        {formData.type === 'WELLNESS' && (t('typeWellnessDesc') || 'Spa resorts, wellness packages')}
+                    </p>
                 </div>
             </div>
 

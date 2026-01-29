@@ -122,9 +122,16 @@
             "phoneLabel": "Telefon Nömrəsi",
             "phonePlaceholder": "+994 (XX) XXX-XX-XX",
             "phoneOptional": "İstəyə bağlı",
+            "companyLabel": "Şirkət",
+            "companyPlaceholder": "Şirkət adınız",
+            "companyOptional": "İstəyə bağlı",
             "typeLabel": "Sorğu Növü",
             "typePlaceholder": "Sorğu növünü seçin",
             "typeRequired": "Zəhmət olmasa sorğu növünü seçin",
+            "typeMarketEntry": "Əczaçılıq Bazarına Giriş",
+            "typeHealthTourism": "Sağlamlıq Turizmi Xidmətləri",
+            "typePartnership": "Paylanma Tərəfdaşlığı",
+            "typeGeneral": "Ümumi Sorğu",
             "typePharma": "Əczaçılıq Xidmətləri",
             "typePharmaDesc": "Bazara giriş, tənzimləmə, paylama",
             "typePatient": "Xəstə / Sağlamlıq Turizmi",
@@ -145,7 +152,8 @@
         "success": {
             "title": "Mesaj Uğurla Göndərildi!",
             "description": "Bizimlə əlaqə saxladığınız üçün təşəkkür edirik. Komandamız 1-2 iş günü ərzində sizinlə əlaqə saxlayacaq.",
-            "anotherMessage": "Başqa Mesaj Göndər"
+            "anotherMessage": "Başqa Mesaj Göndər",
+            "toast": "Sorğunuz göndərildi"
         },
         "error": {
             "title": "Mesaj Göndərilə Bilmədi",

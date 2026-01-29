@@ -51,6 +51,19 @@ export default function PageEditor({ page, translation, locales, currentLocale }
     const [success, setSuccess] = useState<string | null>(null);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+    // Reset form state when translation changes (locale switch)
+    useEffect(() => {
+        setTitle(translation?.title || '');
+        setSeoTitle(translation?.seoTitle || '');
+        setSeoDescription(translation?.seoDescription || '');
+        setOgImage(translation?.ogImage || '');
+        setBlocks((translation?.blocks as ContentBlock[]) || []);
+        setStatus(translation?.status || 'DRAFT');
+        setHasUnsavedChanges(false);
+        setError(null);
+        setSuccess(null);
+    }, [translation, currentLocale]);
+
     // Track changes
     useEffect(() => {
         const originalData = JSON.stringify({
