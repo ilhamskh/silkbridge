@@ -5,6 +5,12 @@ import { useRef } from 'react';
 import { Link } from '@/i18n/routing';
 import { Icons } from '@/components/ui/Icons';
 import Button from '@/components/ui/button';
+import { HeroParallaxBlue } from '@/components/sections/HeroParallaxBlue';
+import { InteractiveServices } from '@/components/sections/InteractiveServices';
+import { WhyUsSection } from '@/components/sections/WhyUsSection';
+import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
+import { FaqSection } from '@/components/sections/FaqSection';
+import ContactSection from '@/components/sections/ContactSection';
 import type {
     ContentBlock,
     HeroBlock,
@@ -22,6 +28,12 @@ import type {
     ServiceDetailsBlock,
     ProcessBlock,
     StatsRowBlock,
+    WhyUsBlock,
+    HowItWorksBlock,
+    FaqBlock,
+    InteractiveServicesBlock,
+    AreasBlock,
+    PartnersEmptyBlock,
 } from '@/lib/blocks/schema';
 
 // ============================================
@@ -64,12 +76,9 @@ function HeroBlockRenderer({ block }: { block: HeroBlock }) {
         <section
             ref={ref}
             className="relative min-h-screen flex items-center justify-center overflow-hidden"
-            style={{
-                backgroundImage: block.backgroundImage ? `url(${block.backgroundImage})` : undefined,
-            }}
         >
-            {/* Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950" />
+            {/* Animated Blue Parallax Background */}
+            <HeroParallaxBlue />
 
             {/* Content */}
             <motion.div
@@ -80,7 +89,7 @@ function HeroBlockRenderer({ block }: { block: HeroBlock }) {
             >
                 <motion.h1
                     variants={fadeUp}
-                    className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-white font-bold leading-tight"
+                    className="font-heading text-5xl sm:text-7xl lg:text-8xl xl:text-9xl text-white font-bold leading-[1.1] tracking-tighter"
                 >
                     {taglineLines.map((line, i) => (
                         <span key={i} className="block">
@@ -228,7 +237,7 @@ function ServicesBlockRenderer({ block }: { block: ServicesBlock }) {
                             {service.cta && (
                                 <div className="mt-8">
                                     <Link href={service.cta.href}>
-                                        <Button variant="ghost">
+                                        <Button variant="primary">
                                             {service.cta.text}
                                             <Icons.arrowRight className="ml-2 w-4 h-4" />
                                         </Button>
@@ -310,35 +319,12 @@ function PartnersBlockRenderer({ block }: { block: PartnersBlock }) {
 }
 
 function ContactBlockRenderer({ block }: { block: ContactBlock }) {
-    const ref = useRef<HTMLDivElement>(null);
-    const isInView = useInView(ref, { once: true, margin: '-100px' });
-
     return (
-        <section ref={ref} className="py-24 lg:py-32 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
-                    className="text-center max-w-2xl mx-auto mb-16"
-                >
-                    {block.eyebrow && (
-                        <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-4">
-                            {block.eyebrow}
-                        </span>
-                    )}
-                    <h2 className="font-heading text-3xl sm:text-4xl text-ink">{block.headline}</h2>
-                    {block.description && (
-                        <p className="mt-4 text-muted text-lg">{block.description}</p>
-                    )}
-                </motion.div>
-
-                {/* Contact form would go here - using existing Contact component or a new one */}
-                <div className="text-center text-muted">
-                    <p>Contact form placeholder - implement based on your existing form</p>
-                </div>
-            </div>
-        </section>
+        <ContactSection
+            eyebrow={block.eyebrow}
+            headline={block.headline}
+            description={block.description}
+        />
     );
 }
 
@@ -396,7 +382,7 @@ function InsightsBlockRenderer({ block }: { block: InsightsBlock }) {
                         className="mt-12 text-center"
                     >
                         <Link href={block.ctaHref}>
-                            <Button variant="ghost">
+                            <Button variant="primary">
                                 {block.ctaText}
                                 <Icons.arrowRight className="ml-2 w-4 h-4" />
                             </Button>
@@ -598,7 +584,7 @@ function CtaBlockRenderer({ block }: { block: CtaBlock }) {
     const isInView = useInView(ref, { once: true, margin: '-100px' });
 
     return (
-        <section ref={ref} className="py-16 lg:py-24 bg-primary-900">
+        <section ref={ref} className="py-20 lg:py-28 bg-primary-950">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -784,6 +770,141 @@ function StatsRowBlockRenderer({ block }: { block: StatsRowBlock }) {
     );
 }
 
+function AreasBlockRenderer({ block }: { block: AreasBlock }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+    return (
+        <section ref={ref} className="py-16 lg:py-24 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.5 }}
+                    className="text-center max-w-2xl mx-auto mb-12 lg:mb-16"
+                >
+                    {block.eyebrow && (
+                        <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-3">
+                            {block.eyebrow}
+                        </span>
+                    )}
+                    <h2 className="font-heading text-display-sm lg:text-display text-ink text-balance">
+                        {block.headline}
+                    </h2>
+                    {block.description && (
+                        <p className="mt-4 text-body-lg text-muted">
+                            {block.description}
+                        </p>
+                    )}
+                </motion.div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                    {block.areas.map((area, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{ duration: 0.4, delay: 0.1 + index * 0.05 }}
+                            className="group relative overflow-hidden rounded-card-lg bg-surface border border-border-light hover:shadow-card transition-all duration-300"
+                        >
+                            {area.image ? (
+                                <div className="aspect-[4/3] relative">
+                                    <img
+                                        src={area.image}
+                                        alt={area.name}
+                                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-ink/80 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                                        <h3 className="font-heading text-lg text-white">{area.name}</h3>
+                                        {area.description && (
+                                            <p className="text-body-sm text-white/80 mt-1">{area.description}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="p-5">
+                                    <div className="w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center mb-3">
+                                        <Icons.market className="w-5 h-5 text-primary-600" />
+                                    </div>
+                                    <h3 className="font-heading text-lg text-ink">{area.name}</h3>
+                                    {area.description && (
+                                        <p className="text-body-sm text-muted mt-2">{area.description}</p>
+                                    )}
+                                </div>
+                            )}
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+function PartnersEmptyBlockRenderer({ block }: { block: PartnersEmptyBlock }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+    return (
+        <section ref={ref} className="py-16 lg:py-24 bg-surface">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.5 }}
+                    className="text-center max-w-xl mx-auto"
+                >
+                    {/* Icon */}
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 mb-6">
+                        <Icons.regulatory className="w-10 h-10 text-primary-600" />
+                    </div>
+
+                    {/* Eyebrow */}
+                    {block.eyebrow && (
+                        <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-3">
+                            {block.eyebrow}
+                        </span>
+                    )}
+
+                    {/* Headline */}
+                    <h2 className="font-heading text-display-sm text-ink mb-4 text-balance">
+                        {block.headline}
+                    </h2>
+
+                    {/* Description */}
+                    <p className="text-body-lg text-muted mb-8 max-w-prose mx-auto">
+                        {block.description}
+                    </p>
+
+                    {/* CTA */}
+                    {block.ctaText && block.ctaHref && (
+                        <Link
+                            href={block.ctaHref}
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-medium rounded-full shadow-button hover:bg-primary-700 hover:shadow-button-hover transition-all duration-200"
+                        >
+                            {block.ctaText}
+                        </Link>
+                    )}
+                </motion.div>
+
+                {/* Decorative placeholder boxes */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 0.4 } : {}}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className="mt-12 flex justify-center gap-4"
+                >
+                    {[...Array(5)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="w-16 h-16 rounded-lg bg-border-subtle"
+                            style={{ opacity: 1 - i * 0.15 }}
+                        />
+                    ))}
+                </motion.div>
+            </div>
+        </section>
+    );
+}
 // ============================================
 // Main BlockRenderer Component
 // ============================================
@@ -833,6 +954,18 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
                         return <ProcessBlockRenderer key={key} block={block} />;
                     case 'statsRow':
                         return <StatsRowBlockRenderer key={key} block={block} />;
+                    case 'whyUs':
+                        return <WhyUsSection key={key} block={block} />;
+                    case 'howItWorks':
+                        return <HowItWorksSection key={key} block={block} />;
+                    case 'faq':
+                        return <FaqSection key={key} block={block} />;
+                    case 'interactiveServices':
+                        return <InteractiveServices key={key} block={block} />;
+                    case 'areas':
+                        return <AreasBlockRenderer key={key} block={block} />;
+                    case 'partnersEmpty':
+                        return <PartnersEmptyBlockRenderer key={key} block={block} />;
                     default:
                         // Unknown block type - skip or render placeholder
                         console.warn(`Unknown block type: ${(block as ContentBlock).type}`);

@@ -12,7 +12,7 @@ import { AdminInput } from './ui/AdminInput';
 import { AdminTextarea } from './ui/AdminTextarea';
 import { AdminTabs } from './ui/AdminTabs';
 import { AdminConfirmDialog } from './ui/AdminModal';
-import BlocksEditorNew from '@/components/admin/BlocksEditorNew';
+import GuidedSectionsEditor from '@/components/admin/GuidedSectionsEditor';
 import VersionHistoryDrawer from '@/components/admin/VersionHistoryDrawer';
 
 // Simplified block type for the editor
@@ -402,86 +402,98 @@ export default function PageEditorWrapper({
                 />
 
                 {/* Tab Content */}
-                <div className="flex-1 overflow-y-auto mt-4 pr-2">
+                <div className="flex-1 overflow-hidden">
                     {activeTab === 'content' && (
-                        <div className="space-y-6 max-w-4xl">
-                            {/* Page Title */}
-                            <AdminCard padding="md">
-                                <AdminInput
-                                    label="Page Title"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Enter page title..."
-                                    helperText="This is the main heading displayed on the page"
-                                    required
-                                />
-                            </AdminCard>
-
-                            {/* Blocks Editor */}
-                            <BlocksEditorNew
-                                blocks={blocks}
-                                onChange={setBlocks}
+                        <div className="h-full">
+                            {/* Use Guided Sections Editor instead of generic blocks editor */}
+                            <GuidedSectionsEditor
                                 pageSlug={page.slug}
+                                blocks={blocks.map(b => {
+                                    const { type, ...data } = b.data as any;
+                                    return { type: b.type, ...data };
+                                })}
+                                onBlocksChange={(newBlocks) => {
+                                    const editorBlocks = newBlocks.map((b: any, i: number) => {
+                                        const { type, ...data } = b;
+                                        return {
+                                            id: `block-${i}`,
+                                            type,
+                                            data: b,
+                                        };
+                                    });
+                                    setBlocks(editorBlocks);
+                                }}
                             />
                         </div>
                     )}
 
                     {activeTab === 'seo' && (
-                        <AdminCard padding="md" className="space-y-6 max-w-4xl">
-                            <div className="space-y-1">
-                                <h3 className="font-heading font-semibold text-ink">Search Engine Optimization</h3>
-                                <p className="text-sm text-muted">
-                                    Control how this page appears in search results
-                                </p>
-                            </div>
-
-                            <AdminInput
-                                label="SEO Title"
-                                value={seoTitle}
-                                onChange={(e) => setSeoTitle(e.target.value)}
-                                placeholder="Enter SEO title..."
-                                helperText="Keep under 60 characters for best results"
-                                showCharCount
-                                maxLength={60}
-                            />
-
-                            <AdminTextarea
-                                label="Meta Description"
-                                value={seoDescription}
-                                onChange={(e) => setSeoDescription(e.target.value)}
-                                placeholder="Enter meta description..."
-                                helperText="Keep under 160 characters for best results"
-                                showCharCount
-                                maxLength={160}
-                                rows={3}
-                            />
-
-                            <AdminInput
-                                label="OG Image URL"
-                                value={ogImage}
-                                onChange={(e) => setOgImage(e.target.value)}
-                                placeholder="https://..."
-                                helperText="Image shown when sharing on social media (1200x630px recommended)"
-                            />
-
-                            {/* Google Preview */}
-                            <div className="p-4 bg-surface rounded-xl">
-                                <p className="text-xs font-medium text-muted uppercase tracking-wider mb-3">
-                                    Search Preview
-                                </p>
+                        <div className="p-6 overflow-y-auto h-full">
+                            <AdminCard padding="md" className="space-y-6 max-w-4xl">
                                 <div className="space-y-1">
-                                    <p className="text-primary-600 text-lg font-medium truncate">
-                                        {seoTitle || title || 'Page Title'}
-                                    </p>
-                                    <p className="text-emerald-700 text-sm truncate">
-                                        silkbridge.com/{currentLocale}/{page.slug === 'home' ? '' : page.slug}
-                                    </p>
-                                    <p className="text-sm text-muted line-clamp-2">
-                                        {seoDescription || 'Add a meta description to improve your search visibility.'}
+                                    <h3 className="font-heading font-semibold text-ink">Search Engine Optimization</h3>
+                                    <p className="text-sm text-muted">
+                                        Control how this page appears in search results
                                     </p>
                                 </div>
-                            </div>
-                        </AdminCard>
+
+                                <AdminInput
+                                    label="Page Title"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="Enter page title..."
+                                    helperText="The main page title (used in browser tab and for SEO if no custom SEO title is set)"
+                                    required
+                                />
+
+                                <AdminInput
+                                    label="SEO Title (Override)"
+                                    value={seoTitle}
+                                    onChange={(e) => setSeoTitle(e.target.value)}
+                                    placeholder="Enter SEO title..."
+                                    helperText="Keep under 60 characters for best results. Leave empty to use page title."
+                                    showCharCount
+                                    maxLength={60}
+                                />
+
+                                <AdminTextarea
+                                    label="Meta Description"
+                                    value={seoDescription}
+                                    onChange={(e) => setSeoDescription(e.target.value)}
+                                    placeholder="Enter meta description..."
+                                    helperText="Keep under 160 characters for best results"
+                                    showCharCount
+                                    maxLength={160}
+                                    rows={3}
+                                />
+
+                                <AdminInput
+                                    label="OG Image URL"
+                                    value={ogImage}
+                                    onChange={(e) => setOgImage(e.target.value)}
+                                    placeholder="https://..."
+                                    helperText="Image shown when sharing on social media (1200x630px recommended)"
+                                />
+
+                                {/* Google Preview */}
+                                <div className="p-4 bg-surface rounded-xl">
+                                    <p className="text-xs font-medium text-muted uppercase tracking-wider mb-3">
+                                        Search Preview
+                                    </p>
+                                    <div className="space-y-1">
+                                        <p className="text-primary-600 text-lg font-medium truncate">
+                                            {seoTitle || title || 'Page Title'}
+                                        </p>
+                                        <p className="text-emerald-700 text-sm truncate">
+                                            silkbridge.com/{currentLocale}/{page.slug === 'home' ? '' : page.slug}
+                                        </p>
+                                        <p className="text-sm text-muted line-clamp-2">
+                                            {seoDescription || 'Add a meta description to improve your search visibility.'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </AdminCard>
+                        </div>
                     )}
                 </div>
             </div>

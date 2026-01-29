@@ -132,3 +132,102 @@ model SiteSettingsTranslation {
   @@unique([settingsId, localeCode])
   @@map("site_settings_translations")
 }
+
+// ============================================
+// Contact System
+// ============================================
+
+enum InquiryType {
+  PHARMA
+  PATIENT
+  WELLNESS
+}
+
+enum SubmissionStatus {
+  NEW
+  ARCHIVED
+  SPAM
+}
+
+model ContactRecipient {
+  id        String   @id @default(cuid())
+  label     String // e.g., "General Inquiries", "Pharma Team"
+  email     String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  routingRules ContactRoutingRule[]
+
+  @@map("contact_recipients")
+}
+
+model ContactRoutingRule {
+  id          String      @id @default(cuid())
+  type        InquiryType @unique // PHARMA, PATIENT, WELLNESS
+  recipientId String
+  isActive    Boolean     @default(true)
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  recipient ContactRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@map("contact_routing_rules")
+}
+
+model ContactSubmission {
+  id        String           @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  type      InquiryType
+  message   String
+  locale    String           @default("en")
+  pagePath  String?
+  status    SubmissionStatus @default(NEW)
+  meta      Json? // { userAgent, referrer, ip }
+  createdAt DateTime         @default(now())
+
+  @@map("contact_submissions")
+}
+
+// ============================================
+// Partners
+// ============================================
+
+enum PartnerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Partner {
+  id          String        @id @default(cuid())
+  name        String
+  logoUrl     String?
+  location    String?
+  specialties String[]      @default([])
+  websiteUrl  String?
+  status      PartnerStatus @default(ACTIVE)
+  order       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  translations PartnerTranslation[]
+
+  @@map("partners")
+}
+
+model PartnerTranslation {
+  id          String  @id @default(cuid())
+  partnerId   String
+  localeCode  String
+  description String?
+
+  // Relations
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@unique([partnerId, localeCode])
+  @@map("partner_translations")
+}

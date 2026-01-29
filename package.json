@@ -11,6 +11,8 @@
         "db:migrate": "prisma migrate dev",
         "db:push": "prisma db push",
         "db:seed": "npx tsx prisma/seed.ts",
+        "db:seed:real": "npx tsx prisma/seed-real-content.ts",
+        "db:seed:contact": "npx tsx prisma/seed-contact.ts",
         "db:studio": "prisma studio",
         "db:reset": "prisma migrate reset --force"
     },
@@ -25,7 +27,9 @@
         "@prisma/adapter-pg": "^7.3.0",
         "@prisma/client": "^7.3.0",
         "bcryptjs": "^3.0.3",
+        "date-fns": "^4.1.0",
         "framer-motion": "^11.15.0",
+        "lucide-react": "^0.563.0",
         "next": "^14.2.20",
         "next-auth": "^5.0.0-beta.30",
         "next-intl": "^4.7.0",

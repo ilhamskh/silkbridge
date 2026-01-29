@@ -31,13 +31,11 @@ function PreviewBlock({ block }: { block: EditorBlock }) {
 
     switch (type) {
         case 'hero':
-        case 'heroParallax':
             return (
                 <div
                     className="relative h-80 flex items-center justify-center text-center"
                     style={{
                         backgroundColor: '#1e3a5f',
-                        backgroundImage: data?.backgroundImage ? `url(${data.backgroundImage})` : undefined,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                     }}

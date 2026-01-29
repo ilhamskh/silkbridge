@@ -68,7 +68,6 @@ export const heroBlockSchema = z.object({
         text: z.string().min(1),
         href: z.string().min(1),
     }).optional(),
-    backgroundImage: z.string().optional(),
 });
 
 // About section blocks
@@ -257,6 +256,98 @@ export const statsRowBlockSchema = z.object({
     })).min(1),
 });
 
+// ============================================
+// NEW EXPANDED BLOCK SCHEMAS
+// ============================================
+
+// Why Us block (value propositions)
+export const whyUsItemSchema = z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    icon: z.string().optional(),
+});
+
+export const whyUsBlockSchema = z.object({
+    type: z.literal('whyUs'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().optional(),
+    items: z.array(whyUsItemSchema).min(1),
+});
+
+// How It Works block
+export const howItWorksStepSchema = z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    icon: z.string().optional(),
+});
+
+export const howItWorksBlockSchema = z.object({
+    type: z.literal('howItWorks'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().optional(),
+    steps: z.array(howItWorksStepSchema).min(1),
+});
+
+// Areas block (destinations)
+export const areaItemSchema = z.object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    image: z.string().optional(),
+});
+
+export const areasBlockSchema = z.object({
+    type: z.literal('areas'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().optional(),
+    areas: z.array(areaItemSchema).min(1),
+});
+
+// FAQ block
+export const faqItemSchema = z.object({
+    question: z.string().min(1),
+    answer: z.string().min(1),
+});
+
+export const faqBlockSchema = z.object({
+    type: z.literal('faq'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    items: z.array(faqItemSchema).min(1),
+});
+
+// Interactive Services block
+export const interactiveServiceSchema = z.object({
+    id: z.string().min(1),
+    title: z.string().min(1),
+    shortTitle: z.string().optional(),
+    description: z.string().min(1),
+    features: z.array(z.string()).optional(),
+    icon: z.string().optional(),
+});
+
+export const interactiveServicesBlockSchema = z.object({
+    type: z.literal('interactiveServices'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().optional(),
+    services: z.array(interactiveServiceSchema).min(1),
+    ctaText: z.string().optional(),
+    ctaHref: z.string().optional(),
+});
+
+// Partners Empty block
+export const partnersEmptyBlockSchema = z.object({
+    type: z.literal('partnersEmpty'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().min(1),
+    ctaText: z.string().optional(),
+    ctaHref: z.string().optional(),
+});
+
 // Combined content block schema
 export const contentBlockSchema = z.discriminatedUnion('type', [
     headingBlockSchema,
@@ -282,6 +373,13 @@ export const contentBlockSchema = z.discriminatedUnion('type', [
     storyBlockSchema,
     introBlockSchema,
     statsRowBlockSchema,
+    // New expanded blocks
+    whyUsBlockSchema,
+    howItWorksBlockSchema,
+    areasBlockSchema,
+    faqBlockSchema,
+    interactiveServicesBlockSchema,
+    partnersEmptyBlockSchema,
 ]);
 
 export const blocksArraySchema = z.array(contentBlockSchema);

@@ -41,6 +41,7 @@ const navigation: NavSection[] = [
         title: 'Content',
         items: [
             { name: 'Pages', href: '/admin/content', icon: 'pages' },
+            { name: 'Contact Inbox', href: '/admin/contact', icon: 'inbox' },
             { name: 'Global Settings', href: '/admin/settings', icon: 'settings' },
         ],
     },

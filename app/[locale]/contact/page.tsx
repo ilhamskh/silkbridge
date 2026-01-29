@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { siteConfig } from '@/content/site-config';
-import { getPageContent } from '@/lib/blocks/content';
-import BlockRenderer from '@/lib/blocks/BlockRenderer';
-import type { ContentBlock } from '@/lib/blocks/schema';
+import ContactPageContent from '@/components/contact/ContactPageContent';
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -44,16 +41,5 @@ export default async function ContactPage({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);
 
-    // Fetch page content from database
-    const pageContent = await getPageContent('contact', locale as 'en' | 'az');
-
-    if (!pageContent) {
-        notFound();
-    }
-
-    return (
-        <div className="pt-24 lg:pt-32">
-            <BlockRenderer blocks={pageContent.blocks as ContentBlock[]} />
-        </div>
-    );
+    return <ContactPageContent locale={locale} />;
 }

@@ -112,21 +112,46 @@
         "form": {
             "title": "Bizə Mesaj Göndərin",
             "nameLabel": "Ad Soyad",
-            "namePlaceholder": "Əli Əliyev",
+            "namePlaceholder": "Adınızı daxil edin",
+            "nameRequired": "Zəhmət olmasa adınızı daxil edin",
+            "nameMinLength": "Ad ən azı 2 simvol olmalıdır",
             "emailLabel": "E-poçt Ünvanı",
-            "emailPlaceholder": "eli@sirket.az",
-            "companyLabel": "Şirkət (İstəyə bağlı)",
-            "companyPlaceholder": "Şirkətinizin Adı",
+            "emailPlaceholder": "siz@sirket.az",
+            "emailRequired": "Zəhmət olmasa e-poçtunuzu daxil edin",
+            "emailInvalid": "Zəhmət olmasa düzgün e-poçt ünvanı daxil edin",
+            "phoneLabel": "Telefon Nömrəsi",
+            "phonePlaceholder": "+994 (XX) XXX-XX-XX",
+            "phoneOptional": "İstəyə bağlı",
             "typeLabel": "Sorğu Növü",
             "typePlaceholder": "Sorğu növünü seçin",
-            "typeMarketEntry": "Əczaçılıq Bazarına Giriş",
-            "typeHealthTourism": "Sağlamlıq Turizmi Xidmətləri",
-            "typePartnership": "Tərəfdaşlıq İmkanı",
-            "typeGeneral": "Ümumi Sorğu",
+            "typeRequired": "Zəhmət olmasa sorğu növünü seçin",
+            "typePharma": "Əczaçılıq Xidmətləri",
+            "typePharmaDesc": "Bazara giriş, tənzimləmə, paylama",
+            "typePatient": "Xəstə / Sağlamlıq Turizmi",
+            "typePatientDesc": "Tibbi müalicələr, xəstəxana koordinasiyası",
+            "typeWellness": "Sağlamlıq & Spa",
+            "typeWellnessDesc": "Spa kurortları, sağlamlıq paketləri",
             "messageLabel": "Mesajınız",
-            "messagePlaceholder": "Ehtiyaclarınız və necə kömək edə biləcəyimiz haqqında bizə məlumat verin...",
+            "messagePlaceholder": "Ehtiyaclarınız və necə kömək edə biləcəyimiz haqqında məlumat verin...",
+            "messageRequired": "Zəhmət olmasa mesajınızı daxil edin",
+            "messageMinLength": "Mesaj ən azı 10 simvol olmalıdır",
             "submit": "Mesaj Göndər",
-            "submitting": "Göndərilir..."
+            "submitting": "Göndərilir...",
+            "preferredContactLabel": "Üstünlük Verilən Əlaqə Üsulu",
+            "preferredEmail": "E-poçt",
+            "preferredPhone": "Telefon",
+            "preferredAny": "Fərqi yoxdur"
+        },
+        "success": {
+            "title": "Mesaj Uğurla Göndərildi!",
+            "description": "Bizimlə əlaqə saxladığınız üçün təşəkkür edirik. Komandamız 1-2 iş günü ərzində sizinlə əlaqə saxlayacaq.",
+            "anotherMessage": "Başqa Mesaj Göndər"
+        },
+        "error": {
+            "title": "Mesaj Göndərilə Bilmədi",
+            "description": "Nəsə səhv getdi. Zəhmət olmasa yenidən cəhd edin və ya birbaşa bizimlə əlaqə saxlayın.",
+            "tryAgain": "Yenidən Cəhd Edin",
+            "rateLimit": "Çox sayda sorğu. Zəhmət olmasa bir az gözləyin və yenidən cəhd edin."
         },
         "info": {
             "title": "Əlaqə Saxlayın",
@@ -134,9 +159,14 @@
             "emailTitle": "E-poçt Yazın",
             "emailDesc": "Ümumi sorğular və dəstək üçün",
             "phoneTitle": "Zəng Edin",
-            "phoneDesc": "B.e-Cümə 9:00-18:00 EST",
+            "phoneDesc": "B.e-Cümə 9:00-18:00",
             "officeTitle": "Ofisimizi Ziyarət Edin",
-            "officeDesc": "Nyu-York, ABŞ"
+            "officeAddress": "Bakı, Azərbaycan"
+        },
+        "trust": {
+            "secure": "Məlumatlarınız təhlükəsizdir",
+            "noSpam": "Məlumatlarınızı heç vaxt paylaşmırıq",
+            "response": "1-2 iş günü ərzində cavab"
         }
     },
     "partnersPage": {

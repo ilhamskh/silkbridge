@@ -22,7 +22,6 @@ export interface EditorBlock {
 // Block type definitions
 const BLOCK_TYPES = {
     hero: { label: 'Hero Banner', icon: 'image' as const, description: 'Large hero section with title and CTA' },
-    heroParallax: { label: 'Hero Parallax', icon: 'image' as const, description: 'Parallax scrolling hero section' },
     text: { label: 'Text Block', icon: 'text' as const, description: 'Rich text content section' },
     heading: { label: 'Heading', icon: 'text' as const, description: 'Section heading with subtitle' },
     image: { label: 'Image', icon: 'image' as const, description: 'Single image with caption' },
@@ -151,7 +150,7 @@ function BlockGalleryModal({ isOpen, onClose, onSelect }: {
 }) {
     const [search, setSearch] = useState('');
     const categories: Record<string, string[]> = {
-        'Layout': ['hero', 'heroParallax', 'heading', 'spacer', 'divider'],
+        'Layout': ['hero', 'heading', 'spacer', 'divider'],
         'Content': ['text', 'image', 'gallery', 'video'],
         'Sections': ['features', 'services', 'about', 'stats', 'partners', 'team'],
         'Engagement': ['cta', 'testimonials', 'faq', 'contact', 'insights'],
@@ -270,7 +269,6 @@ function BlockEditorModal({ isOpen, onClose, block, onSave }: {
     const renderFields = () => {
         switch (block.type) {
             case 'hero':
-            case 'heroParallax':
                 return (
                     <div className="space-y-4">
                         <AdminInput
@@ -285,12 +283,6 @@ function BlockEditorModal({ isOpen, onClose, block, onSave }: {
                             onChange={(e) => setData({ ...data, subtitle: e.target.value })}
                             placeholder="Enter subtitle..."
                             rows={2}
-                        />
-                        <AdminInput
-                            label="Background Image URL"
-                            value={data.backgroundImage as string || ''}
-                            onChange={(e) => setData({ ...data, backgroundImage: e.target.value })}
-                            placeholder="https://..."
                         />
                         <AdminInput
                             label="CTA Text"

@@ -17,7 +17,6 @@ export const heroBlockSchema = z.object({
         text: z.string().min(1),
         href: z.string().min(1),
     }).optional(),
-    backgroundImage: z.string().optional(),
 });
 
 // About Block
@@ -212,6 +211,95 @@ export const statsRowBlockSchema = z.object({
     })).min(1),
 });
 
+// Why Us Block (Value Propositions)
+export const whyUsItemSchema = z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    icon: z.string().optional(),
+});
+
+export const whyUsBlockSchema = z.object({
+    type: z.literal('whyUs'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().optional(),
+    items: z.array(whyUsItemSchema).min(1).max(5),
+});
+
+// How It Works Block (Process Steps)
+export const howItWorksStepSchema = z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    icon: z.string().optional(),
+});
+
+export const howItWorksBlockSchema = z.object({
+    type: z.literal('howItWorks'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().optional(),
+    steps: z.array(howItWorksStepSchema).min(2).max(5),
+});
+
+// Areas We Cover Block
+export const areaSchema = z.object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    image: z.string().optional(),
+});
+
+export const areasBlockSchema = z.object({
+    type: z.literal('areas'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().optional(),
+    areas: z.array(areaSchema).min(1),
+});
+
+// FAQ Block
+export const faqItemSchema = z.object({
+    question: z.string().min(1),
+    answer: z.string().min(1),
+});
+
+export const faqBlockSchema = z.object({
+    type: z.literal('faq'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().optional(),
+    items: z.array(faqItemSchema).min(1),
+});
+
+// Interactive Services Block (for tabs/accordion)
+export const interactiveServiceSchema = z.object({
+    id: z.string().min(1),
+    title: z.string().min(1),
+    shortTitle: z.string().optional(),
+    description: z.string().min(1),
+    features: z.array(z.string()).optional(),
+    icon: z.string().optional(),
+});
+
+export const interactiveServicesBlockSchema = z.object({
+    type: z.literal('interactiveServices'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().optional(),
+    services: z.array(interactiveServiceSchema).min(1),
+    ctaText: z.string().optional(),
+    ctaHref: z.string().optional(),
+});
+
+// Partners Empty State Block
+export const partnersEmptyBlockSchema = z.object({
+    type: z.literal('partnersEmpty'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    description: z.string().min(1),
+    ctaText: z.string().optional(),
+    ctaHref: z.string().optional(),
+});
+
 // Basic content blocks
 export const headingBlockSchema = z.object({
     type: z.literal('heading'),
@@ -252,6 +340,12 @@ export const contentBlockSchema = z.discriminatedUnion('type', [
     serviceDetailsBlockSchema,
     processBlockSchema,
     statsRowBlockSchema,
+    whyUsBlockSchema,
+    howItWorksBlockSchema,
+    areasBlockSchema,
+    faqBlockSchema,
+    interactiveServicesBlockSchema,
+    partnersEmptyBlockSchema,
     headingBlockSchema,
     paragraphBlockSchema,
     imageBlockSchema,
@@ -276,6 +370,12 @@ export type CtaBlock = z.infer<typeof ctaBlockSchema>;
 export type ServiceDetailsBlock = z.infer<typeof serviceDetailsBlockSchema>;
 export type ProcessBlock = z.infer<typeof processBlockSchema>;
 export type StatsRowBlock = z.infer<typeof statsRowBlockSchema>;
+export type WhyUsBlock = z.infer<typeof whyUsBlockSchema>;
+export type HowItWorksBlock = z.infer<typeof howItWorksBlockSchema>;
+export type AreasBlock = z.infer<typeof areasBlockSchema>;
+export type FaqBlock = z.infer<typeof faqBlockSchema>;
+export type InteractiveServicesBlock = z.infer<typeof interactiveServicesBlockSchema>;
+export type PartnersEmptyBlock = z.infer<typeof partnersEmptyBlockSchema>;
 export type HeadingBlock = z.infer<typeof headingBlockSchema>;
 export type ParagraphBlock = z.infer<typeof paragraphBlockSchema>;
 export type ImageBlock = z.infer<typeof imageBlockSchema>;
