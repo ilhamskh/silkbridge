@@ -109,7 +109,7 @@ function HeroBlockRenderer({ block }: { block: HeroBlock }) {
 
                 <motion.div
                     variants={fadeUp}
-                    className="mt- flex flex-col sm:flex-row gap-4 justify-center"
+                    className="mt-8 flex flex-col sm:flex-row gap-4 justify-center"
                 >
                     {block.ctaPrimary && (
                         <Link href={block.ctaPrimary.href}>
@@ -645,7 +645,8 @@ function CtaBlockRenderer({ block }: { block: CtaBlock }) {
                             <Link href={block.primaryButton.href}>
                                 <Button
                                     size="lg"
-                                    className="bg-white text-primary-900 hover:bg-primary-50 text-lg px-8 py-6 h-auto font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all"
+                                    variant="ghost"
+                                    className="!bg-white !text-primary-900 hover:!bg-primary-50 !border-0 text-lg px-8 py-6 h-auto font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all"
                                 >
                                     {block.primaryButton.text}
                                     <Icons.arrowRight className="ml-2 w-5 h-5" />
