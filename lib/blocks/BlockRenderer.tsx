@@ -109,7 +109,7 @@ function HeroBlockRenderer({ block }: { block: HeroBlock }) {
 
                 <motion.div
                     variants={fadeUp}
-                    className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
+                    className="mt- flex flex-col sm:flex-row gap-4 justify-center"
                 >
                     {block.ctaPrimary && (
                         <Link href={block.ctaPrimary.href}>

@@ -1,0 +1,1007 @@
+import "dotenv/config";
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import pg from 'pg';
+import bcrypt from 'bcryptjs';
+import type { ContentBlock } from '../lib/validations';
+
+type Role = 'ADMIN' | 'EDITOR';
+type PageStatus = 'DRAFT' | 'PUBLISHED';
+
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+});
+
+// ============================================
+// Initial Content Blocks for Pages
+// ============================================
+
+const homeBlocksEn: ContentBlock[] = [
+    {
+        type: 'hero',
+        tagline: 'Based in Baku\nYour Gateway to Azerbaijan',
+        subtagline: 'Silkbridge International specializing in a wide range of comprehensive tourism services in Azerbaijan.',
+        ctaPrimary: { text: 'Explore Our Services', href: '/services' },
+        ctaSecondary: { text: 'View Tour Packages', href: '/services#packages' },
+    },
+    {
+        type: 'about',
+        eyebrow: 'Who are we?',
+        headline: 'Experience, Talent',
+        headlineAccent: 'Hospitality',
+        mission: 'Silkbridge International specializing in a wide range of comprehensive tourism services in Azerbaijan. Our experience, talent, hospitality, flexibility, and expertise are harmoniously combined to meet your wishes and satisfy all your travel and leisure needs.',
+        pillars: [
+            { title: 'Quality is our focus', description: 'We hold ourselves to the highest standards ensuring exceptional experiences.', icon: 'quality' },
+            { title: 'Experience', description: 'Years of expertise in Azerbaijan tourism and hospitality industry.', icon: 'experience' },
+            { title: 'Personal service', description: 'Tailored solutions to meet your unique travel needs.', icon: 'personal' },
+            { title: 'Uniqueness', description: 'Discover one-of-a-kind experiences in Azerbaijan.', icon: 'unique' },
+        ],
+    },
+    {
+        type: 'services',
+        eyebrow: 'OUR SERVICES',
+        headline: 'Comprehensive Tourism Solutions',
+        services: [
+            {
+                title: 'Air Tickets Reservation',
+                description: 'Book flights to any destination worldwide and to Azerbaijan on regular airline routes.',
+                features: [
+                    'Global airline connections',
+                    'Competitive pricing',
+                    'Flexible booking options',
+                    'Multi-city itineraries',
+                    '24/7 booking support',
+                ],
+                cta: { text: 'Learn More', href: '/services#flights' },
+            },
+            {
+                title: 'Travel Packages & Tours',
+                description: 'Curated experiences including thematic tours, VIP packages, MICE, business travel, and custom itineraries.',
+                features: [
+                    'Customized tour packages',
+                    'Cultural experiences',
+                    'Adventure tourism',
+                    'City tours and excursions',
+                    'Group and private options',
+                ],
+                cta: { text: 'View Packages', href: '/services#packages' },
+            },
+        ],
+    },
+    {
+        type: 'insights',
+        eyebrow: 'Tourism Insights',
+        headline: 'Azerbaijan Tourism at a Glance',
+        subheadline: 'Key statistics shaping Azerbaijan\'s growing tourism industry',
+        stats: [
+            { value: '3.5M', label: 'Annual Tourists', note: 'Ministry of Culture' },
+            { value: '15%', label: 'Tourism Growth YoY', note: 'Tourism Board' },
+            { value: '850+', label: 'Hotels & Resorts', note: 'Industry Data' },
+            { value: '$2.1B', label: 'Tourism Revenue', note: 'State Statistics' },
+        ],
+        ctaText: 'Explore Azerbaijan',
+        ctaHref: '/services',
+    },
+    {
+        type: 'partners',
+        eyebrow: 'Our Network',
+        headline: 'Trusted by Leading Hospitality Providers',
+        description: 'We partner with premier hotels, resorts, and tourism operators across Azerbaijan.',
+        ctaText: 'View Our Partners',
+        ctaHref: '/partners',
+    },
+    {
+        type: 'contact',
+        eyebrow: 'Get in Touch',
+        headline: "Let's Start Planning Your Journey",
+        description: "Contact us to learn more about our services and start your Azerbaijan adventure.",
+        showForm: true,
+        showMap: true,
+    },
+];
+
+const homeBlocksAz: ContentBlock[] = [
+    {
+        type: 'hero',
+        tagline: 'Bakıda Yerləşir\nAzərbaycana Açılan Qapınız',
+        subtagline: 'Silkbridge International Azərbaycanda geniş çeşiddə hərtərəfli turizm xidmətlərində ixtisaslaşır.',
+        ctaPrimary: { text: 'Xidmətlərimizi Kəşf Edin', href: '/services' },
+        ctaSecondary: { text: 'Tur Paketlərini Görün', href: '/services#packages' },
+    },
+    {
+        type: 'about',
+        eyebrow: 'Biz Kimik?',
+        headline: 'Təcrübə, İstedadlı',
+        headlineAccent: 'Qonaqpərvərlik',
+        mission: 'Silkbridge International Azərbaycanda geniş çeşiddə hərtərəfli turizm xidmətlərində ixtisaslaşır. Təcrübəmiz, istedadımız, qonaqpərvərliyimiz, çevikliyimiz və ekspertizamız arzularınızı yerinə yetirmək və bütün səyahət və istirahət ehtiyaclarınızı ödəmək üçün harmonik şəkildə birləşir.',
+        pillars: [
+            { title: 'Keyfiyyət fokusumzdur', description: 'Müstəsna təcrübələr təmin edərək ən yüksək standartlara riayət edirik.', icon: 'quality' },
+            { title: 'Təcrübə', description: 'Azərbaycan turizm və qonaqpərvərlik sənayesində uzun illərin təcrübəsi.', icon: 'experience' },
+            { title: 'Fərdi xidmət', description: 'Unikal səyahət ehtiyaclarınıza uyğun fərdi həllər.', icon: 'personal' },
+            { title: 'Unikallıq', description: 'Azərbaycanda özünəməxsus təcrübələri kəşf edin.', icon: 'unique' },
+        ],
+    },
+    {
+        type: 'services',
+        eyebrow: 'XİDMƏTLƏRİMİZ',
+        headline: 'Hərtərəfli Turizm Həlləri',
+        services: [
+            {
+                title: 'Aviabilet Rezervasiyası',
+                description: 'Dünyanın istənilən nöqtəsinə və Azərbaycana müntəzəm aviareyslər üzrə uçuşlar rezerv edin.',
+                features: [
+                    'Qlobal aviaşirkət əlaqələri',
+                    'Rəqabətli qiymətlər',
+                    'Çevik rezervasiya variantları',
+                    'Çoxşəhərli marşrutlar',
+                    '24/7 rezervasiya dəstəyi',
+                ],
+                cta: { text: 'Ətraflı', href: '/services#flights' },
+            },
+            {
+                title: 'Səyahət Paketləri və Turlar',
+                description: 'Tematik turlar, VIP paketlər, MICE, iş səyahətləri və fərdi marşrutlar daxil olmaqla kuratorluq edilmiş təcrübələr.',
+                features: [
+                    'Fərdi tur paketləri',
+                    'Mədəni təcrübələr',
+                    'Macəra turizmi',
+                    'Şəhər turları və ekskursiyalar',
+                    'Qrup və fərdi variantlar',
+                ],
+                cta: { text: 'Paketlərə Baxın', href: '/services#packages' },
+            },
+        ],
+    },
+    {
+        type: 'insights',
+        eyebrow: 'Turizm Məlumatları',
+        headline: 'Azərbaycan Turizminə Baxış',
+        subheadline: 'Azərbaycanın inkişaf edən turizm sənayesini formalaşdıran əsas göstəricilər',
+        stats: [
+            { value: '3.5M', label: 'İllik Turistlər', note: 'Mədəniyyət Nazirliyi' },
+            { value: '15%', label: 'İllik Turizm Artımı', note: 'Turizm Şurası' },
+            { value: '850+', label: 'Otel və Kurort', note: 'Sənaye Məlumatları' },
+            { value: '$2.1B', label: 'Turizm Gəliri', note: 'Dövlət Statistikası' },
+        ],
+        ctaText: 'Azərbaycanı Kəşf Edin',
+        ctaHref: '/services',
+    },
+    {
+        type: 'partners',
+        eyebrow: 'Şəbəkəmiz',
+        headline: 'Aparıcı Qonaqpərvərlik Təchizatçıları Tərəfindən Etibar Edilir',
+        description: 'Azərbaycan üzrə premium otellər, kurortlar və turizm operatorları ilə əməkdaşlıq edirik.',
+        ctaText: 'Tərəfdaşlarımızı Görün',
+        ctaHref: '/partners',
+    },
+    {
+        type: 'contact',
+        eyebrow: 'Əlaqə',
+        headline: 'Səyahətinizi Planlaşdırmağa Başlayaq',
+        description: 'Xidmətlərimiz haqqında daha çox məlumat almaq və Azərbaycan macəranıza başlamaq üçün bizimlə əlaqə saxlayın.',
+        showForm: true,
+        showMap: true,
+    },
+];
+
+const aboutBlocksEn: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'About Us',
+        headline: 'Bridging Healthcare',
+        headlineAccent: 'Across Borders',
+        text: 'Founded with a vision to democratize access to global healthcare, Silkbridge International has grown into a trusted partner for pharmaceutical companies and patients alike.',
+    },
+    {
+        type: 'story',
+        title: 'Our Story',
+        paragraphs: [
+            "Silkbridge International was born from a simple observation: the global healthcare ecosystem was becoming increasingly interconnected, yet navigating it remained dauntingly complex.",
+            "Our founders, veterans of the pharmaceutical and healthcare industries, recognized the need for a bridge—one that could connect innovative pharmaceutical companies with emerging markets, and patients with world-class care regardless of geography.",
+            "Today, we operate across three continents, facilitating market entries, coordinating medical journeys, and building partnerships that improve healthcare outcomes worldwide.",
+        ],
+    },
+    {
+        type: 'milestones',
+        milestones: [
+            { year: '2015', event: 'Founded in New York City' },
+            { year: '2017', event: 'Expanded to Singapore office' },
+            { year: '2019', event: 'Launched Health Tourism division' },
+            { year: '2021', event: 'Reached 50+ hospital partnerships' },
+            { year: '2023', event: 'Opened Dubai regional hub' },
+            { year: '2025', event: '500+ successful market entries' },
+        ],
+    },
+    {
+        type: 'values',
+        title: 'Our Values',
+        subtitle: 'The principles that guide every decision we make',
+        values: [
+            { title: 'Excellence', description: 'We hold ourselves to the highest standards in every engagement, ensuring outcomes that exceed expectations.' },
+            { title: 'Integrity', description: 'Transparent communication and ethical practices form the foundation of all our partnerships.' },
+            { title: 'Innovation', description: 'We continuously evolve our approaches to stay ahead in rapidly changing healthcare landscapes.' },
+            { title: 'Compassion', description: "At our core, we're driven by the desire to improve healthcare access and outcomes globally." },
+        ],
+    },
+    {
+        type: 'team',
+        title: 'Leadership Team',
+        subtitle: 'Experienced professionals dedicated to your success',
+        members: [
+            { name: 'Dr. Sarah Chen', role: 'Chief Executive Officer', bio: 'Former VP at a leading pharmaceutical company with 20+ years in international market development.' },
+            { name: 'James Park', role: 'Head of Health Tourism', bio: 'Pioneer in medical tourism coordination with deep networks across Asia-Pacific healthcare systems.' },
+            { name: 'Michelle Wong', role: 'Director of Regulatory Affairs', bio: 'Ex-FDA reviewer with expertise in global pharmaceutical approval processes.' },
+            { name: 'David Mueller', role: 'Chief Strategy Officer', bio: 'Management consultant background specializing in healthcare market entry strategies.' },
+        ],
+    },
+    {
+        type: 'cta',
+        headline: 'Ready to Work Together?',
+        description: "Whether you're exploring new markets or seeking world-class healthcare, we're here to guide your journey.",
+        primaryButton: { text: 'Get in Touch', href: '/contact' },
+    },
+];
+
+const aboutBlocksAz: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Haqqımızda',
+        headline: 'Səhiyyəni Birləşdiririk',
+        headlineAccent: 'Sərhədlər Boyu',
+        text: 'Qlobal səhiyyəyə çıxışın demokratikləşdirilməsi vizyonu ilə yaradılmış Silkbridge International həm əczaçılıq şirkətləri, həm də xəstələr üçün etibarlı tərəfdaşa çevrilmişdir.',
+    },
+    {
+        type: 'story',
+        title: 'Hekayəmiz',
+        paragraphs: [
+            'Silkbridge International sadə bir müşahidədən doğuldu: qlobal səhiyyə ekosistemi getdikcə daha çox qarşılıqlı əlaqəli olurdu, lakin ona naviqasiya etmək hələ də qorxunc dərəcədə mürəkkəb olaraq qalırdı.',
+            'Əczaçılıq və səhiyyə sənayesi veteranları olan təsisçilərimiz körpünün – innovativ əczaçılıq şirkətlərini yüksələn bazarlarla, xəstələri isə coğrafiyadan asılı olmayaraq dünya səviyyəli tibbi xidmətlə birləşdirə biləcək körpünün zəruriliyini dərk etdilər.',
+            'Bu gün biz üç qitədə fəaliyyət göstəririk, bazara girişləri asanlaşdırır, tibbi səyahətləri koordinasiya edir və dünya miqyasında səhiyyə nəticələrini yaxşılaşdıran tərəfdaşlıqlar qururuq.',
+        ],
+    },
+    {
+        type: 'milestones',
+        milestones: [
+            { year: '2015', event: 'Nyu-Yorkda təsis edildi' },
+            { year: '2017', event: 'Sinqapur ofisi açıldı' },
+            { year: '2019', event: 'Sağlamlıq Turizmi bölməsi başladı' },
+            { year: '2021', event: '50+ xəstəxana tərəfdaşlığına çatdı' },
+            { year: '2023', event: 'Dubay regional mərkəzi açıldı' },
+            { year: '2025', event: '500+ uğurlu bazara giriş' },
+        ],
+    },
+    {
+        type: 'values',
+        title: 'Dəyərlərimiz',
+        subtitle: 'Hər qərarımıza rəhbərlik edən prinsiplər',
+        values: [
+            { title: 'Mükəmməllik', description: 'Hər bir işdə özümüzü ən yüksək standartlara riayət etməyə öhdələyirik və gözləntini aşan nəticələr təmin edirik.' },
+            { title: 'Dürüstlük', description: 'Şəffaf ünsiyyət və etik praktikalar bütün tərəfdaşlıqlarımızın əsasını təşkil edir.' },
+            { title: 'İnnovasiya', description: 'Sürətlə dəyişən səhiyyə mənzərələrində öndə qalmaq üçün yanaşmalarımızı davamlı olaraq təkmilləşdiririk.' },
+            { title: 'Mərhəmət', description: 'Əsasda qlobal səhiyyəyə çıxışı və nəticələri yaxşılaşdırmaq istəyi dayanır.' },
+        ],
+    },
+    {
+        type: 'team',
+        title: 'Rəhbərlik Komandası',
+        subtitle: 'Uğurunuza həsr olunmuş təcrübəli mütəxəssislər',
+        members: [
+            { name: 'Dr. Sara Çen', role: 'Baş İcraçı Direktor', bio: 'Beynəlxalq bazar inkişafında 20+ illik təcrübəyə malik aparıcı əczaçılıq şirkətinin keçmiş vitse-prezidenti.' },
+            { name: 'Ceyms Park', role: 'Səhiyyə Turizmi Rəhbəri', bio: 'Asiya-Sakit Okean səhiyyə sistemlərində geniş şəbəkələrə malik tibbi turizm koordinasiyasında qabaqcıl mütəxəssis.' },
+            { name: 'Mişel Vonq', role: 'Tənzimləyici Məsələlər Direktoru', bio: 'Qlobal əczaçılıq təsdiq proseslərində təcrübəyə malik keçmiş FDA eksperti.' },
+            { name: 'David Müller', role: 'Baş Strategiya Direktoru', bio: 'Səhiyyə bazarına giriş strategiyalarında ixtisaslaşmış idarəetmə məsləhətçiliyi təcrübəsi.' },
+        ],
+    },
+    {
+        type: 'cta',
+        headline: 'Birlikdə İşləməyə Hazırsınız?',
+        description: 'İstər yeni bazarlar araşdırırsınız, istərsə də dünya səviyyəli səhiyyə axtarırsınız—biz səyahətinizə rəhbərlik etməyə hazırıq.',
+        primaryButton: { text: 'Əlaqə Saxlayın', href: '/contact' },
+    },
+];
+
+const servicesBlocksEn: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Our Services',
+        headline: 'Two Pillars of',
+        headlineAccent: 'Global Healthcare',
+        text: "Whether you're expanding pharmaceutical reach or seeking world-class medical care, our expertise guides you every step of the way.",
+    },
+    {
+        type: 'serviceDetails',
+        serviceId: 'marketEntry',
+        title: 'Market Entry Services',
+        description: 'Comprehensive support for pharmaceutical and healthcare companies entering new markets.',
+        features: [
+            'Regulatory pathway analysis & strategy',
+            'Local partner identification & vetting',
+            'Market sizing & competitive intelligence',
+            'Distribution network establishment',
+            'Pricing & reimbursement consulting',
+        ],
+        ctaText: 'Discuss Your Market Entry',
+        ctaHref: '/contact',
+        details: [
+            { title: 'Regulatory Strategy', description: 'Navigate complex approval processes with our expert guidance on regulatory pathways, documentation requirements, and submission strategies.', tags: ['Pre-submission meetings', 'Dossier preparation', 'Agency liaison', 'Post-approval variations'] },
+            { title: 'Market Intelligence', description: 'Make informed decisions with comprehensive market analysis, competitive landscape assessment, and demand forecasting.', tags: ['Market sizing', 'Competitive analysis', 'Pricing strategy', 'Distribution mapping'] },
+            { title: 'Partner Development', description: 'Identify and vet local partners, distributors, and manufacturing partners to ensure sustainable market presence.', tags: ['Partner identification', 'Due diligence', 'Contract negotiation', 'Relationship management'] },
+        ],
+    },
+    {
+        type: 'serviceDetails',
+        serviceId: 'healthTourism',
+        title: 'Health & Wellness Tourism',
+        description: 'End-to-end coordination for patients seeking medical care and wellness experiences abroad.',
+        features: [
+            'Hospital & specialist matching',
+            'Treatment planning & coordination',
+            'Travel & accommodation arrangements',
+            'Interpreter & concierge services',
+            'Post-treatment follow-up care',
+        ],
+        ctaText: 'Start Your Journey',
+        ctaHref: '/contact',
+        details: [
+            { title: 'Medical Coordination', description: 'End-to-end coordination of your medical journey, from initial consultation to post-treatment follow-up.', tags: ['Hospital matching', 'Specialist appointments', 'Treatment planning', 'Second opinions'] },
+            { title: 'Travel & Logistics', description: 'Seamless travel arrangements including flights, accommodations, and ground transportation.', tags: ['Flight booking', 'Medical visas', 'Accommodation', 'Airport transfers'] },
+            { title: 'Concierge Services', description: 'Personalized support throughout your stay including interpretation, companion care, and wellness experiences.', tags: ['Medical interpreters', 'Companion services', 'Recovery retreats', 'Local experiences'] },
+        ],
+    },
+    {
+        type: 'process',
+        title: 'How We Work',
+        subtitle: 'A proven process for exceptional outcomes',
+        steps: [
+            { title: 'Discovery', description: 'We understand your goals, constraints, and vision through in-depth consultation.' },
+            { title: 'Strategy', description: 'Our experts develop a tailored roadmap aligned with your objectives.' },
+            { title: 'Execution', description: 'We manage every detail while keeping you informed at each milestone.' },
+            { title: 'Success', description: 'Ongoing support ensures sustained success and partnership growth.' },
+        ],
+    },
+    {
+        type: 'cta',
+        headline: 'Ready to Get Started?',
+        description: "Let's discuss how we can help you achieve your healthcare goals.",
+        primaryButton: { text: 'Schedule a Consultation', href: '/contact' },
+        secondaryButton: { text: 'View Our Partners', href: '/partners' },
+    },
+];
+
+const servicesBlocksAz: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Xidmətlərimiz',
+        headline: 'Qlobal Səhiyyənin',
+        headlineAccent: 'İki Sütunu',
+        text: 'İstər əczaçılıq əhatəsini genişləndirirsiniz, istərsə də dünya səviyyəli tibbi xidmət axtarırsınız—təcrübəmiz hər addımda sizə rəhbərlik edir.',
+    },
+    {
+        type: 'serviceDetails',
+        serviceId: 'marketEntry',
+        title: 'Bazara Giriş Xidmətləri',
+        description: 'Yeni bazarlara daxil olan əczaçılıq və səhiyyə şirkətləri üçün hərtərəfli dəstək.',
+        features: [
+            'Tənzimləyici yol analizi və strategiya',
+            'Yerli tərəfdaş müəyyənləşdirmə və yoxlama',
+            'Bazar ölçüsü və rəqabət kəşfiyyatı',
+            'Paylanma şəbəkəsinin qurulması',
+            'Qiymətqoyma və geri ödəmə konsaltinqi',
+        ],
+        ctaText: 'Bazara Girişinizi Müzakirə Edin',
+        ctaHref: '/contact',
+        details: [
+            { title: 'Tənzimləyici Strategiya', description: 'Tənzimləyici yollar, sənədləşdirmə tələbləri və təqdimetmə strategiyaları üzrə ekspert rəhbərliyimizlə mürəkkəb təsdiq proseslərini naviqasiya edin.', tags: ['Ön-təqdimetmə görüşləri', 'Dosye hazırlanması', 'Agentlik əlaqəsi', 'Təsdiq sonrası dəyişikliklər'] },
+            { title: 'Bazar Kəşfiyyatı', description: 'Hərtərəfli bazar analizi, rəqabət mənzərəsinin qiymətləndirilməsi və tələb proqnozlaşdırması ilə məlumatlı qərarlar verin.', tags: ['Bazar ölçüsü', 'Rəqabət analizi', 'Qiymət strategiyası', 'Paylanma xəritələməsi'] },
+            { title: 'Tərəfdaş İnkişafı', description: 'Davamlı bazar mövcudluğunu təmin etmək üçün yerli tərəfdaşları, distribyutorları və istehsal tərəfdaşlarını müəyyən edin və yoxlayın.', tags: ['Tərəfdaş müəyyənləşdirmə', 'Lazımi yoxlama', 'Müqavilə danışıqları', 'Münasibət idarəetməsi'] },
+        ],
+    },
+    {
+        type: 'serviceDetails',
+        serviceId: 'healthTourism',
+        title: 'Sağlamlıq və Wellness Turizmi',
+        description: 'Xaricdə tibbi xidmət və sağlamlıq təcrübəsi axtaran xəstələr üçün başdan-başa koordinasiya.',
+        features: [
+            'Xəstəxana və mütəxəssis seçimi',
+            'Müalicə planlaması və koordinasiyası',
+            'Səyahət və yerləşmə tənzimləmələri',
+            'Tərcüməçi və konsyerj xidmətləri',
+            'Müalicədən sonrakı izləmə',
+        ],
+        ctaText: 'Səyahətinizə Başlayın',
+        ctaHref: '/contact',
+        details: [
+            { title: 'Tibbi Koordinasiya', description: 'İlkin konsultasiyadan müalicə sonrası izləməyə qədər tibbi səyahətinizin başdan-başa koordinasiyası.', tags: ['Xəstəxana seçimi', 'Mütəxəssis görüşləri', 'Müalicə planlaması', 'İkinci rəylər'] },
+            { title: 'Səyahət və Logistika', description: 'Uçuşlar, yerləşmə və yerüstü nəqliyyat daxil olmaqla qüsursuz səyahət tənzimləmələri.', tags: ['Uçuş rezervasiyası', 'Tibbi vizalar', 'Yerləşmə', 'Hava limanı transferləri'] },
+            { title: 'Konsyerj Xidmətləri', description: 'Tərcümə, müşayiət xidməti və wellness təcrübələri daxil olmaqla qalma müddətiniz boyunca fərdi dəstək.', tags: ['Tibbi tərcüməçilər', 'Müşayiət xidmətləri', 'Bərpa kurortları', 'Yerli təcrübələr'] },
+        ],
+    },
+    {
+        type: 'process',
+        title: 'Necə İşləyirik',
+        subtitle: 'Müstəsna nəticələr üçün sübut edilmiş proses',
+        steps: [
+            { title: 'Kəşf', description: 'Dərin konsultasiya vasitəsilə məqsədlərinizi, məhdudiyyətlərinizi və vizyonunuzu anlayırıq.' },
+            { title: 'Strategiya', description: 'Ekspertlərimiz məqsədlərinizə uyğun fərdiləşdirilmiş yol xəritəsi hazırlayır.' },
+            { title: 'İcra', description: 'Hər bir mərhələdə sizi məlumatlandıraraq hər detalı idarə edirik.' },
+            { title: 'Uğur', description: 'Davamlı dəstək davamlı uğur və tərəfdaşlıq inkişafını təmin edir.' },
+        ],
+    },
+    {
+        type: 'cta',
+        headline: 'Başlamağa Hazırsınız?',
+        description: 'Səhiyyə məqsədlərinizə çatmağınıza necə kömək edə biləcəyimizi müzakirə edək.',
+        primaryButton: { text: 'Konsultasiya Planlaşdırın', href: '/contact' },
+        secondaryButton: { text: 'Tərəfdaşlarımıza Baxın', href: '/partners' },
+    },
+];
+
+const partnersBlocksEn: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Our Network',
+        headline: 'Trusted Global',
+        headlineAccent: 'Healthcare Partners',
+        text: "We've built relationships with leading healthcare institutions across four continents, ensuring our clients receive world-class care wherever they are.",
+    },
+    {
+        type: 'statsRow',
+        stats: [
+            { value: '60+', label: 'Partner Hospitals' },
+            { value: '15', label: 'Countries' },
+            { value: '500+', label: 'Specialists' },
+            { value: '10K+', label: 'Patients Served' },
+        ],
+    },
+    {
+        type: 'partners',
+        eyebrow: 'Our Network',
+        headline: 'Trusted Healthcare Partners',
+        description: 'We collaborate with leading healthcare institutions to deliver exceptional service.',
+        partners: [
+            { name: 'Baku Medical Plaza', location: 'Baku, Azerbaijan', specialty: 'Advanced Diagnostics & Treatment' },
+            { name: 'Istanbul Health Partners', location: 'Istanbul, Turkey', specialty: 'International Patient Care' },
+        ],
+    },
+    {
+        type: 'cta',
+        headline: 'Become a Partner',
+        description: 'Join our global network of healthcare institutions and expand your reach to international patients.',
+        primaryButton: { text: 'Partner With Us', href: '/contact' },
+    },
+];
+
+const partnersBlocksAz: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Şəbəkəmiz',
+        headline: 'Etibarlı Qlobal',
+        headlineAccent: 'Səhiyyə Tərəfdaşları',
+        text: 'Müştərilərimizin harada olursa olsunlar dünya səviyyəli xidmət almasını təmin etmək üçün dörd qitədə aparıcı səhiyyə müəssisələri ilə münasibətlər qurmuşuq.',
+    },
+    {
+        type: 'statsRow',
+        stats: [
+            { value: '60+', label: 'Tərəfdaş Xəstəxanalar' },
+            { value: '15', label: 'Ölkə' },
+            { value: '500+', label: 'Mütəxəssis' },
+            { value: '10K+', label: 'Xidmət Edilən Xəstə' },
+        ],
+    },
+    {
+        type: 'partners',
+        eyebrow: 'Şəbəkəmiz',
+        headline: 'Etibarlı Səhiyyə Tərəfdaşları',
+        description: 'Müstəsna xidmət göstərmək üçün aparıcı səhiyyə müəssisələri ilə əməkdaşlıq edirik.',
+        partners: [
+            { name: 'Bakı Tibb Mərkəzi', location: 'Bakı, Azərbaycan', specialty: 'İnkişaf Etmiş Diaqnostika və Müalicə' },
+            { name: 'İstanbul Səhiyyə Tərəfdaşları', location: 'İstanbul, Türkiyə', specialty: 'Beynəlxalq Xəstə Qulluğu' },
+        ],
+    },
+    {
+        type: 'cta',
+        headline: 'Tərəfdaş Olun',
+        description: 'Qlobal səhiyyə müəssisələri şəbəkəmizə qoşulun və beynəlxalq xəstələrə əhatənizi genişləndirin.',
+        primaryButton: { text: 'Bizimlə Tərəfdaş Olun', href: '/contact' },
+    },
+];
+
+const contactBlocksEn: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Contact Us',
+        headline: "Let's Start a Conversation",
+        text: "Whether you're exploring pharmaceutical market entry or seeking world-class healthcare abroad, our team is ready to help you achieve your goals.",
+    },
+    {
+        type: 'contact',
+        headline: 'Get in Touch',
+        description: 'Our team is available to answer your questions and discuss how we can support your healthcare or market entry objectives.',
+        showForm: true,
+        showMap: true,
+    },
+];
+
+
+const contactBlocksAz: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Əlaqə',
+        headline: 'Söhbətə Başlayaq',
+        text: 'İstər əczaçılıq bazarına girişi araşdırırsınız, istərsə də xaricdə dünya səviyyəli səhiyyə axtarırsınız—komandamız məqsədlərinizə çatmağınıza kömək etməyə hazırdır.',
+    },
+    {
+        type: 'contact',
+        headline: 'Əlaqə Saxlayın',
+        description: 'Komandamız suallarınıza cavab verməyə və səhiyyə və ya bazara giriş məqsədlərinizə necə dəstək verə biləcəyimizi müzakirə etməyə hazırdır.',
+        showForm: true,
+        showMap: true,
+    },
+];
+
+// ============================================
+// Russian Content Blocks
+// ============================================
+
+const homeBlocksRu: ContentBlock[] = [
+    {
+        type: 'hero',
+        tagline: 'Базируемся в Баку\nВаш путь в Азербайджан',
+        subtagline: 'Silkbridge International специализируется на широком спектре комплексных туристических услуг в Азербайджане.',
+        ctaPrimary: { text: 'Наши услуги', href: '/services' },
+        ctaSecondary: { text: 'Туристические пакеты', href: '/services#packages' },
+    },
+    {
+        type: 'about',
+        eyebrow: 'Кто мы?',
+        headline: 'Опыт, талант',
+        headlineAccent: 'Гостеприимство',
+        mission: 'Silkbridge International специализируется на широком спектре комплексных туристических услуг в Азербайджане. Наш опыт, талант, гостеприимство, гибкость и экспертиза гармонично сочетаются для удовлетворения ваших пожеланий и всех потребностей в путешествиях и отдыхе.',
+        pillars: [
+            { title: 'Качество — наш фокус', description: 'Мы придерживаемся высочайших стандартов, обеспечивая исключительный опыт.', icon: 'quality' },
+            { title: 'Опыт', description: 'Многолетний опыт в туризме и индустрии гостеприимства Азербайджана.', icon: 'experience' },
+            { title: 'Персональный сервис', description: 'Индивидуальные решения для ваших уникальных потребностей в путешествиях.', icon: 'personal' },
+            { title: 'Уникальность', description: 'Откройте для себя неповторимые впечатления в Азербайджане.', icon: 'unique' },
+        ],
+    },
+    {
+        type: 'services',
+        eyebrow: 'НАШИ УСЛУГИ',
+        headline: 'Комплексные туристические решения',
+        services: [
+            {
+                title: 'Бронирование авиабилетов',
+                description: 'Бронируйте авиабилеты в любую точку мира и в Азербайджан на регулярных авиарейсах.',
+                features: [
+                    'Глобальные авиасообщения',
+                    'Конкурентные цены',
+                    'Гибкие варианты бронирования',
+                    'Маршруты с несколькими городами',
+                    'Поддержка бронирования 24/7',
+                ],
+                cta: { text: 'Подробнее', href: '/services#flights' },
+            },
+            {
+                title: 'Туристические пакеты и туры',
+                description: 'Курируемые впечатления, включая тематические туры, VIP-пакеты, MICE, деловые поездки и индивидуальные маршруты.',
+                features: [
+                    'Индивидуальные туры',
+                    'Культурные впечатления',
+                    'Приключенческий туризм',
+                    'Экскурсии по городу',
+                    'Групповые и частные туры',
+                ],
+                cta: { text: 'Посмотреть пакеты', href: '/services#packages' },
+            },
+        ],
+    },
+    {
+        type: 'insights',
+        eyebrow: 'Туристическая аналитика',
+        headline: 'Туризм Азербайджана одним взглядом',
+        subheadline: 'Ключевые показатели растущей туристической индустрии Азербайджана',
+        stats: [
+            { value: '3.5M', label: 'Туристов ежегодно', note: 'Министерство культуры' },
+            { value: '15%', label: 'Рост туризма г/г', note: 'Совет по туризму' },
+            { value: '850+', label: 'Отелей и курортов', note: 'Данные отрасли' },
+            { value: '$2.1B', label: 'Доход от туризма', note: 'Госстатистика' },
+        ],
+        ctaText: 'Исследуйте Азербайджан',
+        ctaHref: '/services',
+    },
+    {
+        type: 'partners',
+        eyebrow: 'Наша сеть',
+        headline: 'Нам доверяют ведущие поставщики услуг гостеприимства',
+        description: 'Мы сотрудничаем с премиальными отелями, курортами и туроператорами по всему Азербайджану.',
+        ctaText: 'Наши партнёры',
+        ctaHref: '/partners',
+    },
+    {
+        type: 'contact',
+        eyebrow: 'Связаться с нами',
+        headline: 'Начнём планировать ваше путешествие',
+        description: 'Свяжитесь с нами, чтобы узнать больше о наших услугах и начать ваше приключение в Азербайджане.',
+        showForm: true,
+        showMap: true,
+    },
+];
+
+const aboutBlocksRu: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'О нас',
+        headline: 'Объединяем здравоохранение',
+        headlineAccent: 'через границы',
+        text: 'Основанная с целью демократизации доступа к глобальному здравоохранению, Silkbridge International выросла в надёжного партнёра для фармацевтических компаний и пациентов.',
+    },
+    {
+        type: 'story',
+        title: 'Наша история',
+        paragraphs: [
+            'Silkbridge International родилась из простого наблюдения: глобальная экосистема здравоохранения становилась всё более взаимосвязанной, но навигация по ней оставалась пугающе сложной.',
+            'Наши основатели, ветераны фармацевтической и медицинской индустрии, осознали необходимость моста — того, который мог бы соединить инновационные фармацевтические компании с развивающимися рынками, а пациентов — с первоклассной медицинской помощью независимо от географии.',
+            'Сегодня мы работаем на трёх континентах, способствуя выходу на рынок, координируя медицинские путешествия и выстраивая партнёрства, которые улучшают результаты здравоохранения по всему миру.',
+        ],
+    },
+    {
+        type: 'milestones',
+        milestones: [
+            { year: '2015', event: 'Основание в Нью-Йорке' },
+            { year: '2017', event: 'Открытие офиса в Сингапуре' },
+            { year: '2019', event: 'Запуск направления медицинского туризма' },
+            { year: '2021', event: 'Более 50 партнёрских больниц' },
+            { year: '2023', event: 'Открытие регионального хаба в Дубае' },
+            { year: '2025', event: '500+ успешных выходов на рынок' },
+        ],
+    },
+    {
+        type: 'values',
+        title: 'Наши ценности',
+        subtitle: 'Принципы, которые направляют каждое наше решение',
+        values: [
+            { title: 'Превосходство', description: 'Мы придерживаемся высочайших стандартов в каждом проекте, обеспечивая результаты, превосходящие ожидания.' },
+            { title: 'Честность', description: 'Прозрачное общение и этичные практики составляют основу всех наших партнёрств.' },
+            { title: 'Инновации', description: 'Мы постоянно совершенствуем наши подходы, чтобы оставаться впереди в быстро меняющемся мире здравоохранения.' },
+            { title: 'Сострадание', description: 'В нашей основе лежит стремление улучшить доступ к здравоохранению и его результаты во всём мире.' },
+        ],
+    },
+    {
+        type: 'team',
+        title: 'Команда руководителей',
+        subtitle: 'Опытные профессионалы, посвящённые вашему успеху',
+        members: [
+            { name: 'Д-р Сара Чен', role: 'Главный исполнительный директор', bio: 'Бывший вице-президент ведущей фармацевтической компании с 20+ годами опыта в развитии международных рынков.' },
+            { name: 'Джеймс Парк', role: 'Руководитель медицинского туризма', bio: 'Пионер в координации медицинского туризма с обширными связями в системах здравоохранения Азиатско-Тихоокеанского региона.' },
+            { name: 'Мишель Вонг', role: 'Директор по регуляторным вопросам', bio: 'Бывший эксперт FDA со специализацией в глобальных процессах одобрения фармацевтической продукции.' },
+            { name: 'Дэвид Мюллер', role: 'Директор по стратегии', bio: 'Опыт в управленческом консалтинге со специализацией на стратегиях выхода на рынок здравоохранения.' },
+        ],
+    },
+    {
+        type: 'cta',
+        headline: 'Готовы работать вместе?',
+        description: 'Исследуете ли вы новые рынки или ищете первоклассную медицинскую помощь — мы здесь, чтобы направить вас.',
+        primaryButton: { text: 'Связаться с нами', href: '/contact' },
+    },
+];
+
+const servicesBlocksRu: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Наши услуги',
+        headline: 'Два столпа',
+        headlineAccent: 'глобального здравоохранения',
+        text: 'Расширяете ли вы фармацевтический охват или ищете первоклассную медицинскую помощь — наша экспертиза направит вас на каждом шагу.',
+    },
+    {
+        type: 'serviceDetails',
+        serviceId: 'marketEntry',
+        title: 'Услуги выхода на рынок',
+        description: 'Комплексная поддержка фармацевтических и медицинских компаний при выходе на новые рынки.',
+        features: [
+            'Анализ и стратегия регуляторного пути',
+            'Поиск и проверка местных партнёров',
+            'Оценка рынка и конкурентная разведка',
+            'Создание дистрибьюторской сети',
+            'Консультирование по ценообразованию и возмещению',
+        ],
+        ctaText: 'Обсудить выход на рынок',
+        ctaHref: '/contact',
+        details: [
+            { title: 'Регуляторная стратегия', description: 'Проходите сложные процессы одобрения с нашим экспертным руководством по регуляторным путям, требованиям к документации и стратегиям подачи.', tags: ['Предподачные встречи', 'Подготовка досье', 'Связь с агентствами', 'Пострегистрационные изменения'] },
+            { title: 'Рыночная аналитика', description: 'Принимайте обоснованные решения с комплексным анализом рынка, оценкой конкурентной среды и прогнозированием спроса.', tags: ['Оценка рынка', 'Анализ конкурентов', 'Стратегия ценообразования', 'Картирование дистрибуции'] },
+            { title: 'Развитие партнёрства', description: 'Находите и проверяйте местных партнёров, дистрибьюторов и производственных партнёров для обеспечения устойчивого присутствия на рынке.', tags: ['Поиск партнёров', 'Due diligence', 'Переговоры по контрактам', 'Управление отношениями'] },
+        ],
+    },
+    {
+        type: 'serviceDetails',
+        serviceId: 'healthTourism',
+        title: 'Медицинский и велнес туризм',
+        description: 'Полная координация для пациентов, ищущих медицинскую помощь и велнес-опыт за рубежом.',
+        features: [
+            'Подбор больницы и специалиста',
+            'Планирование и координация лечения',
+            'Организация путешествия и проживания',
+            'Услуги переводчика и консьержа',
+            'Постлечебное наблюдение',
+        ],
+        ctaText: 'Начать путешествие',
+        ctaHref: '/contact',
+        details: [
+            { title: 'Медицинская координация', description: 'Полная координация вашего медицинского путешествия — от первичной консультации до постлечебного наблюдения.', tags: ['Подбор больницы', 'Запись к специалистам', 'Планирование лечения', 'Второе мнение'] },
+            { title: 'Путешествие и логистика', description: 'Бесшовная организация путешествия включая перелёты, проживание и наземный транспорт.', tags: ['Бронирование авиабилетов', 'Медицинские визы', 'Проживание', 'Трансфер из аэропорта'] },
+            { title: 'Консьерж-услуги', description: 'Персонализированная поддержка на протяжении всего пребывания, включая перевод, сопровождение и велнес-опыт.', tags: ['Медицинские переводчики', 'Услуги сопровождения', 'Восстановительные курорты', 'Местные впечатления'] },
+        ],
+    },
+    {
+        type: 'process',
+        title: 'Как мы работаем',
+        subtitle: 'Проверенный процесс для исключительных результатов',
+        steps: [
+            { title: 'Исследование', description: 'Мы понимаем ваши цели, ограничения и видение через глубокие консультации.' },
+            { title: 'Стратегия', description: 'Наши эксперты разрабатывают индивидуальную дорожную карту, соответствующую вашим целям.' },
+            { title: 'Исполнение', description: 'Мы управляем каждой деталью, информируя вас на каждом этапе.' },
+            { title: 'Успех', description: 'Постоянная поддержка обеспечивает устойчивый успех и рост партнёрства.' },
+        ],
+    },
+    {
+        type: 'cta',
+        headline: 'Готовы начать?',
+        description: 'Давайте обсудим, как мы можем помочь вам достичь ваших целей в здравоохранении.',
+        primaryButton: { text: 'Запланировать консультацию', href: '/contact' },
+        secondaryButton: { text: 'Наши партнёры', href: '/partners' },
+    },
+];
+
+const partnersBlocksRu: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Наша сеть',
+        headline: 'Надёжные глобальные',
+        headlineAccent: 'партнёры в здравоохранении',
+        text: 'Мы построили отношения с ведущими медицинскими учреждениями на четырёх континентах, обеспечивая нашим клиентам первоклассную помощь, где бы они ни находились.',
+    },
+    {
+        type: 'statsRow',
+        stats: [
+            { value: '60+', label: 'Партнёрских больниц' },
+            { value: '15', label: 'Стран' },
+            { value: '500+', label: 'Специалистов' },
+            { value: '10K+', label: 'Обслуженных пациентов' },
+        ],
+    },
+    {
+        type: 'partners',
+        eyebrow: 'Наша сеть',
+        headline: 'Надёжные партнёры в здравоохранении',
+        description: 'Мы сотрудничаем с ведущими медицинскими учреждениями для предоставления исключительного сервиса.',
+        partners: [
+            { name: 'Baku Medical Plaza', location: 'Баку, Азербайджан', specialty: 'Продвинутая диагностика и лечение' },
+            { name: 'Istanbul Health Partners', location: 'Стамбул, Турция', specialty: 'Международное обслуживание пациентов' },
+        ],
+    },
+    {
+        type: 'cta',
+        headline: 'Стать партнёром',
+        description: 'Присоединяйтесь к нашей глобальной сети медицинских учреждений и расширьте свой охват международных пациентов.',
+        primaryButton: { text: 'Стать партнёром', href: '/contact' },
+    },
+];
+
+const contactBlocksRu: ContentBlock[] = [
+    {
+        type: 'intro',
+        eyebrow: 'Контакты',
+        headline: 'Давайте начнём разговор',
+        text: 'Исследуете ли вы выход на фармацевтический рынок или ищете первоклассную медицинскую помощь за рубежом — наша команда готова помочь вам достичь ваших целей.',
+    },
+    {
+        type: 'contact',
+        headline: 'Связаться с нами',
+        description: 'Наша команда готова ответить на ваши вопросы и обсудить, как мы можем поддержать ваши цели в здравоохранении или выходе на рынок.',
+        showForm: true,
+        showMap: true,
+    },
+];
+
+// ============================================
+// Main Seed Function
+// ============================================
+
+
+async function main() {
+    console.log('🌱 Starting database seed...\n');
+
+    // Clean existing data
+    console.log('🧹 Cleaning existing data...');
+    await prisma.pageTranslation.deleteMany();
+    await prisma.page.deleteMany();
+    await prisma.siteSettingsTranslation.deleteMany();
+    await prisma.siteSettings.deleteMany();
+    await prisma.locale.deleteMany();
+    await prisma.user.deleteMany();
+
+    // Create locales
+    console.log('🌍 Creating locales...');
+    const localeEn = await prisma.locale.create({
+        data: {
+            code: 'en',
+            name: 'English',
+            nativeName: 'English',
+            flag: '🇺🇸',
+            isRTL: false,
+            isDefault: true,
+            isEnabled: true,
+        },
+    });
+
+    const localeAz = await prisma.locale.create({
+        data: {
+            code: 'az',
+            name: 'Azerbaijani',
+            nativeName: 'Azərbaycan',
+            flag: '🇦🇿',
+            isRTL: false,
+            isDefault: false,
+            isEnabled: true,
+        },
+    });
+
+    const localeRu = await prisma.locale.create({
+        data: {
+            code: 'ru',
+            name: 'Russian',
+            nativeName: 'Русский',
+            flag: '🇷🇺',
+            isRTL: false,
+            isDefault: false,
+            isEnabled: true,
+        },
+    });
+    console.log(`  ✓ Created locales: ${localeEn.code}, ${localeAz.code}, ${localeRu.code}\n`);
+
+    // Create admin user
+    console.log('👤 Creating admin user...');
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@silkbridge.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'AdminPassword123!';
+    const passwordHash = await bcrypt.hash(adminPassword, 12);
+
+    const admin = await prisma.user.create({
+        data: {
+            email: adminEmail,
+            passwordHash,
+            name: 'Admin',
+            role: 'ADMIN' as Role,
+            isActive: true,
+        },
+    });
+    console.log(`  ✓ Created admin: ${admin.email}\n`);
+
+    // Create pages
+    console.log('📄 Creating pages...');
+    const pageConfigs = [
+        { slug: 'home', enTitle: 'Home', azTitle: 'Ana Səhifə', ruTitle: 'Главная', enBlocks: homeBlocksEn, azBlocks: homeBlocksAz, ruBlocks: homeBlocksRu },
+        { slug: 'about', enTitle: 'About', azTitle: 'Haqqımızda', ruTitle: 'О нас', enBlocks: aboutBlocksEn, azBlocks: aboutBlocksAz, ruBlocks: aboutBlocksRu },
+        { slug: 'services', enTitle: 'Services', azTitle: 'Xidmətlər', ruTitle: 'Услуги', enBlocks: servicesBlocksEn, azBlocks: servicesBlocksAz, ruBlocks: servicesBlocksRu },
+        { slug: 'partners', enTitle: 'Partners', azTitle: 'Tərəfdaşlar', ruTitle: 'Партнёры', enBlocks: partnersBlocksEn, azBlocks: partnersBlocksAz, ruBlocks: partnersBlocksRu },
+        { slug: 'contact', enTitle: 'Contact', azTitle: 'Əlaqə', ruTitle: 'Контакты', enBlocks: contactBlocksEn, azBlocks: contactBlocksAz, ruBlocks: contactBlocksRu },
+    ];
+
+    for (const config of pageConfigs) {
+        const page = await prisma.page.create({
+            data: {
+                slug: config.slug,
+            },
+        });
+
+        // Create English translation
+        await prisma.pageTranslation.create({
+            data: {
+                pageId: page.id,
+                localeCode: 'en',
+                title: config.enTitle,
+                seoTitle: `${config.enTitle} | Silkbridge International`,
+                seoDescription: `${config.enTitle} page for Silkbridge International - connecting markets and health tourism across borders.`,
+                blocks: config.enBlocks as unknown as object,
+                status: 'PUBLISHED' as PageStatus,
+            },
+        });
+
+        // Create Azerbaijani translation
+        await prisma.pageTranslation.create({
+            data: {
+                pageId: page.id,
+                localeCode: 'az',
+                title: config.azTitle,
+                seoTitle: `${config.azTitle} | Silkbridge International`,
+                seoDescription: `${config.azTitle} səhifəsi - Silkbridge International bazarları və sağlamlıq turizmini birləşdirir.`,
+                blocks: config.azBlocks as unknown as object,
+                status: 'PUBLISHED' as PageStatus,
+            },
+        });
+
+        // Create Russian translation
+        await prisma.pageTranslation.create({
+            data: {
+                pageId: page.id,
+                localeCode: 'ru',
+                title: config.ruTitle,
+                seoTitle: `${config.ruTitle} | Silkbridge International`,
+                seoDescription: `${config.ruTitle} - Silkbridge International объединяет рынки и медицинский туризм через границы.`,
+                blocks: config.ruBlocks as unknown as object,
+                status: 'PUBLISHED' as PageStatus,
+            },
+        });
+
+        console.log(`  ✓ Created page: ${config.slug}`);
+    }
+
+    // Create site settings
+    console.log('\n⚙️ Creating site settings...');
+    const settings = await prisma.siteSettings.create({
+        data: {
+            id: '1',
+            siteName: 'Silkbridge International',
+            contactEmail: 'contact@silkbridge.com',
+            contactPhone: '+1 (555) 123-4567',
+            contactAddress: '350 Fifth Avenue, Suite 7820, New York, NY 10118',
+            socialLinks: {
+                linkedin: 'https://linkedin.com/company/silkbridge',
+                twitter: 'https://twitter.com/silkbridge',
+            },
+        },
+    });
+
+    // Create settings translations
+    await prisma.siteSettingsTranslation.create({
+        data: {
+            settingsId: settings.id,
+            localeCode: 'en',
+            tagline: 'Bridging global healthcare markets with precision, compliance, and care.',
+            footerText: '© {year} Silkbridge International. All rights reserved.',
+        },
+    });
+
+    await prisma.siteSettingsTranslation.create({
+        data: {
+            settingsId: settings.id,
+            localeCode: 'az',
+            tagline: 'Qlobal səhiyyə bazarlarını dəqiqlik, uyğunluq və qayğı ilə birləşdiririk.',
+            footerText: '© {year} Silkbridge International. Bütün hüquqlar qorunur.',
+        },
+    });
+
+    await prisma.siteSettingsTranslation.create({
+        data: {
+            settingsId: settings.id,
+            localeCode: 'ru',
+            tagline: 'Связываем глобальные рынки здравоохранения с точностью, соответствием и заботой.',
+            footerText: '© {year} Silkbridge International. Все права защищены.',
+        },
+    });
+    console.log('  ✓ Created site settings\n');
+
+    console.log('✅ Database seeded successfully!\n');
+    console.log('📋 Summary:');
+    console.log(`   - Locales: ${await prisma.locale.count()}`);
+    console.log(`   - Users: ${await prisma.user.count()}`);
+    console.log(`   - Pages: ${await prisma.page.count()}`);
+    console.log(`   - Page Translations: ${await prisma.pageTranslation.count()}`);
+    console.log(`   - Site Settings: ${await prisma.siteSettings.count()}`);
+    console.log(`   - Settings Translations: ${await prisma.siteSettingsTranslation.count()}`);
+    console.log('\n🔐 Admin credentials:');
+    console.log(`   Email: ${adminEmail}`);
+    console.log(`   Password: ${adminPassword}`);
+}
+
+main()
+    .catch((e) => {
+        console.error('❌ Seed failed:', e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });
