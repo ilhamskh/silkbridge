@@ -1,43 +1,49 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { navigationConfig, siteConfig } from '@/content/site-config';
+import { siteConfig } from '@/content/site-config';
+import { getNavigationItems, getFooterSectionLabels } from '@/lib/content/getNavigation';
 import Logo from '@/components/ui/Logo';
 import { Icons } from '@/components/ui/Icons';
+import type { Locale } from '@/i18n/config';
+
+// UI labels for footer chrome (not marketing content)
+const footerUiLabels: Record<string, { copyright: string; privacyPolicy: string; termsOfService: string }> = {
+    en: { copyright: '© {year} {company}. All rights reserved.', privacyPolicy: 'Privacy Policy', termsOfService: 'Terms of Service' },
+    az: { copyright: '© {year} {company}. Bütün hüquqlar qorunur.', privacyPolicy: 'Məxfilik Siyasəti', termsOfService: 'İstifadə Şərtləri' },
+    ru: { copyright: '© {year} {company}. Все права защищены.', privacyPolicy: 'Политика конфиденциальности', termsOfService: 'Условия использования' },
+};
+
+// Taglines by locale (will be replaced by DB when settings are properly populated)
+const taglines: Record<string, string> = {
+    en: 'Bridging global healthcare markets with premium pharmaceutical services and world-class medical tourism.',
+    az: 'Premium əczaçılıq xidmətləri və dünya səviyyəli tibbi turizm ilə qlobal səhiyyə bazarlarını birləşdiririk.',
+    ru: 'Связываем глобальные рынки здравоохранения с премиальными фармацевтическими услугами и медицинским туризмом мирового класса.',
+};
 
 export default function Footer() {
+    const locale = useLocale() as Locale;
     const currentYear = new Date().getFullYear();
-    const t = useTranslations('footer');
-    const tNav = useTranslations('nav');
+    
+    // Get navigation items from content layer
+    const navigation = getNavigationItems(locale);
+    const sectionLabels = getFooterSectionLabels(locale);
+    const uiLabels = footerUiLabels[locale] || footerUiLabels.en;
+    const tagline = taglines[locale] || taglines.en;
 
     const footerLinks = [
         {
-            titleKey: 'services.title',
-            links: [
-                { labelKey: 'services.marketEntry', href: '/services#market-entry' },
-                { labelKey: 'services.regulatory', href: '/services#regulatory' },
-                { labelKey: 'services.healthTourism', href: '/services#health-tourism' },
-                { labelKey: 'services.wellness', href: '/services#wellness' },
-            ],
+            title: sectionLabels.services,
+            links: navigation.footer.services,
         },
         {
-            titleKey: 'company.title',
-            links: [
-                { labelKey: 'company.about', href: '/about' },
-                { labelKey: 'company.partners', href: '/partners' },
-                { labelKey: 'company.insights', href: '/market-insights' },
-                { labelKey: 'company.contact', href: '/contact' },
-            ],
+            title: sectionLabels.company,
+            links: navigation.footer.company,
         },
         {
-            titleKey: 'resources.title',
-            links: [
-                { labelKey: 'resources.reports', href: '/market-insights' },
-                { labelKey: 'resources.portal', href: '/partners' },
-                { labelKey: 'resources.privacy', href: '/privacy' },
-                { labelKey: 'resources.terms', href: '/terms' },
-            ],
+            title: sectionLabels.resources,
+            links: navigation.footer.resources,
         },
     ];
 
@@ -50,12 +56,13 @@ export default function Footer() {
                     <div className="lg:col-span-4">
                         <Logo className="h-8 w-auto text-white" />
                         <p className="mt-6 text-white/60 text-body-sm leading-relaxed max-w-sm">
-                            {t('tagline')}
+                            {tagline}
                         </p>
                         {/* Social Links */}
                         <div className="mt-8 flex items-center gap-4">
-                            {navigationConfig.social.map((item) => {
+                            {navigation.social.map((item) => {
                                 const Icon = Icons[item.icon as keyof typeof Icons];
+                                if (!Icon) return null; // Guard against missing icons
                                 return (
                                     <a
                                         key={item.name}
@@ -77,18 +84,18 @@ export default function Footer() {
                     <div className="lg:col-span-8">
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
                             {footerLinks.map((group) => (
-                                <div key={group.titleKey}>
+                                <div key={group.title}>
                                     <h3 className="text-sm font-semibold text-white tracking-wide uppercase">
-                                        {t(group.titleKey)}
+                                        {group.title}
                                     </h3>
                                     <ul className="mt-4 space-y-3">
                                         {group.links.map((link) => (
-                                            <li key={link.labelKey}>
+                                            <li key={link.href}>
                                                 <Link
                                                     href={link.href}
                                                     className="text-white/60 hover:text-white text-body-sm transition-colors"
                                                 >
-                                                    {t(link.labelKey)}
+                                                    {link.label}
                                                 </Link>
                                             </li>
                                         ))}
@@ -105,14 +112,14 @@ export default function Footer() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <p className="text-white/40 text-sm">
-                            {t('copyright', { year: currentYear, company: siteConfig.name })}
+                            {uiLabels.copyright.replace('{year}', String(currentYear)).replace('{company}', siteConfig.name)}
                         </p>
                         <div className="flex items-center gap-6 text-sm text-white/40">
                             <Link href="/privacy" className="hover:text-white transition-colors">
-                                {t('privacyPolicy')}
+                                {uiLabels.privacyPolicy}
                             </Link>
                             <Link href="/terms" className="hover:text-white transition-colors">
-                                {t('termsOfService')}
+                                {uiLabels.termsOfService}
                             </Link>
                         </div>
                     </div>

@@ -6,30 +6,31 @@ import { useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Link, useRouter } from '@/i18n/routing';
 import { locales, localeNames, localeFlags, type Locale } from '@/i18n/config';
-import { getNavigationItems } from '@/lib/content/getNavigation';
 import Logo from '@/components/ui/Logo';
 import Button from '@/components/ui/button';
 import { Icons } from '@/components/ui/Icons';
 import MobileMenu from '@/components/layout/MobileMenu';
+import type { NavigationItem } from '@/lib/content/getNavigation';
 
-// UI labels for chrome elements (not marketing content)
-const uiLabels: Record<string, { selectLanguage: string; toggleMenu: string; getConsultation: string }> = {
-    en: { selectLanguage: 'Select language', toggleMenu: 'Toggle menu', getConsultation: 'Get Consultation' },
-    az: { selectLanguage: 'Dili seçin', toggleMenu: 'Menyunu aç', getConsultation: 'Konsultasiya alın' },
-    ru: { selectLanguage: 'Выбрать язык', toggleMenu: 'Меню', getConsultation: 'Консультация' },
-};
+interface HeaderClientProps {
+    navItems: NavigationItem[];
+    ctaLabel: string;
+    selectLanguageLabel: string;
+    toggleMenuLabel: string;
+}
 
-export default function Header() {
+export default function HeaderClient({ 
+    navItems, 
+    ctaLabel,
+    selectLanguageLabel,
+    toggleMenuLabel,
+}: HeaderClientProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
     const pathname = usePathname();
     const locale = useLocale() as Locale;
     const router = useRouter();
-    
-    // Get navigation items from content layer (not messages)
-    const navigation = getNavigationItems(locale);
-    const labels = uiLabels[locale] || uiLabels.en;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -46,7 +47,6 @@ export default function Header() {
 
     const switchLocale = (newLocale: Locale) => {
         startTransition(() => {
-            // Get the path without the locale prefix
             const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
             router.replace(pathWithoutLocale, { locale: newLocale });
         });
@@ -56,14 +56,14 @@ export default function Header() {
         <>
             <header
                 className={`
-          fixed top-0 left-0 right-0 z-50 transition-all duration-300
-          ${isScrolled
+                    fixed top-0 left-0 right-0 z-50 transition-all duration-300
+                    ${isScrolled
                         ? 'py-3 bg-white/80 backdrop-blur-xl shadow-sm border-b border-border-light'
                         : hasDarkHero
                             ? 'py-5 bg-transparent'
                             : 'py-5 bg-white/80 backdrop-blur-xl border-b border-border-light'
                     }
-        `}
+                `}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between">
@@ -77,7 +77,7 @@ export default function Header() {
 
                         {/* Desktop Navigation */}
                         <nav className="hidden lg:flex items-center gap-1">
-                            {navigation.main.map((item) => {
+                            {navItems.map((item) => {
                                 const isActive = pathname === `/${locale}${item.href}` ||
                                     (item.href === '/' && (pathname === `/${locale}` || pathname === `/${locale}/`));
                                 return (
@@ -85,8 +85,8 @@ export default function Header() {
                                         key={item.href}
                                         href={item.href}
                                         className={`
-                      relative px-4 py-2 text-sm font-medium transition-colors
-                      ${isScrolled || !hasDarkHero
+                                            relative px-4 py-2 text-sm font-medium transition-colors
+                                            ${isScrolled || !hasDarkHero
                                                 ? isActive
                                                     ? 'text-primary-600'
                                                     : 'text-muted hover:text-primary-600'
@@ -94,14 +94,13 @@ export default function Header() {
                                                     ? 'text-white'
                                                     : 'text-white/80 hover:text-white'
                                             }
-                    `}
+                                        `}
                                     >
                                         {item.label}
                                         {isActive && (
                                             <motion.div
                                                 layoutId="nav-indicator"
-                                                className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full ${isScrolled || !hasDarkHero ? 'bg-primary-500' : 'bg-white'
-                                                    }`}
+                                                className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full ${isScrolled || !hasDarkHero ? 'bg-primary-500' : 'bg-white'}`}
                                                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                                             />
                                         )}
@@ -116,11 +115,11 @@ export default function Header() {
                             <div className="relative group">
                                 <button
                                     className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                    ${isScrolled || !hasDarkHero
+                                        ${isScrolled || !hasDarkHero
                                             ? 'text-muted hover:text-primary-600 hover:bg-primary-50'
                                             : 'text-white/80 hover:text-white hover:bg-white/10'}
-                  `}
-                                    aria-label={labels.selectLanguage}
+                                    `}
+                                    aria-label={selectLanguageLabel}
                                 >
                                     <span className="text-base">{localeFlags[locale]}</span>
                                     <span className="uppercase">{locale}</span>
@@ -134,9 +133,9 @@ export default function Header() {
                                                 onClick={() => switchLocale(loc)}
                                                 disabled={isPending}
                                                 className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors
-                          ${loc === locale ? 'bg-primary-50 text-primary-600' : 'text-ink hover:bg-surface'}
-                          ${isPending ? 'opacity-50' : ''}
-                        `}
+                                                    ${loc === locale ? 'bg-primary-50 text-primary-600' : 'text-ink hover:bg-surface'}
+                                                    ${isPending ? 'opacity-50' : ''}
+                                                `}
                                             >
                                                 <span className="text-base">{localeFlags[loc]}</span>
                                                 <span>{localeNames[loc]}</span>
@@ -155,12 +154,12 @@ export default function Header() {
                                     variant={isScrolled || !hasDarkHero ? 'primary' : 'ghost'}
                                     size="sm"
                                 >
-                                    {labels.getConsultation}
+                                    {ctaLabel}
                                 </Button>
                             </Link>
                         </div>
 
-                        {/* Mobile Right Side: CTA Pill + Menu Button */}
+                        {/* Mobile Right Side */}
                         <div className="flex lg:hidden items-center gap-2">
                             {/* Compact CTA Pill */}
                             <Link href="/contact">
@@ -172,7 +171,7 @@ export default function Header() {
                                             : 'bg-white/90 text-primary-700 hover:bg-white'}
                                     `}
                                 >
-                                    {navigation.main.find(i => i.href === '/contact')?.label || 'Contact'}
+                                    {navItems.find(i => i.href === '/contact')?.label || 'Contact'}
                                 </button>
                             </Link>
 
@@ -182,7 +181,7 @@ export default function Header() {
                                 className={`p-2 transition-colors rounded-lg
                                     ${isScrolled || !hasDarkHero ? 'text-ink hover:bg-surface' : 'text-white hover:bg-white/10'}
                                 `}
-                                aria-label={labels.toggleMenu}
+                                aria-label={toggleMenuLabel}
                                 aria-expanded={isMobileMenuOpen}
                             >
                                 {isMobileMenuOpen ? (
