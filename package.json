@@ -27,6 +27,7 @@
         "@dnd-kit/utilities": "^3.2.2",
         "@prisma/adapter-pg": "^7.3.0",
         "@prisma/client": "^7.3.0",
+        "@vercel/blob": "^2.0.1",
         "bcryptjs": "^3.0.3",
         "date-fns": "^4.1.0",
         "framer-motion": "^11.15.0",

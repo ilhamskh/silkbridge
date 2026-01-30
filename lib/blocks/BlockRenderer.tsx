@@ -2,6 +2,7 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import * as React from 'react';
 import { Link } from '@/i18n/routing';
 import { Icons } from '@/components/ui/Icons';
 import Button from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { WhyUsSection } from '@/components/sections/WhyUsSection';
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
 import { FaqSection } from '@/components/sections/FaqSection';
 import ContactSection from '@/components/sections/ContactSection';
+import { PartnerCard } from '@/components/partners/PartnerCard';
 import type {
     ContentBlock,
     HeroBlock,
@@ -255,90 +257,88 @@ function ServicesBlockRenderer({ block }: { block: ServicesBlock }) {
 function PartnersBlockRenderer({ block }: { block: PartnersBlock }) {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: true, margin: '-100px' });
+    const [partners, setPartners] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        async function fetchPartners() {
+            try {
+                const response = await fetch('/api/partners');
+                if (response.ok) {
+                    const data = await response.json();
+                    setPartners(data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch partners:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchPartners();
+    }, []);
 
     return (
-        <section ref={ref} className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-b from-white via-surface to-white">
-            {/* Decorative background elements */}
-            <div className="absolute inset-0 opacity-30">
-                <div className="absolute top-20 left-10 w-72 h-72 bg-primary-200 rounded-full blur-3xl" />
-                <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary-100 rounded-full blur-3xl" />
-            </div>
-
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section ref={ref} className="py-16 lg:py-24 bg-gradient-to-b from-gray-50 to-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.6 }}
-                    className="text-center max-w-3xl mx-auto mb-16"
+                    className="text-center mb-12"
                 >
                     {block.eyebrow && (
-                        <span className="inline-block text-primary-600 text-sm font-semibold tracking-wider uppercase mb-4">
+                        <p className="text-sm font-semibold text-primary-600 tracking-wider uppercase mb-3">
                             {block.eyebrow}
-                        </span>
+                        </p>
                     )}
-                    <h2 className="font-heading text-4xl sm:text-5xl font-bold text-ink mb-4">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
                         {block.headline}
                     </h2>
                     {block.description && (
-                        <p className="text-lg text-muted leading-relaxed">{block.description}</p>
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            {block.description}
+                        </p>
                     )}
                 </motion.div>
 
-                {block.partners && block.partners.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {block.partners.map((partner, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="group relative"
-                            >
-                                {/* Glassmorphism card with gradient border */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
-
-                                <div className="relative bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-border-light shadow-soft hover:shadow-lg transition-all duration-300 h-full">
-                                    {/* Accent line */}
-                                    <div className="w-12 h-1 bg-gradient-to-r from-primary-500 to-primary-700 rounded-full mb-6" />
-
-                                    <h4 className="font-heading text-xl font-bold text-ink mb-2 group-hover:text-primary-700 transition-colors">
-                                        {partner.name}
-                                    </h4>
-
-                                    {partner.location && (
-                                        <p className="flex items-center gap-2 text-sm text-muted mb-3">
-                                            <Icons.mapPin className="w-4 h-4 text-primary-500" />
-                                            {partner.location}
-                                        </p>
-                                    )}
-
-                                    {partner.specialty && (
-                                        <div className="mt-4 pt-4 border-t border-border-light">
-                                            <p className="text-sm font-medium text-primary-700">
-                                                {partner.specialty}
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </motion.div>
+                {/* Loading State */}
+                {loading && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="animate-pulse">
+                                <div className="bg-gray-200 rounded-2xl h-80"></div>
+                            </div>
                         ))}
                     </div>
                 )}
 
-                {block.ctaText && block.ctaHref && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ duration: 0.6, delay: 0.4 }}
-                        className="mt-16 text-center"
-                    >
-                        <Link href={block.ctaHref}>
-                            <Button size="lg" className="group">
-                                {block.ctaText}
-                                <Icons.arrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </Button>
-                        </Link>
-                    </motion.div>
+                {/* Partners Grid */}
+                {!loading && partners.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                        {partners.map((partner, index) => (
+                            <PartnerCard
+                                key={partner.id}
+                                partner={partner}
+                                index={index}
+                            />
+                        ))}
+                    </div>
+                )}
+
+                {/* Empty State */}
+                {!loading && partners.length === 0 && (
+                    <div className="text-center py-20">
+                        <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span className="text-4xl">🤝</span>
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                            No Partners Yet
+                        </h3>
+                        <p className="text-lg text-gray-600 max-w-md mx-auto">
+                            We're currently building our network of trusted partners. Check back soon!
+                        </p>
+                    </div>
                 )}
             </div>
         </section>

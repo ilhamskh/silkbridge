@@ -22,7 +22,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { name, logoUrl, location, specialties, websiteUrl, status, descriptions } = body;
+        const { name, logoUrl, images, location, specialties, websiteUrl, status, descriptions } = body;
 
         // Get highest order value
         const lastPartner = await prisma.partner.findFirst({
@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
             data: {
                 name,
                 logoUrl,
+                images: images || [],
                 location,
                 specialties: specialties || [],
                 websiteUrl,

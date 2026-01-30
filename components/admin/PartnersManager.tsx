@@ -2,15 +2,17 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, GripVertical, Pencil, Trash2, ExternalLink, MoreVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, GripVertical, Pencil, Trash2, ExternalLink, MoreVertical, ChevronUp, ChevronDown, Image as ImageIcon } from 'lucide-react';
 import { AdminInput } from './ui/AdminInput';
 import { AdminTextarea } from './ui/AdminTextarea';
+import { ImageUploader } from './ui/ImageUploader';
 import Button from '@/components/ui/button';
 
 interface Partner {
     id: string;
     name: string;
     logoUrl: string | null;
+    images: string[];
     location: string | null;
     specialties: string[];
     websiteUrl: string | null;
@@ -44,6 +46,7 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
     const [formData, setFormData] = useState({
         name: '',
         logoUrl: '',
+        images: [] as string[],
         location: '',
         specialties: '',
         websiteUrl: '',
@@ -55,6 +58,7 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
         setFormData({
             name: '',
             logoUrl: '',
+            images: [],
             location: '',
             specialties: '',
             websiteUrl: '',
@@ -73,6 +77,7 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
         setFormData({
             name: partner.name,
             logoUrl: partner.logoUrl || '',
+            images: partner.images || [],
             location: partner.location || '',
             specialties: partner.specialties.join(', '),
             websiteUrl: partner.websiteUrl || '',
@@ -100,7 +105,8 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
 
         const payload = {
             name: formData.name,
-            logoUrl: formData.logoUrl || null,
+            logoUrl: formData.images[0] || formData.logoUrl || null,
+            images: formData.images,
             location: formData.location || null,
             specialties: specialtiesArray,
             websiteUrl: formData.websiteUrl || null,
@@ -346,11 +352,11 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                                 />
                             </div>
 
-                            <AdminInput
-                                label="Logo URL"
-                                value={formData.logoUrl}
-                                onChange={(e) => setFormData(prev => ({ ...prev, logoUrl: e.target.value }))}
-                                placeholder="https://..."
+                            {/* Image Upload */}
+                            <ImageUploader
+                                images={formData.images}
+                                onChange={(images) => setFormData(prev => ({ ...prev, images }))}
+                                maxImages={10}
                             />
 
                             <AdminInput

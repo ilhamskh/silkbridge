@@ -10,7 +10,7 @@ export async function PUT(
     try {
         const { id } = await params;
         const body = await request.json();
-        const { name, logoUrl, location, specialties, websiteUrl, status, descriptions } = body;
+        const { name, logoUrl, images, location, specialties, websiteUrl, status, descriptions } = body;
 
         // Update partner
         const partner = await prisma.partner.update({
@@ -18,6 +18,7 @@ export async function PUT(
             data: {
                 name,
                 logoUrl,
+                images: images || [],
                 location,
                 specialties: specialties || [],
                 websiteUrl,

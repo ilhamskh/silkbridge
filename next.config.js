@@ -13,7 +13,11 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'images.stockcake.com',
-            }
+            },
+            {
+                protocol: 'https',
+                hostname: '*.public.blob.vercel-storage.com',
+            },
         ],
     },
 };

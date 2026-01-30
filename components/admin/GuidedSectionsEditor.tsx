@@ -38,6 +38,28 @@ export default function GuidedSectionsEditor({
     const [activeSectionId, setActiveSectionId] = useState<string>(sectionsMeta[0]?.id || '');
     const [sections, setSections] = useState<PageSections>(() => blocksToPageSections(pageSlug, blocks));
 
+    // Handle pages with no guided sections defined
+    if (sectionsMeta.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-full bg-gray-50">
+                <div className="text-center max-w-md p-8">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span className="text-3xl">📝</span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        No Guided Editor Available
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                        The guided section editor is not yet configured for the "{pageSlug}" page.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                        You can still edit this page using the JSON editor or add sections through the database.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     const handleSectionChange = (sectionId: string, data: any) => {
         const updatedSections = { ...sections, [sectionId]: data };
         setSections(updatedSections);
