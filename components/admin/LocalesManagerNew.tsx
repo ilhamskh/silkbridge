@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createLocale, updateLocale, deleteLocale } from '@/lib/actions';
 import { useToast } from './ui/AdminToast';
-import { AdminCard, AdminCardHeader, AdminCardContent } from './ui/AdminCard';
+import { AdminCard } from './ui/AdminCard';
 import { AdminButton } from './ui/AdminButton';
 import { AdminIcon } from './ui/AdminIcon';
 import { AdminInput } from './ui/AdminInput';
@@ -46,12 +46,11 @@ const COMMON_LOCALES = [
     { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
 ];
 
-export default function LocalesManagerNew({ locales: initialLocales }: LocalesManagerNewProps) {
+export default function LocalesManagerNew({ locales }: LocalesManagerNewProps) {
     const router = useRouter();
     const toast = useToast();
-    const [locales, setLocales] = useState(initialLocales);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [editingLocale, setEditingLocale] = useState<typeof initialLocales[0] | null>(null);
+    const [editingLocale, setEditingLocale] = useState<typeof locales[0] | null>(null);
     const [deleteLocaleCode, setDeleteLocaleCode] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -213,7 +212,7 @@ export default function LocalesManagerNew({ locales: initialLocales }: LocalesMa
         }
     };
 
-    const openEditModal = (locale: typeof initialLocales[0]) => {
+    const openEditModal = (locale: typeof locales[0]) => {
         setEditingLocale(locale);
         setFormData({
             code: locale.code,

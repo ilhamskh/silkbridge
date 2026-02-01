@@ -14,10 +14,7 @@ const recipientSchema = z.object({
     email: z.string().email('Invalid email address'),
 });
 
-const routingSchema = z.object({
-    type: z.enum(['PHARMA', 'PATIENT', 'WELLNESS']),
-    recipientId: z.string().min(1, 'Please select a recipient'),
-});
+
 
 // ============================================
 // Recipients

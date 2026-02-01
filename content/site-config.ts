@@ -1,5 +1,3 @@
-import type { Locale } from '@/i18n/config';
-
 // Non-localized site configuration
 export const siteConfig = {
     name: 'Silkbridge International',

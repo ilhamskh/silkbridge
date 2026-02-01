@@ -115,6 +115,27 @@ export const storyBlockSchema = z.object({
     paragraphs: z.array(z.string()).min(1),
 });
 
+// Storyline Block (Narrative Timeline)
+export const storylineBeatSchema = z.object({
+    id: z.string(),
+    kicker: z.string().optional(),
+    title: z.string().min(1),
+    description: z.string().min(1),
+    year: z.string().optional(),
+});
+
+export const storylineBlockSchema = z.object({
+    type: z.literal('storyline'),
+    eyebrow: z.string().optional(),
+    title: z.string().min(1),
+    text: z.string().optional(),
+    beats: z.array(storylineBeatSchema).min(1),
+    cta: z.object({
+        text: z.string().min(1),
+        href: z.string().min(1),
+    }).optional(),
+});
+
 // Milestones Block
 export const milestoneSchema = z.object({
     year: z.string().min(1),
@@ -333,6 +354,7 @@ export const contentBlockSchema = z.discriminatedUnion('type', [
     insightsBlockSchema,
     introBlockSchema,
     storyBlockSchema,
+    storylineBlockSchema,
     milestonesBlockSchema,
     valuesBlockSchema,
     teamBlockSchema,
@@ -363,6 +385,7 @@ export type ContactBlock = z.infer<typeof contactBlockSchema>;
 export type InsightsBlock = z.infer<typeof insightsBlockSchema>;
 export type IntroBlock = z.infer<typeof introBlockSchema>;
 export type StoryBlock = z.infer<typeof storyBlockSchema>;
+export type StorylineBlock = z.infer<typeof storylineBlockSchema>;
 export type MilestonesBlock = z.infer<typeof milestonesBlockSchema>;
 export type ValuesBlock = z.infer<typeof valuesBlockSchema>;
 export type TeamBlock = z.infer<typeof teamBlockSchema>;

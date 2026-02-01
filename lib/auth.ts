@@ -61,11 +61,7 @@ declare module 'next-auth' {
     }
 }
 
-// Extend JWT type
-interface ExtendedJWT {
-    id: string;
-    role: Role;
-}
+
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [

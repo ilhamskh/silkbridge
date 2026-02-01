@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { AdminCard, AdminCardHeader, AdminCardContent } from './ui/AdminCard';
+import { AdminCard } from './ui/AdminCard';
 import { AdminButton } from './ui/AdminButton';
 import { AdminIcon } from './ui/AdminIcon';
 import { AdminInput } from './ui/AdminInput';
@@ -40,6 +40,7 @@ const BLOCK_TYPES = {
     spacer: { label: 'Spacer', icon: 'layout' as const, description: 'Vertical spacing' },
     divider: { label: 'Divider', icon: 'layout' as const, description: 'Horizontal line divider' },
     about: { label: 'About Section', icon: 'info' as const, description: 'Company about section' },
+    storyline: { label: 'Storyline (Timeline)', icon: 'clock' as const, description: 'Creative vertical timeline' },
     insights: { label: 'Insights/Blog', icon: 'article' as const, description: 'Latest blog posts' },
     custom: { label: 'Custom HTML', icon: 'code' as const, description: 'Custom HTML/code block' },
 };
@@ -415,6 +416,42 @@ function BlockEditorModal({ isOpen, onClose, block, onSave }: {
                         />
                     </div>
                 );
+            case 'storyline':
+                return (
+                    <div className="space-y-4">
+                        <AdminInput
+                            label="Eyebrow"
+                            value={data.eyebrow as string || ''}
+                            onChange={(e) => setData({ ...data, eyebrow: e.target.value })}
+                            placeholder="OUR JOURNEY"
+                        />
+                        <AdminInput
+                            label="Title"
+                            value={data.title as string || ''}
+                            onChange={(e) => setData({ ...data, title: e.target.value })}
+                            placeholder="Building Bridges"
+                        />
+                        <AdminTextarea
+                            label="Intro Text"
+                            value={data.text as string || ''}
+                            onChange={(e) => setData({ ...data, text: e.target.value })}
+                            placeholder="Brief intro..."
+                            rows={2}
+                        />
+                        <AdminTextarea
+                            label="Beats (JSON)"
+                            value={JSON.stringify(data.beats || [], null, 2)}
+                            onChange={(e) => {
+                                try {
+                                    setData({ ...data, beats: JSON.parse(e.target.value) });
+                                } catch { }
+                            }}
+                            placeholder='[{"id": "1", "kicker": "ORIGINS", "year": "2010", "title": "...", "description": "..."}]'
+                            rows={8}
+                            helperText='Array of {id, kicker, year, title, description} objects'
+                        />
+                    </div>
+                );
             case 'spacer':
                 return (
                     <div>
@@ -480,7 +517,7 @@ function BlockEditorModal({ isOpen, onClose, block, onSave }: {
     );
 }
 
-export default function BlocksEditorNew({ blocks, onChange, pageSlug }: BlocksEditorNewProps) {
+export default function BlocksEditorNew({ blocks, onChange }: BlocksEditorNewProps) {
     const [showGallery, setShowGallery] = useState(false);
     const [editingBlock, setEditingBlock] = useState<EditorBlock | null>(null);
     const [insertIndex, setInsertIndex] = useState<number | null>(null);

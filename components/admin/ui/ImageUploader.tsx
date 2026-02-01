@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { Upload, X, GripVertical, Loader2, AlertCircle, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, GripVertical, Loader2, AlertCircle } from 'lucide-react';
 
 interface ImageUploaderProps {
     images: string[];
@@ -17,7 +17,6 @@ export function ImageUploader({
     className = ''
 }: ImageUploaderProps) {
     const [isUploading, setIsUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
     const [dragActive, setDragActive] = useState(false);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -35,7 +34,7 @@ export function ImageUploader({
         const filesToUpload = Array.from(files).slice(0, remainingSlots);
         setIsUploading(true);
         setError(null);
-        setUploadProgress(0);
+
 
         try {
             const formData = new FormData();
@@ -65,7 +64,7 @@ export function ImageUploader({
             setError(err instanceof Error ? err.message : 'Upload failed');
         } finally {
             setIsUploading(false);
-            setUploadProgress(0);
+
         }
     }, [images, maxImages, onChange]);
 

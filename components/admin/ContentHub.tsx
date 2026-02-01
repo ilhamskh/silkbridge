@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { AdminCard, AdminCardHeader } from './ui/AdminCard';
+import { AdminCard } from './ui/AdminCard';
 import { AdminBadge } from './ui/AdminBadge';
 import { AdminButton } from './ui/AdminButton';
 import { AdminIcon } from './ui/AdminIcon';
@@ -105,8 +105,8 @@ export default function ContentHub({ pages, locales }: ContentHubProps) {
                         <button
                             onClick={() => setSelectedLocale('all')}
                             className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${selectedLocale === 'all'
-                                    ? 'bg-primary-50 text-primary-700'
-                                    : 'text-muted hover:text-ink'
+                                ? 'bg-primary-50 text-primary-700'
+                                : 'text-muted hover:text-ink'
                                 }`}
                         >
                             All
@@ -116,8 +116,8 @@ export default function ContentHub({ pages, locales }: ContentHubProps) {
                                 key={locale.code}
                                 onClick={() => setSelectedLocale(locale.code)}
                                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${selectedLocale === locale.code
-                                        ? 'bg-primary-50 text-primary-700'
-                                        : 'text-muted hover:text-ink'
+                                    ? 'bg-primary-50 text-primary-700'
+                                    : 'text-muted hover:text-ink'
                                     }`}
                             >
                                 {locale.flag} {locale.name}
@@ -210,7 +210,7 @@ export default function ContentHub({ pages, locales }: ContentHubProps) {
                                     </p>
                                     <div className="flex flex-wrap gap-2">
                                         {locales.map((locale) => {
-                                            const { status, translation } = getTranslationStatus(page, locale.code);
+                                            const { status } = getTranslationStatus(page, locale.code);
                                             return (
                                                 <Link
                                                     key={locale.code}

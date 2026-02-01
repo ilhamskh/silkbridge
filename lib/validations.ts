@@ -238,6 +238,27 @@ export const storyBlockSchema = z.object({
     paragraphs: z.array(z.string()).min(1),
 });
 
+// Storyline Block (Narrative Timeline)
+export const storylineBeatSchema = z.object({
+    id: z.string(),
+    kicker: z.string().optional(),
+    title: z.string().min(1),
+    description: z.string().min(1),
+    year: z.string().optional(),
+});
+
+export const storylineBlockSchema = z.object({
+    type: z.literal('storyline'),
+    eyebrow: z.string().optional(),
+    title: z.string().min(1),
+    text: z.string().optional(),
+    beats: z.array(storylineBeatSchema).min(1),
+    cta: z.object({
+        text: z.string().min(1),
+        href: z.string().min(1),
+    }).optional(),
+});
+
 // Intro block (generic page intro)
 export const introBlockSchema = z.object({
     type: z.literal('intro'),
@@ -371,6 +392,7 @@ export const contentBlockSchema = z.discriminatedUnion('type', [
     serviceDetailsBlockSchema,
     processBlockSchema,
     storyBlockSchema,
+    storylineBlockSchema,
     introBlockSchema,
     statsRowBlockSchema,
     // New expanded blocks

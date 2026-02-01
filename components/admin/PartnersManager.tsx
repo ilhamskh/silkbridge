@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, GripVertical, Pencil, Trash2, ExternalLink, MoreVertical, ChevronUp, ChevronDown, Image as ImageIcon } from 'lucide-react';
+import { Plus, Pencil, Trash2, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
 import { AdminInput } from './ui/AdminInput';
 import { AdminTextarea } from './ui/AdminTextarea';
 import { ImageUploader } from './ui/ImageUploader';

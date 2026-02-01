@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminIcon } from './ui/AdminIcon';
 
 // Simple EditorBlock type for the visual editor
@@ -377,7 +377,7 @@ function PreviewBlock({ block }: { block: EditorBlock }) {
     }
 }
 
-export default function LivePreview({ pageSlug, locale, title, blocks, device }: LivePreviewProps) {
+export default function LivePreview({ pageSlug, locale, blocks, device }: LivePreviewProps) {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {

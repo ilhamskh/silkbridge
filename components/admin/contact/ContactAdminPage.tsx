@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/admin/ui/Tabs';
-import { Inbox, Users, GitBranch, Settings } from 'lucide-react';
+import { Inbox, Users, GitBranch } from 'lucide-react';
 import ContactRecipients from './ContactRecipients';
 import ContactRouting from './ContactRouting';
 import ContactSubmissions from './ContactSubmissions';

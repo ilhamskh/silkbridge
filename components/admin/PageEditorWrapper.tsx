@@ -45,10 +45,7 @@ interface PageEditorWrapperProps {
         isDefault: boolean;
     }>;
     currentLocale: string;
-    allTranslations: Array<{
-        localeCode: string;
-        status: 'DRAFT' | 'PUBLISHED';
-    }>;
+
 }
 
 export default function PageEditorWrapper({
@@ -56,7 +53,7 @@ export default function PageEditorWrapper({
     translation,
     locales,
     currentLocale,
-    allTranslations,
+
 }: PageEditorWrapperProps) {
     const router = useRouter();
     const toast = useToast();
@@ -414,7 +411,7 @@ export default function PageEditorWrapper({
                                 })}
                                 onBlocksChange={(newBlocks) => {
                                     const editorBlocks = newBlocks.map((b: any, i: number) => {
-                                        const { type, ...data } = b;
+                                        const { type } = b;
                                         return {
                                             id: `block-${i}`,
                                             type,
@@ -517,7 +514,7 @@ export default function PageEditorWrapper({
                 onClose={() => setShowHistoryDrawer(false)}
                 pageId={page.id}
                 localeCode={currentLocale}
-                onRestore={(version: { id: string }) => {
+                onRestore={(_) => {
                     // In a full implementation, this would restore from version history
                     toast.info('Version history restoration coming soon');
                     setShowHistoryDrawer(false);

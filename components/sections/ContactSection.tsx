@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { siteConfig } from '@/content/site-config';
+import { useTranslations } from 'next-intl';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
@@ -52,15 +53,17 @@ export default function ContactSection({ eyebrow, headline, description }: Conta
         }
     };
 
+    const t = useTranslations('contactPage.form');
+
     const inquiryTypes = [
-        { value: 'flights', label: 'Flight Bookings' },
-        { value: 'hotels', label: 'Hotel Reservations' },
-        { value: 'packages', label: 'Travel Packages' },
-        { value: 'transfers', label: 'Transfers & Car Rental' },
-        { value: 'guides', label: 'Professional Guides' },
-        { value: 'visa', label: 'Visa Support' },
-        { value: 'partnership', label: 'Partnership Inquiry' },
-        { value: 'general', label: 'General Inquiry' },
+        { value: 'flights', label: t('typeFlights') },
+        { value: 'hotels', label: t('typeHotels') },
+        { value: 'packages', label: t('typePackages') },
+        { value: 'transfers', label: t('typeTransfers') },
+        { value: 'guides', label: t('typeGuides') },
+        { value: 'visa', label: t('typeVisa') },
+        { value: 'partnership', label: t('typePartnership') },
+        { value: 'general', label: t('typeGeneral') },
     ];
 
     return (
@@ -97,17 +100,17 @@ export default function ContactSection({ eyebrow, headline, description }: Conta
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <Input
-                                    label="Name"
-                                    placeholder="Your name"
+                                    label={t('nameLabel')}
+                                    placeholder={t('namePlaceholder')}
                                     value={formState.name}
                                     onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                                     required
                                     disabled={status === 'loading'}
                                 />
                                 <Input
-                                    label="Email"
+                                    label={t('emailLabel')}
                                     type="email"
-                                    placeholder="your@email.com"
+                                    placeholder={t('emailPlaceholder')}
                                     value={formState.email}
                                     onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                                     required
@@ -116,8 +119,8 @@ export default function ContactSection({ eyebrow, headline, description }: Conta
                             </div>
 
                             <Select
-                                label="Inquiry Type"
-                                placeholder="Select a service"
+                                label={t('typeLabel')}
+                                placeholder={t('typePlaceholder')}
                                 options={inquiryTypes}
                                 value={formState.type}
                                 onChange={(e) => setFormState({ ...formState, type: e.target.value })}
@@ -126,8 +129,8 @@ export default function ContactSection({ eyebrow, headline, description }: Conta
                             />
 
                             <Textarea
-                                label="Message"
-                                placeholder="Tell us about your travel plans..."
+                                label={t('messageLabel')}
+                                placeholder={t('messagePlaceholder')}
                                 value={formState.message}
                                 onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                                 rows={5}
@@ -137,13 +140,13 @@ export default function ContactSection({ eyebrow, headline, description }: Conta
 
                             {status === 'success' && (
                                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm">
-                                    ✓ Message sent successfully! We'll get back to you soon.
+                                    ✓ {t('success.toast') || 'Message sent successfully!'}
                                 </div>
                             )}
 
                             {status === 'error' && (
                                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
-                                    ✗ Failed to send message. Please try again.
+                                    ✗ {t('error.title') || 'Failed to send message.'}
                                 </div>
                             )}
 
@@ -153,7 +156,7 @@ export default function ContactSection({ eyebrow, headline, description }: Conta
                                 className="w-full sm:w-auto"
                                 disabled={status === 'loading'}
                             >
-                                {status === 'loading' ? 'Sending...' : 'Send Message'}
+                                {status === 'loading' ? t('submitting') : t('submit')}
                                 <Icons.arrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         </form>

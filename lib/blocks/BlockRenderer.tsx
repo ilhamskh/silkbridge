@@ -11,6 +11,7 @@ import { InteractiveServices } from '@/components/sections/InteractiveServices';
 import { WhyUsSection } from '@/components/sections/WhyUsSection';
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
 import { FaqSection } from '@/components/sections/FaqSection';
+import { Storyline } from '@/components/sections/Storyline';
 import ContactSection from '@/components/sections/ContactSection';
 import { PartnerCard } from '@/components/partners/PartnerCard';
 import type {
@@ -23,6 +24,7 @@ import type {
     InsightsBlock,
     IntroBlock,
     StoryBlock,
+    StorylineBlock,
     MilestonesBlock,
     ValuesBlock,
     TeamBlock,
@@ -30,10 +32,6 @@ import type {
     ServiceDetailsBlock,
     ProcessBlock,
     StatsRowBlock,
-    WhyUsBlock,
-    HowItWorksBlock,
-    FaqBlock,
-    InteractiveServicesBlock,
     AreasBlock,
     PartnersEmptyBlock,
 } from '@/lib/blocks/schema';
@@ -91,7 +89,7 @@ function HeroBlockRenderer({ block }: { block: HeroBlock }) {
             >
                 <motion.h1
                     variants={fadeUp}
-                    className="font-heading text-5xl sm:text-7xl lg:text-8xl xl:text-9xl text-white font-bold leading-[1.1] tracking-tighter"
+                    className="font-heading text-6xl sm:text-8xl lg:text-9xl text-white font-bold leading-[1.0] tracking-tighter"
                 >
                     {taglineLines.map((line, i) => (
                         <span key={i} className="block">
@@ -479,6 +477,10 @@ function StoryBlockRenderer({ block }: { block: StoryBlock }) {
             </div>
         </section>
     );
+}
+
+function StorylineBlockRenderer({ block }: { block: StorylineBlock }) {
+    return <Storyline block={block} />;
 }
 
 function MilestonesBlockRenderer({ block }: { block: MilestonesBlock }) {
@@ -1032,6 +1034,8 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
                         return <IntroBlockRenderer key={key} block={block} />;
                     case 'story':
                         return <StoryBlockRenderer key={key} block={block} />;
+                    case 'storyline':
+                        return <StorylineBlockRenderer key={key} block={block} />;
                     case 'milestones':
                         return <MilestonesBlockRenderer key={key} block={block} />;
                     case 'values':

@@ -62,7 +62,7 @@ const inquiryTypeConfig: {
 export default function ContactRouting() {
     const [isPending, startTransition] = useTransition();
     const [recipients, setRecipients] = useState<Recipient[]>([]);
-    const [routingRules, setRoutingRules] = useState<RoutingRule[]>([]);
+
     const [selectedRecipients, setSelectedRecipients] = useState<Record<InquiryType, string>>({
         PHARMA: '',
         PATIENT: '',
@@ -84,7 +84,7 @@ export default function ContactRouting() {
         }
 
         if (rulesResult.success && rulesResult.data) {
-            setRoutingRules(rulesResult.data as RoutingRule[]);
+
 
             // Set initial selected recipients
             const initial: Record<InquiryType, string> = {
@@ -160,10 +160,10 @@ export default function ContactRouting() {
                         onClick={handleSaveAll}
                         disabled={isPending}
                         className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${saveStatus === 'saved'
-                                ? 'bg-emerald-600 text-white'
-                                : saveStatus === 'error'
-                                    ? 'bg-red-600 text-white'
-                                    : 'bg-primary-600 text-white hover:bg-primary-700'
+                            ? 'bg-emerald-600 text-white'
+                            : saveStatus === 'error'
+                                ? 'bg-red-600 text-white'
+                                : 'bg-primary-600 text-white hover:bg-primary-700'
                             }`}
                     >
                         {saveStatus === 'saving' ? (
@@ -278,15 +278,15 @@ export default function ContactRouting() {
                                                         )
                                                     }
                                                     className={`flex w-full items-center justify-between px-4 py-3 text-left transition-colors first:rounded-t-lg last:rounded-b-lg hover:bg-slate-50 ${selectedId === recipient.id
-                                                            ? 'bg-primary-50'
-                                                            : ''
+                                                        ? 'bg-primary-50'
+                                                        : ''
                                                         }`}
                                                 >
                                                     <div>
                                                         <p
                                                             className={`font-medium ${selectedId === recipient.id
-                                                                    ? 'text-primary-600'
-                                                                    : 'text-slate-900'
+                                                                ? 'text-primary-600'
+                                                                : 'text-slate-900'
                                                                 }`}
                                                         >
                                                             {recipient.label}

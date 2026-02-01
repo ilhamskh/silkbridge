@@ -61,7 +61,7 @@ export async function PUT(
 
 // DELETE a partner
 export async function DELETE(
-    request: NextRequest,
+    _: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {

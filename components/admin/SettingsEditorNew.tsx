@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { saveSiteSettings } from '@/lib/actions';
 import { useToast } from './ui/AdminToast';
 import { AdminCard, AdminCardHeader, AdminCardContent } from './ui/AdminCard';
@@ -9,7 +8,7 @@ import { AdminButton } from './ui/AdminButton';
 import { AdminIcon } from './ui/AdminIcon';
 import { AdminInput } from './ui/AdminInput';
 import { AdminTextarea } from './ui/AdminTextarea';
-import { AdminTabs, AdminTabContent } from './ui/AdminTabs';
+import { AdminTabs } from './ui/AdminTabs';
 import { AdminBadge } from './ui/AdminBadge';
 
 interface SettingsEditorNewProps {
@@ -50,7 +49,7 @@ interface SocialLinks {
 }
 
 export default function SettingsEditorNew({ settings, locales }: SettingsEditorNewProps) {
-    const router = useRouter();
+
     const toast = useToast();
     const [isSaving, setIsSaving] = useState(false);
     const [activeTab, setActiveTab] = useState('general');
@@ -313,8 +312,8 @@ export default function SettingsEditorNew({ settings, locales }: SettingsEditorN
                                             key={locale.code}
                                             onClick={() => setActiveLocale(locale.code)}
                                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${activeLocale === locale.code
-                                                    ? 'bg-primary-100 text-primary-700'
-                                                    : 'text-muted hover:text-ink hover:bg-surface'
+                                                ? 'bg-primary-100 text-primary-700'
+                                                : 'text-muted hover:text-ink hover:bg-surface'
                                                 }`}
                                         >
                                             {locale.flag && <span>{locale.flag}</span>}

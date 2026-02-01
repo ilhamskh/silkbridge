@@ -104,7 +104,7 @@ export default async function PageEditorPage({ params, searchParams }: PageProps
             translation={data.translation}
             locales={data.locales}
             currentLocale={data.currentLocale}
-            allTranslations={data.allTranslations}
+
         />
     );
 }

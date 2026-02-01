@@ -12,13 +12,13 @@ export function RichBlocksRenderer({ blocks }: RichBlocksRendererProps) {
     return (
         <div className="prose-silkbridge">
             {blocks.map((block, index) => (
-                <Block key={index} block={block} index={index} />
+                <Block key={index} block={block} />
             ))}
         </div>
     );
 }
 
-function Block({ block, index }: { block: ContentBlock; index: number }) {
+function Block({ block }: { block: ContentBlock }) {
     const variants = {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0 },

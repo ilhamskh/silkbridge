@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { AdminIcon } from './ui/AdminIcon';
 import { AdminButton } from './ui/AdminButton';
@@ -34,7 +34,7 @@ interface AdminHeaderProps {
 
 export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
     const pathname = usePathname();
-    const router = useRouter();
+
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');

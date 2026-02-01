@@ -196,23 +196,16 @@ const aboutBlocksEn: ContentBlock[] = [
         text: 'Silkbridge International specializes in a wide range of comprehensive tourism services in Azerbaijan. Our experience, talent, hospitality, flexibility, and expertise are harmoniously combined to meet your wishes and satisfy all your travel and leisure needs.',
     },
     {
-        type: 'story',
-        title: 'Our Story',
-        paragraphs: [
-            "Based in Baku, Silkbridge International was founded with a passion for showcasing the beauty and culture of Azerbaijan to travelers from around the world.",
-            "Our team of experienced tourism professionals recognized Azerbaijan's incredible potential as a destination bridging East and West, offering ancient history alongside modern luxury.",
-            "Today, we provide complete tourism solutions including air tickets, hotel reservations, guided tours, transfers, and visa support—ensuring every guest experiences the best of Azerbaijan.",
-        ],
-    },
-    {
-        type: 'milestones',
-        milestones: [
-            { year: '2010', event: 'Founded in Baku, Azerbaijan' },
-            { year: '2013', event: 'Expanded to MICE & corporate services' },
-            { year: '2016', event: 'Launched custom tour packages' },
-            { year: '2019', event: '50+ hotel partnerships established' },
-            { year: '2022', event: 'Introduced wellness tourism programs' },
-            { year: '2025', event: '10,000+ satisfied travelers' },
+        type: 'storyline',
+        title: 'Our Journey',
+        text: 'From local roots to global reach, discover how Silkbridge became Azerbaijan’s premier tourism partner.',
+        beats: [
+            { id: '1', year: '2010', kicker: 'ORIGINS', title: 'Founded in Baku', description: 'Silkbridge International was founded with a passion for showcasing the beauty and culture of Azerbaijan to travelers from around the world.' },
+            { id: '2', year: '2013', kicker: 'EXPANSION', title: 'MICE & Corporate', description: 'We expanded our services to include comprehensive MICE solutions, supporting international conferences and corporate events in Baku.' },
+            { id: '3', year: '2016', kicker: 'INNOVATION', title: 'Custom Packages', description: 'Launched our signature "Silk Road" custom itineraries, allowing guests to explore regions beyond Baku like Sheki and Gabala.' },
+            { id: '4', year: '2019', kicker: 'PARTNERSHIPS', title: 'Hotel Network', description: 'Established direct partnerships with over 50 premier hotels and resorts across Azerbaijan, ensuring best rates for our clients.' },
+            { id: '5', year: '2022', kicker: 'WELLNESS', title: 'Health Tourism', description: 'Introduced specialized wellness programs partnering with Naftalan and Chenot Palace resorts.' },
+            { id: '6', year: '2025', kicker: 'TODAY', title: 'Leading the Way', description: 'Today, we serve over 10,000 satisfied travelers annually, bridging East and West with modern luxury and ancient hospitality.' },
         ],
     },
     {
@@ -254,23 +247,16 @@ const aboutBlocksAz: ContentBlock[] = [
         text: 'Silkbridge International Azərbaycanda geniş çeşiddə hərtərəfli turizm xidmətlərində ixtisaslaşır. Təcrübəmiz, istedadımız, qonaqpərvərliyimiz, çevikliyimiz və ekspertizamız arzularınızı yerinə yetirmək və bütün səyahət və istirahət ehtiyaclarınızı ödəmək üçün harmonik şəkildə birləşir.',
     },
     {
-        type: 'story',
+        type: 'storyline',
         title: 'Hekayəmiz',
-        paragraphs: [
-            'Bakıda yerləşən Silkbridge International dünyanın hər yerindən gələn səyahətçilərə Azərbaycanın gözəlliklərini və mədəniyyətini nümayiş etdirmək ehtirasıyla təsis edilmişdir.',
-            'Təcrübəli turizm mütəxəssislərindən ibarət komandamız Azərbaycanın Şərq və Qərbi, qədim tarixi və müasir lüksü birləşdirən təyinat kimi inanılmaz potensialını dərk etdi.',
-            'Bu gün biz aviabiletlər, otel rezervasiyaları, bələdçili turlar, transferlər və viza dəstəyi daxil olmaqla tam turizm həlləri təqdim edirik—hər qonağın Azərbaycanın ən yaxşı tərəflərini yaşamasını təmin edirik.',
-        ],
-    },
-    {
-        type: 'milestones',
-        milestones: [
-            { year: '2010', event: 'Bakı, Azərbaycanda təsis edildi' },
-            { year: '2013', event: 'MICE və korporativ xidmətlərə genişləndi' },
-            { year: '2016', event: 'Fərdi tur paketləri başladıldı' },
-            { year: '2019', event: '50+ otel tərəfdaşlığı quruldu' },
-            { year: '2022', event: 'Wellness turizm proqramları təqdim edildi' },
-            { year: '2025', event: '10,000+ məmnun səyahətçi' },
+        text: 'Yerli köklərdən qlobal miqyaslı fəaliyyətə, Silkbridge-in necə Azərbaycanın aparıcı turizm tərəfdaşına çevrildiyini kəşf edin.',
+        beats: [
+            { id: '1', year: '2010', kicker: 'MƏNŞƏYİ', title: 'Bakıda Təsis Edildi', description: 'Silkbridge International, Azərbaycanın gözəlliklərini və mədəniyyətini dünyaya tanıtmaq ehtirası ilə təsis edilmişdir.' },
+            { id: '2', year: '2013', kicker: 'GENİŞLƏNMƏ', title: 'MICE və Korporativ', description: 'Xidmətlərimizi genişləndirərək Bakıda beynəlxalq konfranslar və korporativ tədbirləri dəstəkləyən MICE həllərini təqdim etməyə başladıq.' },
+            { id: '3', year: '2016', kicker: 'İNNOVASİYA', title: 'Fərdi Paketlər', description: 'Qonaqlara Bakıdan kənar, Şəki və Qəbələ kimi bölgələri kəşf etməyə imkan verən "İpək Yolu" fərdi marşrutlarımızı işə saldıq.' },
+            { id: '4', year: '2019', kicker: 'TƏRƏFDAŞLIQ', title: 'Otel Şəbəkəsi', description: 'Müştərilərimiz üçün ən yaxşı qiymətləri təmin etmək məqsədilə 50-dən çox premium otel və kurortla birbaşa tərəfdaşlıq qurduq.' },
+            { id: '5', year: '2022', kicker: 'SAĞLAMLIQ', title: 'Tibbi Turizm', description: 'Naftalan və Çenot Palace kurortları ilə əməkdaşlıq edərək ixtisaslaşmış wellness proqramlarını təqdim etdik.' },
+            { id: '6', year: '2025', kicker: 'BU GÜN', title: 'Liderlik', description: 'Bu gün Şərq və Qərbi müasir lüks və qədim qonaqpərvərliklə birləşdirərək hər il 10,000-dən çox məmnun səyahətçiyə xidmət edirik.' },
         ],
     },
     {
@@ -773,23 +759,16 @@ const aboutBlocksRu: ContentBlock[] = [
         text: 'Silkbridge International специализируется на широком спектре комплексных туристических услуг в Азербайджане. Наш опыт, талант, гостеприимство, гибкость и экспертиза гармонично сочетаются для удовлетворения ваших пожеланий и всех потребностей в путешествиях и отдыхе.',
     },
     {
-        type: 'story',
-        title: 'Наша история',
-        paragraphs: [
-            'Silkbridge International была основана в Баку с целью показать красоту и культуру Азербайджана путешественникам со всего мира.',
-            'Наша команда опытных профессионалов в сфере туризма осознала невероятный потенциал Азербайджана как направления, соединяющего Восток и Запад, древнюю историю и современную роскошь.',
-            'Сегодня мы предоставляем полный спектр туристических услуг, включая авиабилеты, бронирование отелей, экскурсии с гидом, трансферы и визовую поддержку — обеспечивая каждому гостю лучший опыт в Азербайджане.',
-        ],
-    },
-    {
-        type: 'milestones',
-        milestones: [
-            { year: '2010', event: 'Основание в Баку, Азербайджан' },
-            { year: '2013', event: 'Расширение на MICE и корпоративные услуги' },
-            { year: '2016', event: 'Запуск индивидуальных турпакетов' },
-            { year: '2019', event: '50+ партнёрств с отелями' },
-            { year: '2022', event: 'Представление велнес-туризма' },
-            { year: '2025', event: '10 000+ довольных путешественников' },
+        type: 'storyline',
+        title: 'Наш путь',
+        text: 'От локальных корней до глобального охвата — узнайте, как Silkbridge стал ведущим туристическим партнером Азербайджана.',
+        beats: [
+            { id: '1', year: '2010', kicker: 'НАЧАЛО', title: 'Основание в Баку', description: 'Silkbridge International была основана со страстью показать красоту и культуру Азербайджана путешественникам со всего мира.' },
+            { id: '2', year: '2013', kicker: 'РАСШИРЕНИЕ', title: 'MICE и Корпоративы', description: 'Мы расширили наши услуги, включив комплексные решения MICE, поддерживая международные конференции и корпоративные мероприятия в Баку.' },
+            { id: '3', year: '2016', kicker: 'ИННОВАЦИИ', title: 'Авторские пакеты', description: 'Запустили наши фирменные маршруты "Шелковый путь", позволяющие гостям исследовать регионы за пределами Баку, такие как Шеки и Габала.' },
+            { id: '4', year: '2019', kicker: 'ПАРТНЕРСТВА', title: 'Сеть отелей', description: 'Установили прямые партнерские отношения с более чем 50 премиальными отелями и курортами по всему Азербайджану.' },
+            { id: '5', year: '2022', kicker: 'ЗДОРОВЬЕ', title: 'Оздоровительный туризм', description: 'Представили специализированные велнес-программы в партнерстве с курортами Нафталан и Chenot Palace.' },
+            { id: '6', year: '2025', kicker: 'СЕГОДНЯ', title: 'Ведущий путь', description: 'Сегодня мы обслуживаем более 10 000 довольных путешественников ежегодно, объединяя Восток и Запад с современной роскошью.' },
         ],
     },
     {

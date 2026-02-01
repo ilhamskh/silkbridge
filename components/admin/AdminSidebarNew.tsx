@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import Logo from '@/components/ui/Logo';
+
 import { AdminIcon } from './ui/AdminIcon';
 
 type Role = 'ADMIN' | 'EDITOR';
@@ -41,6 +41,7 @@ const navigation: NavSection[] = [
         title: 'Content',
         items: [
             { name: 'Pages', href: '/admin/content', icon: 'pages' },
+            { name: 'Partners', href: '/admin/partners', icon: 'users' },
             { name: 'Contact Inbox', href: '/admin/contact', icon: 'inbox' },
             { name: 'Global Settings', href: '/admin/settings', icon: 'settings' },
         ],
