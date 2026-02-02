@@ -1,9 +1,10 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect, Suspense } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { siteConfig } from '@/content/site-config';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
@@ -16,15 +17,26 @@ interface ContactSectionProps {
     description?: string;
 }
 
-export default function ContactSection({ eyebrow, headline, description }: ContactSectionProps) {
+function ContactSectionContent({ eyebrow, headline, description }: ContactSectionProps) {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: true, margin: '-100px' });
+    const searchParams = useSearchParams();
+    const initialType = searchParams.get('type') || '';
+
     const [formState, setFormState] = useState({
         name: '',
         email: '',
-        type: '',
+        type: initialType,
         message: '',
     });
+
+    // Update type if URL changes
+    useEffect(() => {
+        const type = searchParams.get('type');
+        if (type) {
+            setFormState(prev => ({ ...prev, type }));
+        }
+    }, [searchParams]);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -56,14 +68,10 @@ export default function ContactSection({ eyebrow, headline, description }: Conta
     const t = useTranslations('contactPage.form');
 
     const inquiryTypes = [
-        { value: 'flights', label: t('typeFlights') },
-        { value: 'hotels', label: t('typeHotels') },
-        { value: 'packages', label: t('typePackages') },
-        { value: 'transfers', label: t('typeTransfers') },
-        { value: 'guides', label: t('typeGuides') },
-        { value: 'visa', label: t('typeVisa') },
-        { value: 'partnership', label: t('typePartnership') },
-        { value: 'general', label: t('typeGeneral') },
+        { value: 'patient', label: t('typePatient') },
+        { value: 'tour', label: t('typeTour') },
+        { value: 'business', label: t('typeBusiness') },
+        { value: 'other', label: t('typeOther') },
     ];
 
     return (
@@ -237,5 +245,13 @@ export default function ContactSection({ eyebrow, headline, description }: Conta
                 </div>
             </div>
         </section>
+    );
+}
+
+export default function ContactSection(props: ContactSectionProps) {
+    return (
+        <Suspense fallback={<div className="py-24 lg:py-32 bg-white"><div className="max-w-7xl mx-auto px-4"><div className="h-96 bg-gray-100 rounded-xl animate-pulse"></div></div></div>}>
+            <ContactSectionContent {...props} />
+        </Suspense>
     );
 }

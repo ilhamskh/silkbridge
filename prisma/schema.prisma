@@ -138,9 +138,9 @@ model SiteSettingsTranslation {
 // ============================================
 
 enum InquiryType {
-  PHARMA
-  PATIENT
-  WELLNESS
+  PATIENT  // Health / Medical tourism
+  TOUR     // Azerbaijan tours
+  BUSINESS // Pharma & B2B inquiries
 }
 
 enum SubmissionStatus {
@@ -209,6 +209,7 @@ model Partner {
   location    String?
   specialties String[]      @default([])
   websiteUrl  String?
+  category    String?       // "government" | "hospital" | "pharma" | "hotel" | "wellness"
   status      PartnerStatus @default(ACTIVE)
   order       Int           @default(0)
   createdAt   DateTime      @default(now())
@@ -276,4 +277,17 @@ model FaqItemTranslation {
 
   @@unique([faqItemId, localeCode])
   @@map("faq_item_translations")
+}
+
+// ============================================
+// Gallery System
+// ============================================
+
+model GalleryGroup {
+  id        String   @id @default(cuid())
+  key       String   @unique // "health-tourism" | "wellness" | "tours" | "vehicles" | "hotels"
+  images    Json     @default("[]") // [{url, alt, order}]
+  updatedAt DateTime @updatedAt
+
+  @@map("gallery_groups")
 }

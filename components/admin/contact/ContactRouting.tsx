@@ -37,23 +37,23 @@ const inquiryTypeConfig: {
     color: string;
 }[] = [
         {
-            type: 'PHARMA',
-            label: 'Pharmaceutical Services',
+            type: 'BUSINESS',
+            label: 'Pharmaceutical & B2B',
             description: 'Market entry, regulatory, distribution inquiries',
             icon: Briefcase,
             color: 'blue',
         },
         {
             type: 'PATIENT',
-            label: 'Patient / Health Tourism',
-            description: 'Medical treatments, hospital coordination',
+            label: 'Health & Wellness',
+            description: 'Medical treatments, spa resorts, patient care',
             icon: Heart,
             color: 'rose',
         },
         {
-            type: 'WELLNESS',
-            label: 'Wellness & Spa',
-            description: 'Spa resorts, wellness packages',
+            type: 'TOUR',
+            label: 'Tourism & Travel',
+            description: 'City tours, packages, transport, hotels',
             icon: Sparkles,
             color: 'emerald',
         },
@@ -64,9 +64,9 @@ export default function ContactRouting() {
     const [recipients, setRecipients] = useState<Recipient[]>([]);
 
     const [selectedRecipients, setSelectedRecipients] = useState<Record<InquiryType, string>>({
-        PHARMA: '',
+        BUSINESS: '',
         PATIENT: '',
-        WELLNESS: '',
+        TOUR: '',
     });
     const [openDropdown, setOpenDropdown] = useState<InquiryType | null>(null);
     const [hasChanges, setHasChanges] = useState(false);
@@ -88,9 +88,9 @@ export default function ContactRouting() {
 
             // Set initial selected recipients
             const initial: Record<InquiryType, string> = {
-                PHARMA: '',
+                BUSINESS: '',
                 PATIENT: '',
-                WELLNESS: '',
+                TOUR: '',
             };
             rulesResult.data.forEach((rule: RoutingRule) => {
                 initial[rule.type] = rule.recipientId;

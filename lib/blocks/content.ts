@@ -34,11 +34,30 @@ export interface PageContent {
     updatedAt: Date;
 }
 
-/**
- * Fetches published page content by slug and locale.
- * Falls back to default locale if translation doesn't exist.
- * Uses unstable_cache with tags for instant revalidation.
- */
+
+async function hydrateBlocks(blocks: ContentBlock[]): Promise<ContentBlock[]> {
+    if (!blocks) return [];
+
+    return Promise.all(blocks.map(async (block) => {
+        if (block.type === 'gallery' && block.groupKey) {
+            try {
+                const group = await prisma.galleryGroup.findUnique({
+                    where: { key: block.groupKey },
+                });
+                if (group && group.images) {
+                    return {
+                        ...block,
+                        images: group.images as any[]
+                    };
+                }
+            } catch (e) {
+                console.error(`Failed to hydrate gallery block ${block.groupKey}`, e);
+            }
+        }
+        return block;
+    }));
+}
+
 export async function getPageContent(
     slug: string,
     locale: string
@@ -94,7 +113,7 @@ export async function getPageContent(
             seoTitle: translation.seoTitle,
             seoDescription: translation.seoDescription,
             ogImage: translation.ogImage,
-            blocks: (translation.blocks as unknown as ContentBlock[]) || [],
+            blocks: await hydrateBlocks((translation.blocks as unknown as ContentBlock[]) || []),
             status: translation.status,
             updatedAt: translation.updatedAt,
         };
@@ -451,42 +470,38 @@ export async function getNavigationData(locale: string): Promise<NavigationData>
             { name: labels.home, href: `/${locale}` },
             { name: labels.about, href: `/${locale}/about` },
             { name: labels.services, href: `/${locale}/services` },
-            { name: labels.marketInsights, href: `/${locale}/market-insights` },
-            { name: labels.partners, href: `/${locale}/partners` },
             { name: labels.contact, href: `/${locale}/contact` },
         ],
         footer: [
             {
                 title: labels.servicesTitle,
                 links: [
-                    { name: labels.marketEntry, href: `/${locale}/services#market-entry` },
-                    { name: labels.regulatory, href: `/${locale}/services#regulatory` },
-                    { name: labels.healthTourism, href: `/${locale}/services#health-tourism` },
-                    { name: labels.wellness, href: `/${locale}/services#wellness` },
+                    { name: labels.marketEntry, href: `/${locale}/services/pharma-marketing` },
+                    { name: labels.regulatory, href: `/${locale}/services/pharma-marketing#regulatory` },
+                    { name: labels.healthTourism, href: `/${locale}/services/health-tourism` },
+                    { name: labels.wellness, href: `/${locale}/services/health-tourism#packages` },
                 ],
             },
             {
                 title: labels.companyTitle,
                 links: [
                     { name: labels.about, href: `/${locale}/about` },
-                    { name: labels.partners, href: `/${locale}/partners` },
-                    { name: labels.marketInsights, href: `/${locale}/market-insights` },
+                    { name: labels.partners, href: `/${locale}/about#partnerships` },
                     { name: labels.contact, href: `/${locale}/contact` },
                 ],
             },
             {
                 title: labels.resourcesTitle,
                 links: [
-                    { name: labels.industryReports, href: `/${locale}/market-insights` },
-                    { name: labels.partnerPortal, href: `/${locale}/partners` },
                     { name: labels.privacyPolicy, href: `/${locale}/privacy` },
                     { name: labels.termsOfService, href: `/${locale}/terms` },
                 ],
             },
         ],
         social: [
-            { name: 'LinkedIn', href: 'https://linkedin.com', icon: 'linkedin' },
-            { name: 'Twitter', href: 'https://twitter.com', icon: 'twitter' },
+            { name: 'LinkedIn', href: 'https://linkedin.com/company/silkbridge', icon: 'linkedin' },
+            { name: 'Twitter', href: 'https://twitter.com/silkbridge', icon: 'twitter' },
+            { name: 'Facebook', href: 'https://facebook.com/silkbridge', icon: 'facebook' },
         ],
     };
 }

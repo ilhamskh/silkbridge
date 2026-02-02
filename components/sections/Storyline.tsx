@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import { StorylineBlock } from '@/lib/blocks/schema';
 import { cn } from '@/lib/utils';
 

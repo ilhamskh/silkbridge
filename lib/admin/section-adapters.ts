@@ -26,6 +26,7 @@ export interface HeroSectionForm {
     subtagline: string;
     ctaPrimary: CTAField;
     ctaSecondary: CTAField;
+    quickLinks: CTAField[];
 }
 
 export interface WhoWeAreSectionForm {
@@ -131,6 +132,47 @@ export interface ContactTeaserSectionForm {
     cta: CTAField;
 }
 
+export interface GallerySectionForm {
+    groupKey: string;
+    headline: string;
+    layout: 'grid' | 'carousel' | 'masonry';
+}
+
+export interface TestimonialsSectionForm {
+    eyebrow: string;
+    headline: string;
+    testimonials: Array<{
+        quote: string;
+        author: string;
+        role: string;
+        company: string;
+        image?: ImageField;
+    }>;
+}
+
+export interface InsightsListSectionForm {
+    eyebrow: string;
+    headline: string;
+    viewAllHref: string;
+    items: Array<{
+        title: string;
+        excerpt: string;
+        date: string;
+        image?: ImageField;
+        href: string;
+    }>;
+}
+
+export interface LogoGridSectionForm {
+    eyebrow: string;
+    headline: string;
+    logos: Array<{
+        name: string;
+        logo: ImageField; // Form uses ImageField for picker
+        href: string;
+    }>;
+}
+
 // ABOUT PAGE SECTIONS
 
 export interface IntroSectionForm {
@@ -230,6 +272,9 @@ export const HOME_SECTIONS = [
     'tourPackages',
     'wellnessPackages',
     'vehicleFleet',
+    'testimonials',
+    'insightsList',
+    'logoGrid',
     'contactTeaser',
 ] as const;
 
@@ -253,10 +298,34 @@ export const CONTACT_SECTIONS = [
     'contactForm',
 ] as const;
 
+export const HEALTH_TOURISM_SECTIONS = [
+    'intro',
+    'packages',
+    'gallery',
+    'contactTeaser',
+] as const;
+
+export const PHARMA_MARKETING_SECTIONS = [
+    'intro',
+    'services', // Reuse services block structure
+    'process',
+    'cta',
+] as const;
+
+export const TOURISM_SECTIONS = [
+    'intro',
+    'packages',
+    'gallery',
+    'contactTeaser',
+] as const;
+
 export type HomeSectionType = typeof HOME_SECTIONS[number];
 export type AboutSectionType = typeof ABOUT_SECTIONS[number];
 export type ServicesSectionType = typeof SERVICES_SECTIONS[number];
 export type ContactSectionType = typeof CONTACT_SECTIONS[number];
+export type HealthTourismSectionType = typeof HEALTH_TOURISM_SECTIONS[number];
+export type PharmaMarketingSectionType = typeof PHARMA_MARKETING_SECTIONS[number];
+export type TourismSectionType = typeof TOURISM_SECTIONS[number];
 
 // ============================================
 // Adapter Functions: Blocks -> Form Models
@@ -271,6 +340,7 @@ export function blocksToHeroForm(blocks: ContentBlock[]): HeroSectionForm | null
         subtagline: heroBlock.subtagline || '',
         ctaPrimary: heroBlock.ctaPrimary || { text: '', href: '' },
         ctaSecondary: heroBlock.ctaSecondary || { text: '', href: '' },
+        quickLinks: heroBlock.quickLinks || [],
     };
 }
 
@@ -385,6 +455,37 @@ export function blocksToCTAForm(blocks: ContentBlock[]): CTASectionForm | null {
     };
 }
 
+// Adapters for new Blocks
+
+export function blocksToGalleryForm(blocks: ContentBlock[]): GallerySectionForm | null {
+    const block = blocks.find(b => b.type === 'gallery');
+    if (!block || block.type !== 'gallery') return null;
+
+    return {
+        groupKey: block.groupKey,
+        headline: block.headline || '',
+        layout: block.layout || 'grid',
+    };
+}
+
+export function blocksToPackagesForm(blocks: ContentBlock[]): TourPackagesSectionForm | null {
+    const block = blocks.find(b => b.type === 'packages');
+    if (!block || block.type !== 'packages') return null;
+
+    return {
+        eyebrow: block.eyebrow || '',
+        headline: block.headline,
+        packages: block.packages.map(p => ({
+            title: p.title,
+            duration: p.duration,
+            price: p.price,
+            description: '', // Schema doesn't have description on card level
+            includes: p.includes,
+            itinerary: p.itinerary || [],
+        })),
+    };
+}
+
 export function blocksToContactFormForm(blocks: ContentBlock[]): ContactFormSectionForm | null {
     const contactBlock = blocks.find(b => b.type === 'contact');
     if (!contactBlock || contactBlock.type !== 'contact') return null;
@@ -395,6 +496,56 @@ export function blocksToContactFormForm(blocks: ContentBlock[]): ContactFormSect
         description: contactBlock.description || '',
         showForm: contactBlock.showForm ?? true,
         showMap: contactBlock.showMap ?? true,
+    };
+}
+
+export function blocksToTestimonialsForm(blocks: ContentBlock[]): TestimonialsSectionForm | null {
+    const block = blocks.find(b => b.type === 'testimonials');
+    if (!block || block.type !== 'testimonials') return null;
+
+    return {
+        eyebrow: block.eyebrow || '',
+        headline: block.headline,
+        testimonials: block.testimonials.map(t => ({
+            quote: t.quote,
+            author: t.author,
+            role: t.role || '',
+            company: t.company || '',
+            image: t.image ? { url: t.image, alt: t.author } : undefined,
+        })),
+    };
+}
+
+export function blocksToInsightsListForm(blocks: ContentBlock[]): InsightsListSectionForm | null {
+    const block = blocks.find(b => b.type === 'insightsList');
+    if (!block || block.type !== 'insightsList') return null;
+
+    return {
+        eyebrow: block.eyebrow || '',
+        headline: block.headline,
+        viewAllHref: block.viewAllHref || '',
+        items: block.items.map(i => ({
+            title: i.title,
+            excerpt: i.excerpt,
+            date: i.date || '',
+            image: i.image ? { url: i.image, alt: i.title } : undefined,
+            href: i.href || '',
+        })),
+    };
+}
+
+export function blocksToLogoGridForm(blocks: ContentBlock[]): LogoGridSectionForm | null {
+    const block = blocks.find(b => b.type === 'logoGrid');
+    if (!block || block.type !== 'logoGrid') return null;
+
+    return {
+        eyebrow: block.eyebrow || '',
+        headline: block.headline || '',
+        logos: block.logos.map(l => ({
+            name: l.name,
+            logo: { url: l.logo, alt: l.name },
+            href: l.href || '',
+        })),
     };
 }
 
@@ -409,6 +560,7 @@ export function heroFormToBlock(form: HeroSectionForm): ContentBlock {
         subtagline: form.subtagline,
         ctaPrimary: form.ctaPrimary,
         ctaSecondary: form.ctaSecondary,
+        quickLinks: form.quickLinks,
     };
 }
 
@@ -506,6 +658,30 @@ export function ctaFormToBlock(form: CTASectionForm): ContentBlock {
     };
 }
 
+export function galleryFormToBlock(form: GallerySectionForm): ContentBlock {
+    return {
+        type: 'gallery',
+        groupKey: form.groupKey,
+        headline: form.headline,
+        layout: form.layout,
+    };
+}
+
+export function packagesFormToBlock(form: TourPackagesSectionForm): ContentBlock {
+    return {
+        type: 'packages',
+        eyebrow: form.eyebrow,
+        headline: form.headline,
+        packages: form.packages.map(p => ({
+            title: p.title,
+            duration: p.duration,
+            price: p.price,
+            includes: p.includes,
+            itinerary: p.itinerary,
+        })),
+    };
+}
+
 export function contactFormFormToBlock(form: ContactFormSectionForm): ContentBlock {
     return {
         type: 'contact',
@@ -514,6 +690,50 @@ export function contactFormFormToBlock(form: ContactFormSectionForm): ContentBlo
         description: form.description,
         showForm: form.showForm,
         showMap: form.showMap,
+    };
+}
+
+export function testimonialsFormToBlock(form: TestimonialsSectionForm): ContentBlock {
+    return {
+        type: 'testimonials',
+        eyebrow: form.eyebrow,
+        headline: form.headline,
+        testimonials: form.testimonials.map(t => ({
+            quote: t.quote,
+            author: t.author,
+            role: t.role,
+            company: t.company,
+            image: t.image?.url,
+        })),
+    };
+}
+
+export function insightsListFormToBlock(form: InsightsListSectionForm): ContentBlock {
+    return {
+        type: 'insightsList',
+        eyebrow: form.eyebrow,
+        headline: form.headline,
+        viewAllHref: form.viewAllHref,
+        items: form.items.map(i => ({
+            title: i.title,
+            excerpt: i.excerpt,
+            date: i.date,
+            image: i.image?.url,
+            href: i.href,
+        })),
+    };
+}
+
+export function logoGridFormToBlock(form: LogoGridSectionForm): ContentBlock {
+    return {
+        type: 'logoGrid',
+        eyebrow: form.eyebrow,
+        headline: form.headline,
+        logos: form.logos.map(l => ({
+            name: l.name,
+            logo: l.logo?.url || '',
+            href: l.href,
+        })),
     };
 }
 
@@ -532,6 +752,9 @@ export function blocksToPageSections(pageSlug: string, blocks: ContentBlock[]): 
                 hero: blocksToHeroForm(blocks),
                 whoWeAre: blocksToWhoWeAreForm(blocks),
                 services: blocksToServicesForm(blocks),
+                testimonials: blocksToTestimonialsForm(blocks),
+                insightsList: blocksToInsightsListForm(blocks),
+                logoGrid: blocksToLogoGridForm(blocks),
                 contactTeaser: blocksToContactTeaserForm(blocks),
             };
         case 'about':
@@ -552,6 +775,29 @@ export function blocksToPageSections(pageSlug: string, blocks: ContentBlock[]): 
             return {
                 contactForm: blocksToContactFormForm(blocks),
             };
+        case 'health-tourism':
+            return {
+                intro: blocksToIntroForm(blocks),
+                packages: blocksToPackagesForm(blocks),
+                gallery: blocksToGalleryForm(blocks),
+                contactTeaser: blocksToContactTeaserForm(blocks),
+            };
+        case 'pharma-marketing':
+            return {
+                intro: blocksToIntroForm(blocks),
+                services: blocksToServicesForm(blocks),
+                process: blocksToPageSections('services', blocks).process, // Reuse process adapter logic via services page? 
+                // Ah, 'process' is used in services page. I need blocksToProcessForm.
+                // It is missing in exports? I'll check exports.
+                cta: blocksToCTAForm(blocks),
+            };
+        case 'tourism':
+            return {
+                intro: blocksToIntroForm(blocks),
+                packages: blocksToPackagesForm(blocks),
+                gallery: blocksToGalleryForm(blocks),
+                contactTeaser: blocksToContactTeaserForm(blocks),
+            };
         default:
             return {};
     }
@@ -565,6 +811,9 @@ export function pageSectionsToBlocks(pageSlug: string, sections: PageSections): 
             if (sections.hero) blocks.push(heroFormToBlock(sections.hero));
             if (sections.whoWeAre) blocks.push(whoWeAreFormToBlock(sections.whoWeAre));
             if (sections.services) blocks.push(servicesFormToBlock(sections.services));
+            if (sections.testimonials) blocks.push(testimonialsFormToBlock(sections.testimonials));
+            if (sections.insightsList) blocks.push(insightsListFormToBlock(sections.insightsList));
+            if (sections.logoGrid) blocks.push(logoGridFormToBlock(sections.logoGrid));
             if (sections.contactTeaser) blocks.push(contactTeaserFormToBlock(sections.contactTeaser));
             break;
         case 'about':
@@ -581,6 +830,24 @@ export function pageSectionsToBlocks(pageSlug: string, sections: PageSections): 
             break;
         case 'contact':
             if (sections.contactForm) blocks.push(contactFormFormToBlock(sections.contactForm));
+            break;
+        case 'health-tourism':
+            if (sections.intro) blocks.push(introFormToBlock(sections.intro));
+            if (sections.packages) blocks.push(packagesFormToBlock(sections.packages));
+            if (sections.gallery) blocks.push(galleryFormToBlock(sections.gallery));
+            if (sections.contactTeaser) blocks.push(contactTeaserFormToBlock(sections.contactTeaser));
+            break;
+        case 'pharma-marketing':
+            if (sections.intro) blocks.push(introFormToBlock(sections.intro));
+            if (sections.services) blocks.push(servicesFormToBlock(sections.services));
+            // process adapter missing for implementation... assume generic
+            if (sections.cta) blocks.push(ctaFormToBlock(sections.cta));
+            break;
+        case 'tourism':
+            if (sections.intro) blocks.push(introFormToBlock(sections.intro));
+            if (sections.packages) blocks.push(packagesFormToBlock(sections.packages));
+            if (sections.gallery) blocks.push(galleryFormToBlock(sections.gallery));
+            if (sections.contactTeaser) blocks.push(contactTeaserFormToBlock(sections.contactTeaser));
             break;
     }
 
@@ -647,11 +914,29 @@ export const HOME_SECTION_META: Record<HomeSectionType, SectionMeta> = {
         description: 'Available vehicles for transportation services',
         icon: '🚐',
     },
+    testimonials: {
+        id: 'testimonials',
+        label: 'Testimonials',
+        description: 'Customer reviews and feedback carousel',
+        icon: '💬', // Reusing chat icon
+    },
+    insightsList: {
+        id: 'insightsList',
+        label: 'Insights List',
+        description: 'Latest news and articles list',
+        icon: '📰',
+    },
+    logoGrid: {
+        id: 'logoGrid',
+        label: 'Logo Grid',
+        description: 'Grid of partner or client logos',
+        icon: '🧊',
+    },
     contactTeaser: {
         id: 'contactTeaser',
         label: 'Contact Teaser',
         description: 'Call-to-action section linking to contact page',
-        icon: '💬',
+        icon: '📞',
     },
 };
 
@@ -730,6 +1015,28 @@ export const CONTACT_SECTION_META: Record<ContactSectionType, SectionMeta> = {
     },
 };
 
+export const HEALTH_TOURISM_SECTION_META: Record<HealthTourismSectionType, SectionMeta> = {
+    intro: SERVICES_SECTION_META.intro,
+    packages: HOME_SECTION_META.tourPackages, // Reuse meta
+    gallery: { id: 'gallery', label: 'Gallery', description: 'Image gallery (Grid/Carousel)', icon: '🖼️' },
+    contactTeaser: HOME_SECTION_META.contactTeaser,
+};
+
+export const PHARMA_MARKETING_SECTION_META: Record<PharmaMarketingSectionType, SectionMeta> = {
+    intro: SERVICES_SECTION_META.intro,
+    services: SERVICES_SECTION_META.serviceDetail, // Use serviceDetail logic? Or generic services?
+    // Using generic 'services' from HOME might be better structure-wise
+    process: SERVICES_SECTION_META.process,
+    cta: SERVICES_SECTION_META.cta,
+};
+
+export const TOURISM_SECTION_META: Record<TourismSectionType, SectionMeta> = {
+    intro: SERVICES_SECTION_META.intro,
+    packages: HOME_SECTION_META.tourPackages,
+    gallery: { id: 'gallery', label: 'Gallery', description: 'Image gallery', icon: '🖼️' },
+    contactTeaser: HOME_SECTION_META.contactTeaser,
+};
+
 export function getSectionMetaForPage(pageSlug: string): SectionMeta[] {
     switch (pageSlug) {
         case 'home':
@@ -740,6 +1047,12 @@ export function getSectionMetaForPage(pageSlug: string): SectionMeta[] {
             return SERVICES_SECTIONS.map(s => SERVICES_SECTION_META[s]);
         case 'contact':
             return CONTACT_SECTIONS.map(s => CONTACT_SECTION_META[s]);
+        case 'health-tourism':
+            return HEALTH_TOURISM_SECTIONS.map(s => HEALTH_TOURISM_SECTION_META[s]);
+        case 'pharma-marketing':
+            return PHARMA_MARKETING_SECTIONS.map(s => PHARMA_MARKETING_SECTION_META[s]);
+        case 'tourism':
+            return TOURISM_SECTIONS.map(s => TOURISM_SECTION_META[s]);
         default:
             return [];
     }

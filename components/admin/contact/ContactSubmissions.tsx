@@ -28,21 +28,21 @@ import type { InquiryType, SubmissionStatus, ContactSubmission } from '@prisma/c
 
 // Type badge colors
 const typeBadgeColors: Record<InquiryType, string> = {
-    PHARMA: 'bg-primary-100 text-primary-700',
+    BUSINESS: 'bg-primary-100 text-primary-700',
     PATIENT: 'bg-rose-100 text-rose-700',
-    WELLNESS: 'bg-emerald-100 text-emerald-700',
+    TOUR: 'bg-emerald-100 text-emerald-700',
 };
 
 const typeIcons: Record<InquiryType, typeof Briefcase> = {
-    PHARMA: Briefcase,
+    BUSINESS: Briefcase,
     PATIENT: Heart,
-    WELLNESS: Sparkles,
+    TOUR: Sparkles,
 };
 
 const typeLabels: Record<InquiryType, string> = {
-    PHARMA: 'Pharmaceutical',
-    PATIENT: 'Patient / Health',
-    WELLNESS: 'Wellness & Spa',
+    BUSINESS: 'Pharmaceutical',
+    PATIENT: 'Health & Wellness',
+    TOUR: 'Tourism & Travel',
 };
 
 // Status badge colors
@@ -115,8 +115,8 @@ export default function ContactSubmissions() {
                 <div
                     onClick={() => setFilters({})}
                     className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${!filters.status
-                            ? 'border-primary-300 bg-primary-50'
-                            : 'border-slate-200 bg-white'
+                        ? 'border-primary-300 bg-primary-50'
+                        : 'border-slate-200 bg-white'
                         }`}
                 >
                     <div className="flex items-center gap-3">
@@ -135,8 +135,8 @@ export default function ContactSubmissions() {
                 <div
                     onClick={() => setFilters({ status: 'NEW' })}
                     className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${filters.status === 'NEW'
-                            ? 'border-primary-300 bg-primary-50'
-                            : 'border-slate-200 bg-white'
+                        ? 'border-primary-300 bg-primary-50'
+                        : 'border-slate-200 bg-white'
                         }`}
                 >
                     <div className="flex items-center gap-3">
@@ -155,8 +155,8 @@ export default function ContactSubmissions() {
                 <div
                     onClick={() => setFilters({ status: 'ARCHIVED' })}
                     className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${filters.status === 'ARCHIVED'
-                            ? 'border-primary-300 bg-primary-50'
-                            : 'border-slate-200 bg-white'
+                        ? 'border-primary-300 bg-primary-50'
+                        : 'border-slate-200 bg-white'
                         }`}
                 >
                     <div className="flex items-center gap-3">
@@ -175,8 +175,8 @@ export default function ContactSubmissions() {
                 <div
                     onClick={() => setFilters({ status: 'SPAM' })}
                     className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${filters.status === 'SPAM'
-                            ? 'border-primary-300 bg-primary-50'
-                            : 'border-slate-200 bg-white'
+                        ? 'border-primary-300 bg-primary-50'
+                        : 'border-slate-200 bg-white'
                         }`}
                 >
                     <div className="flex items-center gap-3">
@@ -202,21 +202,21 @@ export default function ContactSubmissions() {
                 <button
                     onClick={() => setFilters((f) => ({ ...f, type: undefined }))}
                     className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${!filters.type
-                            ? 'bg-slate-900 text-white'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        ? 'bg-slate-900 text-white'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                         }`}
                 >
                     All Types
                 </button>
-                {(['PHARMA', 'PATIENT', 'WELLNESS'] as InquiryType[]).map((type) => {
+                {(['BUSINESS', 'PATIENT', 'TOUR'] as InquiryType[]).map((type) => {
                     const Icon = typeIcons[type];
                     return (
                         <button
                             key={type}
                             onClick={() => setFilters((f) => ({ ...f, type }))}
                             className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${filters.type === type
-                                    ? 'bg-slate-900 text-white'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                ? 'bg-slate-900 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                 }`}
                         >
                             <Icon className="h-4 w-4" />

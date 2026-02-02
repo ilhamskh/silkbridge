@@ -17,6 +17,10 @@ export const heroBlockSchema = z.object({
         text: z.string().min(1),
         href: z.string().min(1),
     }).optional(),
+    quickLinks: z.array(z.object({
+        text: z.string().min(1),
+        href: z.string().min(1),
+    })).optional(),
 });
 
 // About Block
@@ -321,6 +325,109 @@ export const partnersEmptyBlockSchema = z.object({
     ctaHref: z.string().optional(),
 });
 
+// Gallery Block
+// Gallery Block
+export const galleryImageSchema = z.object({
+    url: z.string(),
+    alt: z.string(),
+    caption: z.string().optional(),
+});
+
+export const galleryBlockSchema = z.object({
+    type: z.literal('gallery'),
+    groupKey: z.string(),
+    headline: z.string().optional(),
+    layout: z.enum(['grid', 'carousel', 'masonry']).default('grid'),
+    images: z.array(galleryImageSchema).optional(),
+});
+
+// Packages Block (Tour/Wellness)
+export const packageCardSchema = z.object({
+    title: z.string(),
+    duration: z.string(),
+    price: z.string(),
+    includes: z.array(z.string()),
+    itinerary: z.array(z.string()).optional(),
+});
+
+export const packagesBlockSchema = z.object({
+    type: z.literal('packages'),
+    eyebrow: z.string().optional(),
+    headline: z.string(),
+    packages: z.array(packageCardSchema),
+});
+
+// Vehicle Fleet Block
+export const vehicleSchema = z.object({
+    name: z.string(),
+    capacity: z.string(),
+    dimensions: z.string().optional(),
+    image: z.string().optional(),
+});
+
+export const vehicleFleetBlockSchema = z.object({
+    type: z.literal('vehicleFleet'),
+    headline: z.string(),
+    vehicles: z.array(vehicleSchema),
+});
+
+// Form Selector Block
+export const formSelectorBlockSchema = z.object({
+    type: z.literal('formSelector'),
+    headline: z.string(),
+    description: z.string().optional(),
+    defaultType: z.enum(['patient', 'tour', 'business']).optional(),
+});
+
+// Testimonials Block
+export const testimonialSchema = z.object({
+    quote: z.string().min(1),
+    author: z.string().min(1),
+    role: z.string().optional(),
+    company: z.string().optional(),
+    image: z.string().optional(),
+});
+
+export const testimonialsBlockSchema = z.object({
+    type: z.literal('testimonials'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    testimonials: z.array(testimonialSchema).min(1),
+});
+
+// Insights List Block (Manual list for now)
+export const insightItemSchema = z.object({
+    title: z.string().min(1),
+    excerpt: z.string().min(1),
+    date: z.string().optional(),
+    image: z.string().optional(),
+    href: z.string().optional(),
+});
+
+export const insightsListBlockSchema = z.object({
+    type: z.literal('insightsList'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    items: z.array(insightItemSchema).min(1),
+    viewAllHref: z.string().optional(),
+});
+
+// Logo Grid Block (Simple partners display)
+export const logoItemSchema = z.object({
+    name: z.string().min(1),
+    logo: z.string().min(1),
+    href: z.string().optional(),
+});
+
+export const logoGridBlockSchema = z.object({
+    type: z.literal('logoGrid'),
+    eyebrow: z.string().optional(),
+    headline: z.string().optional(),
+    logos: z.array(logoItemSchema).min(1),
+});
+
+
+
 // Basic content blocks
 export const headingBlockSchema = z.object({
     type: z.literal('heading'),
@@ -372,6 +479,13 @@ export const contentBlockSchema = z.discriminatedUnion('type', [
     paragraphBlockSchema,
     imageBlockSchema,
     dividerBlockSchema,
+    galleryBlockSchema,
+    packagesBlockSchema,
+    vehicleFleetBlockSchema,
+    formSelectorBlockSchema,
+    testimonialsBlockSchema,
+    insightsListBlockSchema,
+    logoGridBlockSchema,
 ]);
 
 export const blocksArraySchema = z.array(contentBlockSchema);
@@ -403,6 +517,13 @@ export type HeadingBlock = z.infer<typeof headingBlockSchema>;
 export type ParagraphBlock = z.infer<typeof paragraphBlockSchema>;
 export type ImageBlock = z.infer<typeof imageBlockSchema>;
 export type DividerBlock = z.infer<typeof dividerBlockSchema>;
+export type GalleryBlock = z.infer<typeof galleryBlockSchema>;
+export type PackagesBlock = z.infer<typeof packagesBlockSchema>;
+export type VehicleFleetBlock = z.infer<typeof vehicleFleetBlockSchema>;
+export type FormSelectorBlock = z.infer<typeof formSelectorBlockSchema>;
+export type TestimonialsBlock = z.infer<typeof testimonialsBlockSchema>;
+export type InsightsListBlock = z.infer<typeof insightsListBlockSchema>;
+export type LogoGridBlock = z.infer<typeof logoGridBlockSchema>;
 
 export type ContentBlock = z.infer<typeof contentBlockSchema>;
 export type BlocksArray = z.infer<typeof blocksArraySchema>;

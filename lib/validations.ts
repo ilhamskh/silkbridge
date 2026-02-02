@@ -68,6 +68,10 @@ export const heroBlockSchema = z.object({
         text: z.string().min(1),
         href: z.string().min(1),
     }).optional(),
+    quickLinks: z.array(z.object({
+        text: z.string().min(1),
+        href: z.string().min(1),
+    })).optional(),
 });
 
 // About section blocks
@@ -281,6 +285,106 @@ export const statsRowBlockSchema = z.object({
 // NEW EXPANDED BLOCK SCHEMAS
 // ============================================
 
+// Testimonials Block
+export const testimonialSchema = z.object({
+    quote: z.string().min(1),
+    author: z.string().min(1),
+    role: z.string().optional(),
+    company: z.string().optional(),
+    image: z.string().optional(),
+});
+
+export const testimonialsBlockSchema = z.object({
+    type: z.literal('testimonials'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    testimonials: z.array(testimonialSchema).min(1),
+});
+
+// Insights List Block
+export const insightItemSchema = z.object({
+    title: z.string().min(1),
+    excerpt: z.string().min(1),
+    date: z.string().optional(),
+    image: z.string().optional(),
+    href: z.string().optional(),
+});
+
+export const insightsListBlockSchema = z.object({
+    type: z.literal('insightsList'),
+    eyebrow: z.string().optional(),
+    headline: z.string().min(1),
+    items: z.array(insightItemSchema).min(1),
+    viewAllHref: z.string().optional(),
+});
+
+// Logo Grid Block
+export const logoItemSchema = z.object({
+    name: z.string().min(1),
+    logo: z.string().min(1),
+    href: z.string().optional(),
+});
+
+export const logoGridBlockSchema = z.object({
+    type: z.literal('logoGrid'),
+    eyebrow: z.string().optional(),
+    headline: z.string().optional(),
+    logos: z.array(logoItemSchema).min(1),
+});
+
+// Gallery Block
+export const galleryImageSchema = z.object({
+    url: z.string(),
+    alt: z.string(),
+    caption: z.string().optional(),
+});
+
+export const galleryBlockSchema = z.object({
+    type: z.literal('gallery'),
+    groupKey: z.string(),
+    headline: z.string().optional(),
+    layout: z.enum(['grid', 'carousel', 'masonry']).default('grid'),
+    images: z.array(galleryImageSchema).optional(),
+});
+
+// Packages Block
+export const packageCardSchema = z.object({
+    title: z.string(),
+    duration: z.string(),
+    price: z.string(),
+    includes: z.array(z.string()),
+    itinerary: z.array(z.string()).optional(),
+});
+
+export const packagesBlockSchema = z.object({
+    type: z.literal('packages'),
+    eyebrow: z.string().optional(),
+    headline: z.string(),
+    packages: z.array(packageCardSchema),
+});
+
+// Vehicle Fleet
+export const vehicleSchema = z.object({
+    name: z.string(),
+    capacity: z.string(),
+    dimensions: z.string().optional(),
+    image: z.string().optional(),
+});
+
+export const vehicleFleetBlockSchema = z.object({
+    type: z.literal('vehicleFleet'),
+    headline: z.string(),
+    vehicles: z.array(vehicleSchema),
+});
+
+// Form Selector
+export const formSelectorBlockSchema = z.object({
+    type: z.literal('formSelector'),
+    headline: z.string(),
+    description: z.string().optional(),
+    defaultType: z.enum(['patient', 'tour', 'business']).optional(),
+});
+
 // Why Us block (value propositions)
 export const whyUsItemSchema = z.object({
     title: z.string().min(1),
@@ -402,6 +506,13 @@ export const contentBlockSchema = z.discriminatedUnion('type', [
     faqBlockSchema,
     interactiveServicesBlockSchema,
     partnersEmptyBlockSchema,
+    galleryBlockSchema,
+    packagesBlockSchema,
+    vehicleFleetBlockSchema,
+    formSelectorBlockSchema,
+    testimonialsBlockSchema,
+    insightsListBlockSchema,
+    logoGridBlockSchema,
 ]);
 
 export const blocksArraySchema = z.array(contentBlockSchema);

@@ -4,7 +4,7 @@ import { useState, useTransition, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { savePageTranslation } from '@/lib/actions';
 import type { ContentBlock } from '@/lib/validations';
-import BlocksEditor from './BlocksEditor';
+import BlocksEditorNew from './BlocksEditorNew';
 import BlockPreview from './BlockPreview';
 
 interface PageEditorProps {
@@ -259,7 +259,7 @@ export default function PageEditor({ page, translation, locales, currentLocale }
 
                             <div className="p-6">
                                 {activeTab === 'content' ? (
-                                    <BlocksEditor blocks={blocks} onChange={setBlocks} />
+                                    <BlocksEditorNew blocks={blocks} onChange={setBlocks} />
                                 ) : (
                                     <div className="space-y-6">
                                         <div>

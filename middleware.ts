@@ -18,6 +18,28 @@ export default function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    // Redirects for restructured pages
+    if (pathname.includes('/partners')) {
+        const url = request.nextUrl.clone();
+        url.pathname = pathname.replace('/partners', '/about');
+        // Hash isn't passed to server, but we can append it to the redirect URL string
+        // However, NextUrl object handles it? No, hash is client-side.
+        // We construct the string.
+        return NextResponse.redirect(new URL(`${url.pathname}#partnerships`, request.url));
+    }
+
+    if (pathname.includes('/market-insights')) {
+        const url = request.nextUrl.clone();
+        url.pathname = pathname.replace('/market-insights', '');
+        // Ensure trailing slash logic matches (if emptied, it becomes root / or /en)
+        if (url.pathname === '' || url.pathname === '/' || url.pathname.match(/^\/[a-z]{2}$/)) {
+            // fine
+        } else if (url.pathname.endsWith('/')) {
+            url.pathname = url.pathname.slice(0, -1);
+        }
+        return NextResponse.redirect(url);
+    }
+
     // Apply i18n middleware for all other routes
     return intlMiddleware(request);
 }

@@ -15,6 +15,7 @@ export function HeroSectionForm({ data, onChange }: HeroSectionFormProps) {
         subtagline: '',
         ctaPrimary: { text: '', href: '' },
         ctaSecondary: { text: '', href: '' },
+        quickLinks: [],
     };
 
     const handleChange = (field: keyof HeroData, value: any) => {
@@ -114,6 +115,66 @@ export function HeroSectionForm({ data, onChange }: HeroSectionFormProps) {
                             placeholder="/programs"
                         />
                     </div>
+                </div>
+            </div>
+
+            <div className="border-t pt-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-medium text-gray-900">Quick Links (Optional)</h4>
+                    <button
+                        type="button"
+                        onClick={() => handleChange('quickLinks', [...(formData.quickLinks || []), { text: '', href: '' }])}
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                        + Add Link
+                    </button>
+                </div>
+
+                <div className="space-y-4">
+                    {(formData.quickLinks || []).map((link, index) => (
+                        <div key={index} className="flex gap-4 items-start bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <div className="flex-1 space-y-3">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                                        Link Text
+                                    </label>
+                                    <AdminInput
+                                        value={link.text}
+                                        onChange={(e) => {
+                                            const newLinks = [...(formData.quickLinks || [])];
+                                            newLinks[index] = { ...newLinks[index], text: e.target.value };
+                                            handleChange('quickLinks', newLinks);
+                                        }}
+                                        placeholder="E.g. Visa Support"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                                        URL
+                                    </label>
+                                    <AdminInput
+                                        value={link.href}
+                                        onChange={(e) => {
+                                            const newLinks = [...(formData.quickLinks || [])];
+                                            newLinks[index] = { ...newLinks[index], href: e.target.value };
+                                            handleChange('quickLinks', newLinks);
+                                        }}
+                                        placeholder="/services#visa"
+                                    />
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const newLinks = (formData.quickLinks || []).filter((_, i) => i !== index);
+                                    handleChange('quickLinks', newLinks);
+                                }}
+                                className="text-red-600 hover:text-red-700 text-xs mt-8"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

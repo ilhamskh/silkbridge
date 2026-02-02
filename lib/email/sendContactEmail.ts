@@ -29,9 +29,9 @@ export interface EmailResult {
 // Format inquiry type for display
 function formatInquiryType(type: InquiryType): string {
     const labels: Record<InquiryType, string> = {
-        PHARMA: 'Pharmaceutical Services',
-        PATIENT: 'Patient / Health Tourism',
-        WELLNESS: 'Wellness & Spa',
+        BUSINESS: 'Pharmaceutical Services',
+        PATIENT: 'Health & Wellness',
+        TOUR: 'Tourism & Travel',
     };
     return labels[type] || type;
 }

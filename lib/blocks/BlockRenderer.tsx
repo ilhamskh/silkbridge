@@ -34,6 +34,14 @@ import type {
     StatsRowBlock,
     AreasBlock,
     PartnersEmptyBlock,
+    GalleryBlock,
+    PackagesBlock,
+    VehicleFleetBlock,
+    FormSelectorBlock,
+    TestimonialsBlock,
+    InsightsListBlock,
+    LogoGridBlock,
+    FaqBlock,
 } from '@/lib/blocks/schema';
 
 // ============================================
@@ -126,6 +134,24 @@ function HeroBlockRenderer({ block }: { block: HeroBlock }) {
                         </Link>
                     )}
                 </motion.div>
+
+                {block.quickLinks && block.quickLinks.length > 0 && (
+                    <motion.div
+                        variants={fadeUp}
+                        className="mt-16 pt-8 border-t border-white/20 flex flex-wrap justify-center gap-x-8 gap-y-4 max-w-4xl mx-auto"
+                    >
+                        {block.quickLinks.map((link, index) => (
+                            <Link
+                                key={index}
+                                href={link.href}
+                                className="text-sm font-medium text-white/70 hover:text-white transition-colors flex items-center gap-2 group"
+                            >
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 group-hover:bg-white transition-colors" />
+                                {link.text}
+                            </Link>
+                        ))}
+                    </motion.div>
+                )}
             </motion.div>
         </section>
     );
@@ -999,9 +1025,396 @@ function PartnersEmptyBlockRenderer({ block }: { block: PartnersEmptyBlock }) {
         </section>
     );
 }
+
+function GalleryBlockRenderer({ block }: { block: GalleryBlock }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+    if (!block.images || block.images.length === 0) return null;
+
+    return (
+        <section ref={ref} className="py-16 lg:py-24 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {block.headline && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-12"
+                    >
+                        <h2 className="font-heading text-3xl sm:text-4xl text-ink">{block.headline}</h2>
+                    </motion.div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {block.images.map((image, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer bg-gray-100"
+                        >
+                            <img
+                                src={image.url}
+                                alt={image.alt}
+                                className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                {image.caption && (
+                                    <div className="absolute bottom-4 left-4 right-4">
+                                        <p className="text-white font-medium">{image.caption}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function PackagesBlockRenderer({ block }: { block: PackagesBlock }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+    return (
+        <section ref={ref} id="packages" className="py-16 lg:py-24 bg-surface scroll-mt-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.6 }}
+                    className="text-center mb-16"
+                >
+                    {block.eyebrow && (
+                        <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-3">
+                            {block.eyebrow}
+                        </span>
+                    )}
+                    <h2 className="font-heading text-3xl sm:text-4xl text-ink">{block.headline}</h2>
+                </motion.div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {block.packages.map((pkg, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="bg-white rounded-2xl border border-border-light overflow-hidden hover:shadow-card hover:border-primary-200 transition-all duration-300 group"
+                        >
+                            <div className="p-8">
+                                <div className="flex justify-between items-start mb-4">
+                                    <h3 className="font-heading text-xl font-bold text-ink group-hover:text-primary-600 transition-colors">
+                                        {pkg.title}
+                                    </h3>
+                                    <span className="inline-block px-3 py-1 bg-primary-50 text-primary-700 text-xs font-semibold rounded-full">
+                                        {pkg.duration}
+                                    </span>
+                                </div>
+
+                                <div className="mb-6">
+                                    <span className="text-sm text-muted">from</span>
+                                    <div className="flex items-baseline">
+                                        <span className="text-3xl font-bold text-ink">{pkg.price}</span>
+                                        <span className="text-muted ml-1">/ person</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3 mb-8">
+                                    {pkg.includes.map((item, i) => (
+                                        <div key={i} className="flex items-start gap-3">
+                                            <div className="mt-1 w-4 h-4 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                                <Icons.check className="w-2.5 h-2.5 text-green-600" />
+                                            </div>
+                                            <span className="text-sm text-muted">{item}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Link href="/contact?type=tour" className="block">
+                                    <Button variant="secondary" className="w-full group-hover:bg-primary-600 group-hover:text-white transition-all">
+                                        Request Details
+                                    </Button>
+                                </Link>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function VehicleFleetBlockRenderer({ block }: { block: VehicleFleetBlock }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+    return (
+        <section ref={ref} className="py-16 lg:py-24 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.6 }}
+                    className="mb-12"
+                >
+                    <h2 className="font-heading text-3xl sm:text-4xl text-ink">{block.headline}</h2>
+                </motion.div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {block.vehicles.map((vehicle, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="group relative bg-surface rounded-xl overflow-hidden border border-border-light"
+                        >
+                            <div className="aspect-[3/2] bg-gray-100 relative">
+                                {vehicle.image ? (
+                                    <img
+                                        src={vehicle.image}
+                                        alt={vehicle.name}
+                                        className="object-cover w-full h-full"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-muted">
+                                        <Icons.services className="w-10 h-10 opacity-20" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="p-5">
+                                <h3 className="font-heading text-lg font-bold text-ink">{vehicle.name}</h3>
+                                <div className="mt-3 space-y-1 text-sm text-muted">
+                                    <div className="flex justify-between">
+                                        <span>Capacity:</span>
+                                        <span className="font-medium text-ink">{vehicle.capacity}</span>
+                                    </div>
+                                    {vehicle.dimensions && (
+                                        <div className="flex justify-between">
+                                            <span>Size:</span>
+                                            <span className="font-medium text-ink">{vehicle.dimensions}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function FormSelectorBlockRenderer({ block }: { block: FormSelectorBlock }) {
+    // This component renders buttons but functionality is handled by page via URL params
+    // or it could be interactive. For now, we'll assume it's just a visual helper if needed.
+    // Actually, the main use is Contact Page which has special logic.
+    // Maybe this block just renders a "Select your inquiry type" UI that links to param?
+
+    return (
+        <section className="py-12 bg-white">
+            <div className="max-w-4xl mx-auto px-4 text-center">
+                <h2 className="text-2xl font-bold mb-8">{block.headline}</h2>
+                <div className="flex flex-wrap justify-center gap-4">
+                    {['patient', 'tour', 'business'].map((type) => (
+                        <Link key={type} href={`?type=${type}`} scroll={false}>
+                            <Button variant="secondary" className="min-w-[140px] capitalize">
+                                {type === 'patient' ? 'Patient Inquiry' : type === 'tour' ? 'Tour Inquiry' : 'Business Inquiry'}
+                            </Button>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
 // ============================================
 // Main BlockRenderer Component
 // ============================================
+
+
+function TestimonialsBlockRenderer({ block }: { block: TestimonialsBlock }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: '-100px' });
+
+    return (
+        <section ref={ref} className="py-24 lg:py-32 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.6 }}
+                    className="text-center max-w-2xl mx-auto mb-16"
+                >
+                    {block.eyebrow && (
+                        <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-4">
+                            {block.eyebrow}
+                        </span>
+                    )}
+                    <h2 className="font-heading text-3xl sm:text-4xl text-ink">{block.headline}</h2>
+                </motion.div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {block.testimonials.map((testimonial: any, index: number) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col"
+                        >
+                            <div className="mb-6 flex-grow">
+                                <Icons.quote className="w-8 h-8 text-primary-200 mb-4" />
+                                <p className="text-gray-600 text-lg leading-relaxed italic">
+                                    "{testimonial.quote}"
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-4 mt-auto pt-6 border-t border-gray-100">
+                                {testimonial.image ? (
+                                    <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-gray-100">
+                                        <img src={testimonial.image} alt={testimonial.author} className="object-cover w-full h-full" />
+                                    </div>
+                                ) : (
+                                    <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">
+                                        {testimonial.author.charAt(0)}
+                                    </div>
+                                )}
+                                <div>
+                                    <h4 className="font-bold text-gray-900">{testimonial.author}</h4>
+                                    <p className="text-sm text-gray-500">{testimonial.role}{testimonial.company && `, ${testimonial.company}`}</p>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function InsightsListBlockRenderer({ block }: { block: InsightsListBlock }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: '-100px' });
+
+    return (
+        <section ref={ref} className="py-24 lg:py-32 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-end mb-12">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.6 }}
+                        className="max-w-2xl"
+                    >
+                        {block.eyebrow && (
+                            <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-4">
+                                {block.eyebrow}
+                            </span>
+                        )}
+                        <h2 className="font-heading text-3xl sm:text-4xl text-ink">{block.headline}</h2>
+                    </motion.div>
+                    {block.viewAllHref && (
+                        <Link href={block.viewAllHref} className="hidden md:flex items-center text-primary-600 hover:text-primary-700 font-medium transition-colors">
+                            View All Insights <Icons.arrowRight className="ml-2 w-4 h-4" />
+                        </Link>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {block.items.map((item: any, index: number) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="group cursor-pointer"
+                        >
+                            <Link href={item.href || '#'}>
+                                <div className="aspect-[4/3] rounded-2xl bg-gray-100 overflow-hidden mb-6">
+                                    {item.image ? (
+                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-200">
+                                            <Icons.image className="w-12 h-12" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="space-y-3">
+                                    {item.date && (
+                                        <span className="text-sm text-primary-600 font-medium">{item.date}</span>
+                                    )}
+                                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-gray-500 line-clamp-2">{item.excerpt}</p>
+                                </div>
+                            </Link>
+                        </motion.div>
+                    ))}
+                </div>
+
+                {block.viewAllHref && (
+                    <div className="mt-8 md:hidden text-center">
+                        <Link href={block.viewAllHref}>
+                            <Button variant="ghost">View All Insights</Button>
+                        </Link>
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+}
+
+function LogoGridBlockRenderer({ block }: { block: LogoGridBlock }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: '-100px' });
+
+    return (
+        <section ref={ref} className="py-16 bg-white border-y border-gray-100">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {(block.headline || block.eyebrow) && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-10"
+                    >
+                        {block.eyebrow && (
+                            <span className="block text-sm font-semibold text-primary-600 uppercase tracking-wider mb-2">{block.eyebrow}</span>
+                        )}
+                        {block.headline && (
+                            <h2 className="text-2xl font-bold text-gray-900">{block.headline}</h2>
+                        )}
+                    </motion.div>
+                )}
+
+                <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+                    {block.logos.map((logo: any, index: number) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0 }}
+                            animate={isInView ? { opacity: 1 } : {}}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="h-12 w-auto relative"
+                        >
+                            {/* Placeholder for actual logo rendering - using text if simple, or img tag */}
+                            {logo.logo.startsWith('http') || logo.logo.startsWith('/') ? (
+                                <img src={logo.logo} alt={logo.name} className="h-full w-auto object-contain" />
+                            ) : (
+                                <span className="text-xl font-bold text-gray-400">{logo.name}</span>
+                            )}
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
 
 interface BlockRendererProps {
     blocks: ContentBlock[];
@@ -1055,17 +1468,16 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
                     case 'howItWorks':
                         return <HowItWorksSection key={key} block={block} />;
                     case 'faq':
-                        // Transform FaqBlock to FaqSection props
                         return (
                             <FaqSection
                                 key={key}
-                                faqs={block.items?.map((item, idx) => ({
+                                faqs={(block as FaqBlock).items?.map((item: any, idx: number) => ({
                                     id: `faq-${idx}`,
                                     question: item.question,
                                     answer: item.answer,
                                 })) || []}
-                                title={block.headline}
-                                subtitle={block.description}
+                                title={(block as FaqBlock).headline}
+                                subtitle={(block as FaqBlock).description}
                             />
                         );
                     case 'interactiveServices':
@@ -1074,9 +1486,21 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
                         return <AreasBlockRenderer key={key} block={block} />;
                     case 'partnersEmpty':
                         return <PartnersEmptyBlockRenderer key={key} block={block} />;
+                    case 'gallery':
+                        return <GalleryBlockRenderer key={key} block={block} />;
+                    case 'packages':
+                        return <PackagesBlockRenderer key={key} block={block} />;
+                    case 'vehicleFleet':
+                        return <VehicleFleetBlockRenderer key={key} block={block} />;
+                    case 'formSelector':
+                        return <FormSelectorBlockRenderer key={key} block={block} />;
+                    case 'testimonials':
+                        return <TestimonialsBlockRenderer key={key} block={block} />;
+                    case 'insightsList':
+                        return <InsightsListBlockRenderer key={key} block={block} />;
+                    case 'logoGrid':
+                        return <LogoGridBlockRenderer key={key} block={block} />;
                     default:
-                        // Unknown block type - skip or render placeholder
-                        console.warn(`Unknown block type: ${(block as ContentBlock).type}`);
                         return null;
                 }
             })}
