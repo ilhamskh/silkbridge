@@ -4,6 +4,10 @@ import { getPageContent } from '@/lib/blocks/content';
 import BlockRenderer from '@/lib/blocks/BlockRenderer';
 import type { ContentBlock } from '@/lib/blocks/schema';
 
+// Force dynamic rendering to see admin changes immediately
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PageProps {
     params: Promise<{ locale: string }>;
 }

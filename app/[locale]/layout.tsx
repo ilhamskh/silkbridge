@@ -8,7 +8,9 @@ import { routing } from '@/i18n/routing';
 import { locales, type Locale } from '@/i18n/config';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
-import '../globals.css';
+import { MotionConfigProvider } from '@/components/ui/MotionConfigProvider';
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://silkbridge.az';
 
 const inter = Inter({
     subsets: ['latin', 'latin-ext', 'cyrillic'],
@@ -47,7 +49,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     };
 
     return {
-        metadataBase: new URL('https://silkbridge.com'),
+        metadataBase: new URL(BASE_URL),
         title: {
             default: titles[locale] || titles.en,
             template: `%s | Silkbridge International`,
@@ -91,12 +93,10 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
             follow: true,
         },
         alternates: {
-            canonical: `https://silkbridge.com/${locale}`,
-            languages: {
-                en: 'https://silkbridge.com/en',
-                az: 'https://silkbridge.com/az',
-                ru: 'https://silkbridge.com/ru',
-            },
+            canonical: `${BASE_URL}/${locale}`,
+            languages: Object.fromEntries(
+                locales.map((l) => [l, `${BASE_URL}/${l}`])
+            ),
         },
     };
 }
@@ -116,15 +116,37 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     const messages = await getMessages();
 
     return (
-        <html lang={locale} className={`${inter.variable} ${manrope.variable}`}>
-            <body className="font-sans antialiased">
-                <NextIntlClientProvider messages={messages}>
+        <div lang={locale} className={`${inter.variable} ${manrope.variable}`}>
+            <NextIntlClientProvider messages={messages}>
+                <MotionConfigProvider>
                     <Toaster position="top-right" richColors closeButton />
                     <Header />
-                    <main className="min-h-screen">{children}</main>
+                    <main className="min-h-screen font-sans antialiased">{children}</main>
                     <Footer />
-                </NextIntlClientProvider>
-            </body>
-        </html>
+                </MotionConfigProvider>
+            </NextIntlClientProvider>
+            {/* Organization JSON-LD */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'Organization',
+                        name: 'Silkbridge International',
+                        url: BASE_URL,
+                        logo: `${BASE_URL}/logo.png`,
+                        description: 'Health Tourism, Pharmaceutical Market Entry & Tourism Services in Azerbaijan.',
+                        contactPoint: {
+                            '@type': 'ContactPoint',
+                            contactType: 'customer service',
+                            availableLanguage: ['English', 'Azerbaijani', 'Russian'],
+                        },
+                        sameAs: [
+                            'https://linkedin.com/company/silkbridge',
+                        ],
+                    }),
+                }}
+            />
+        </div>
     );
 }

@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { revalidatePath } from 'next/cache';
+import { revalidateTag } from 'next/cache';
+import { requireAuth } from '@/lib/auth';
+import { z } from 'zod';
+import { getPartnersCacheTag, getAllPartnersCacheTag } from '@/lib/content';
+
+const partnerUpdateSchema = z.object({
+    name: z.string().min(1).optional(),
+    logoUrl: z.string().url().optional().nullable(),
+    websiteUrl: z.string().url().optional().nullable(),
+    category: z.enum(['GOVERNMENT', 'HOSPITAL', 'PHARMA', 'INVESTOR', 'ASSOCIATION']).optional(),
+    isActive: z.boolean().optional(),
+    order: z.number().int().optional(),
+    descriptions: z.record(z.string(), z.string()).optional(),
+});
+
+async function revalidatePartners() {
+    revalidateTag(getAllPartnersCacheTag());
+    const locales = await prisma.locale.findMany({ where: { isEnabled: true }, select: { code: true } });
+    for (const loc of locales) {
+        revalidateTag(getPartnersCacheTag(loc.code));
+    }
+}
 
 // UPDATE a partner
 export async function PUT(
@@ -8,21 +29,30 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        await requireAuth();
         const { id } = await params;
+
         const body = await request.json();
-        const { name, logoUrl, images, location, specialties, websiteUrl, status, descriptions } = body;
+        const parsed = partnerUpdateSchema.safeParse(body);
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.issues.map(e => e.message).join(', ') },
+                { status: 400 }
+            );
+        }
+
+        const { name, logoUrl, websiteUrl, category, isActive, order, descriptions } = parsed.data;
 
         // Update partner
         const partner = await prisma.partner.update({
             where: { id },
             data: {
-                name,
-                logoUrl,
-                images: images || [],
-                location,
-                specialties: specialties || [],
-                websiteUrl,
-                status,
+                ...(name !== undefined && { name }),
+                ...(logoUrl !== undefined && { logoUrl }),
+                ...(websiteUrl !== undefined && { websiteUrl }),
+                ...(category !== undefined && { category }),
+                ...(isActive !== undefined && { isActive }),
+                ...(order !== undefined && { order }),
             },
         });
 
@@ -48,10 +78,7 @@ export async function PUT(
             }
         }
 
-        // Revalidate public pages
-        revalidatePath('/[locale]', 'page');
-        revalidatePath('/[locale]/partners', 'page');
-
+        await revalidatePartners();
         return NextResponse.json(partner);
     } catch (error) {
         console.error('Failed to update partner:', error);
@@ -65,16 +92,14 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        await requireAuth();
         const { id } = await params;
 
         await prisma.partner.delete({
             where: { id },
         });
 
-        // Revalidate public pages
-        revalidatePath('/[locale]', 'page');
-        revalidatePath('/[locale]/partners', 'page');
-
+        await revalidatePartners();
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Failed to delete partner:', error);

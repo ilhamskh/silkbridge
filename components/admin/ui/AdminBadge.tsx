@@ -1,5 +1,3 @@
-'use client';
-
 type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'info' | 'draft' | 'published';
 type BadgeSize = 'sm' | 'md';
 

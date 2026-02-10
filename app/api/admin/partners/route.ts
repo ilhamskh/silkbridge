@@ -1,10 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { revalidatePath } from 'next/cache';
+import { revalidateTag } from 'next/cache';
+import { requireAuth } from '@/lib/auth';
+import { z } from 'zod';
+import { getPartnersCacheTag, getAllPartnersCacheTag } from '@/lib/content';
 
-// GET all partners
+const partnerCreateSchema = z.object({
+    name: z.string().min(1, 'Name is required'),
+    logoUrl: z.string().url().optional().nullable(),
+    websiteUrl: z.string().url().optional().nullable(),
+    category: z.enum(['GOVERNMENT', 'HOSPITAL', 'PHARMA', 'INVESTOR', 'ASSOCIATION']),
+    isActive: z.boolean().default(true),
+    descriptions: z.record(z.string(), z.string()).optional(), // { en: "...", az: "..." }
+});
+
+// GET all partners (admin — includes inactive)
 export async function GET() {
     try {
+        await requireAuth();
+
         const partners = await prisma.partner.findMany({
             orderBy: { order: 'asc' },
             include: {
@@ -21,8 +35,18 @@ export async function GET() {
 // CREATE a new partner
 export async function POST(request: NextRequest) {
     try {
+        await requireAuth();
+
         const body = await request.json();
-        const { name, logoUrl, images, location, specialties, websiteUrl, status, descriptions } = body;
+        const parsed = partnerCreateSchema.safeParse(body);
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.issues.map(e => e.message).join(', ') },
+                { status: 400 }
+            );
+        }
+
+        const { name, logoUrl, websiteUrl, category, isActive, descriptions } = parsed.data;
 
         // Get highest order value
         const lastPartner = await prisma.partner.findFirst({
@@ -34,12 +58,10 @@ export async function POST(request: NextRequest) {
         const partner = await prisma.partner.create({
             data: {
                 name,
-                logoUrl,
-                images: images || [],
-                location,
-                specialties: specialties || [],
-                websiteUrl,
-                status: status || 'ACTIVE',
+                logoUrl: logoUrl || null,
+                websiteUrl: websiteUrl || null,
+                category,
+                isActive,
                 order: newOrder,
                 translations: {
                     create: Object.entries(descriptions || {}).map(([localeCode, description]) => ({
@@ -53,9 +75,12 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        // Revalidate public pages
-        revalidatePath('/[locale]', 'page');
-        revalidatePath('/[locale]/partners', 'page');
+        // Revalidate partners cache for all locales
+        revalidateTag(getAllPartnersCacheTag());
+        const locales = await prisma.locale.findMany({ where: { isEnabled: true }, select: { code: true } });
+        for (const loc of locales) {
+            revalidateTag(getPartnersCacheTag(loc.code));
+        }
 
         return NextResponse.json(partner, { status: 201 });
     } catch (error) {

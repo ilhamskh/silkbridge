@@ -19,15 +19,6 @@ export default function middleware(request: NextRequest) {
     }
 
     // Redirects for restructured pages
-    if (pathname.includes('/partners')) {
-        const url = request.nextUrl.clone();
-        url.pathname = pathname.replace('/partners', '/about');
-        // Hash isn't passed to server, but we can append it to the redirect URL string
-        // However, NextUrl object handles it? No, hash is client-side.
-        // We construct the string.
-        return NextResponse.redirect(new URL(`${url.pathname}#partnerships`, request.url));
-    }
-
     if (pathname.includes('/market-insights')) {
         const url = request.nextUrl.clone();
         url.pathname = pathname.replace('/market-insights', '');

@@ -5,7 +5,6 @@ import { Inter, Sora } from 'next/font/google';
 import AdminSidebar from '@/components/admin/AdminSidebarNew';
 import AdminHeader from '@/components/admin/AdminHeaderNew';
 import { ToastProvider } from '@/components/admin/ui/AdminToast';
-import '@/app/globals.css';
 
 const inter = Inter({
     subsets: ['latin'],
@@ -26,7 +25,7 @@ export const metadata = {
     },
 };
 
-export default async function AdminLayout({
+export default async function AdminDashboardLayout({
     children,
 }: {
     children: React.ReactNode;

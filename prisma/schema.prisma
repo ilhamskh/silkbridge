@@ -138,8 +138,8 @@ model SiteSettingsTranslation {
 // ============================================
 
 enum InquiryType {
-  PATIENT  // Health / Medical tourism
-  TOUR     // Azerbaijan tours
+  PATIENT // Health / Medical tourism
+  TOUR // Azerbaijan tours
   BUSINESS // Pharma & B2B inquiries
 }
 
@@ -196,24 +196,24 @@ model ContactSubmission {
 // Partners
 // ============================================
 
-enum PartnerStatus {
-  ACTIVE
-  INACTIVE
+enum PartnerCategory {
+  GOVERNMENT
+  HOSPITAL
+  PHARMA
+  INVESTOR
+  ASSOCIATION
 }
 
 model Partner {
-  id          String        @id @default(cuid())
-  name        String
-  logoUrl     String?
-  images      String[]      @default([]) // Array of Vercel Blob URLs for gallery
-  location    String?
-  specialties String[]      @default([])
-  websiteUrl  String?
-  category    String?       // "government" | "hospital" | "pharma" | "hotel" | "wellness"
-  status      PartnerStatus @default(ACTIVE)
-  order       Int           @default(0)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id         String          @id @default(cuid())
+  name       String
+  logoUrl    String?
+  websiteUrl String?
+  category   PartnerCategory @default(ASSOCIATION)
+  isActive   Boolean         @default(true)
+  order      Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
 
   // Relations
   translations PartnerTranslation[]
@@ -226,6 +226,7 @@ model PartnerTranslation {
   partnerId   String
   localeCode  String
   description String?
+  notes       String? // Optional internal notes or specialties
 
   // Relations
   partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)

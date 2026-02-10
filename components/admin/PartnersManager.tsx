@@ -5,23 +5,39 @@ import { useRouter } from 'next/navigation';
 import { Plus, Pencil, Trash2, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
 import { AdminInput } from './ui/AdminInput';
 import { AdminTextarea } from './ui/AdminTextarea';
-import { ImageUploader } from './ui/ImageUploader';
 import Button from '@/components/ui/button';
+
+type PartnerCategory = 'GOVERNMENT' | 'HOSPITAL' | 'PHARMA' | 'INVESTOR' | 'ASSOCIATION';
+
+const CATEGORY_LABELS: Record<PartnerCategory, string> = {
+    GOVERNMENT: 'Government',
+    HOSPITAL: 'Hospital',
+    PHARMA: 'Pharma',
+    INVESTOR: 'Investor',
+    ASSOCIATION: 'Association',
+};
+
+const CATEGORY_COLORS: Record<PartnerCategory, string> = {
+    GOVERNMENT: 'bg-blue-100 text-blue-700',
+    HOSPITAL: 'bg-emerald-100 text-emerald-700',
+    PHARMA: 'bg-purple-100 text-purple-700',
+    INVESTOR: 'bg-amber-100 text-amber-700',
+    ASSOCIATION: 'bg-slate-100 text-slate-700',
+};
 
 interface Partner {
     id: string;
     name: string;
     logoUrl: string | null;
-    images: string[];
-    location: string | null;
-    specialties: string[];
     websiteUrl: string | null;
-    status: 'ACTIVE' | 'INACTIVE';
+    category: PartnerCategory;
+    isActive: boolean;
     order: number;
     translations: Array<{
         id: string;
         localeCode: string;
         description: string | null;
+        notes: string | null;
     }>;
 }
 
@@ -46,24 +62,22 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
     const [formData, setFormData] = useState({
         name: '',
         logoUrl: '',
-        images: [] as string[],
-        location: '',
-        specialties: '',
         websiteUrl: '',
-        status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE',
+        category: 'ASSOCIATION' as PartnerCategory,
+        isActive: true,
         descriptions: {} as Record<string, string>,
+        notes: {} as Record<string, string>,
     });
 
     const resetForm = () => {
         setFormData({
             name: '',
             logoUrl: '',
-            images: [],
-            location: '',
-            specialties: '',
             websiteUrl: '',
-            status: 'ACTIVE',
+            category: 'ASSOCIATION',
+            isActive: true,
             descriptions: {},
+            notes: {},
         });
     };
 
@@ -74,18 +88,20 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
     };
 
     const openEditModal = (partner: Partner) => {
+        const descriptions: Record<string, string> = {};
+        const notes: Record<string, string> = {};
+        partner.translations.forEach(t => {
+            descriptions[t.localeCode] = t.description || '';
+            notes[t.localeCode] = t.notes || '';
+        });
         setFormData({
             name: partner.name,
             logoUrl: partner.logoUrl || '',
-            images: partner.images || [],
-            location: partner.location || '',
-            specialties: partner.specialties.join(', '),
             websiteUrl: partner.websiteUrl || '',
-            status: partner.status,
-            descriptions: partner.translations.reduce((acc, t) => {
-                acc[t.localeCode] = t.description || '';
-                return acc;
-            }, {} as Record<string, string>),
+            category: partner.category,
+            isActive: partner.isActive,
+            descriptions,
+            notes,
         });
         setEditingPartner(partner);
         setIsCreating(true);
@@ -98,20 +114,14 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
     };
 
     const handleSave = async () => {
-        const specialtiesArray = formData.specialties
-            .split(',')
-            .map(s => s.trim())
-            .filter(Boolean);
-
         const payload = {
             name: formData.name,
-            logoUrl: formData.images[0] || formData.logoUrl || null,
-            images: formData.images,
-            location: formData.location || null,
-            specialties: specialtiesArray,
+            logoUrl: formData.logoUrl || null,
             websiteUrl: formData.websiteUrl || null,
-            status: formData.status,
+            category: formData.category,
+            isActive: formData.isActive,
             descriptions: formData.descriptions,
+            notes: formData.notes,
         };
 
         startTransition(async () => {
@@ -164,13 +174,11 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
         const newPartners = [...partners];
         [newPartners[currentIndex], newPartners[newIndex]] = [newPartners[newIndex], newPartners[currentIndex]];
 
-        // Update order values
-        const updates = newPartners.map((p, i) => ({ id: p.id, order: i }));
-
         setPartners(newPartners);
 
         startTransition(async () => {
             try {
+                const updates = newPartners.map((p, i) => ({ id: p.id, order: i }));
                 await fetch('/api/admin/partners/reorder', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -216,8 +224,7 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                             <tr>
                                 <th className="w-10 px-4 py-3"></th>
                                 <th className="text-left px-4 py-3 text-sm font-medium text-gray-700">Partner</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-700">Location</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-700">Specialties</th>
+                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-700">Category</th>
                                 <th className="text-left px-4 py-3 text-sm font-medium text-gray-700">Status</th>
                                 <th className="w-24 px-4 py-3"></th>
                             </tr>
@@ -273,32 +280,20 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-gray-600">
-                                        {partner.location || '—'}
-                                    </td>
                                     <td className="px-4 py-3">
-                                        <div className="flex flex-wrap gap-1">
-                                            {partner.specialties.slice(0, 3).map((s, i) => (
-                                                <span key={i} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded">
-                                                    {s}
-                                                </span>
-                                            ))}
-                                            {partner.specialties.length > 3 && (
-                                                <span className="text-xs text-gray-500">
-                                                    +{partner.specialties.length - 3}
-                                                </span>
-                                            )}
-                                        </div>
+                                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${CATEGORY_COLORS[partner.category]}`}>
+                                            {CATEGORY_LABELS[partner.category]}
+                                        </span>
                                     </td>
                                     <td className="px-4 py-3">
                                         <span className={`
                                             px-2 py-1 text-xs font-medium rounded-full
-                                            ${partner.status === 'ACTIVE'
+                                            ${partner.isActive
                                                 ? 'bg-green-100 text-green-700'
                                                 : 'bg-gray-100 text-gray-600'
                                             }
                                         `}>
-                                            {partner.status === 'ACTIVE' ? 'Active' : 'Inactive'}
+                                            {partner.isActive ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3">
@@ -341,50 +336,52 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                                     label="Partner Name"
                                     value={formData.name}
                                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                    placeholder="e.g., Grand Hotel Baku"
+                                    placeholder="e.g., Ministry of Health"
                                     required
                                 />
                                 <AdminInput
-                                    label="Location"
-                                    value={formData.location}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                                    placeholder="e.g., Baku, Azerbaijan"
+                                    label="Website URL"
+                                    value={formData.websiteUrl}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, websiteUrl: e.target.value }))}
+                                    placeholder="https://..."
                                 />
                             </div>
 
-                            {/* Image Upload */}
-                            <ImageUploader
-                                images={formData.images}
-                                onChange={(images) => setFormData(prev => ({ ...prev, images }))}
-                                maxImages={10}
-                            />
-
                             <AdminInput
-                                label="Website URL"
-                                value={formData.websiteUrl}
-                                onChange={(e) => setFormData(prev => ({ ...prev, websiteUrl: e.target.value }))}
-                                placeholder="https://..."
+                                label="Logo URL"
+                                value={formData.logoUrl}
+                                onChange={(e) => setFormData(prev => ({ ...prev, logoUrl: e.target.value }))}
+                                placeholder="https://... or /uploads/logo.png"
                             />
 
-                            <AdminInput
-                                label="Specialties (comma-separated)"
-                                value={formData.specialties}
-                                onChange={(e) => setFormData(prev => ({ ...prev, specialties: e.target.value }))}
-                                placeholder="e.g., Hotels, Luxury, Wellness"
-                            />
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Status
-                                </label>
-                                <select
-                                    value={formData.status}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as 'ACTIVE' | 'INACTIVE' }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                    <option value="ACTIVE">Active</option>
-                                    <option value="INACTIVE">Inactive</option>
-                                </select>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Category
+                                    </label>
+                                    <select
+                                        value={formData.category}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as PartnerCategory }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                        {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Status
+                                    </label>
+                                    <select
+                                        value={formData.isActive ? 'active' : 'inactive'}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'active' }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
                             </div>
 
                             {/* Localized Descriptions */}

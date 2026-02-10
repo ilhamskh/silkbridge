@@ -1,9 +1,8 @@
 'use client';
-/// 
-import { forwardRef, type ReactNode } from 'react';
-import { motion, type HTMLMotionProps } from 'framer-motion';
 
-interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
+import { forwardRef, type ReactNode, type ButtonHTMLAttributes } from 'react';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'ghost';
     size?: 'sm' | 'md' | 'lg';
     children?: ReactNode;
@@ -12,9 +11,11 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className = '', variant = 'primary', size = 'md', children, ...props }, ref) => {
         const baseStyles = `
-      inline-flex items-center justify-center font-medium transition-all duration-200
+      inline-flex items-center justify-center font-medium
+      transition-all duration-200 ease-out
       focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2
       disabled:opacity-50 disabled:pointer-events-none
+      hover:scale-[1.02] active:scale-[0.98]
     `;
 
         const variants = {
@@ -40,16 +41,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         };
 
         return (
-            <motion.button
+            <button
                 ref={ref}
                 className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.15 }}
                 {...props}
             >
                 {children}
-            </motion.button>
+            </button>
         );
     }
 );

@@ -70,6 +70,7 @@ export async function getPageContent(
         });
 
         if (!page) {
+            console.log(`[getPageContent] Page not found: ${slug}`);
             return null;
         }
 
@@ -82,6 +83,8 @@ export async function getPageContent(
                 },
             },
         });
+
+        console.log(`[getPageContent] ${slug}/${locale} - Translation status: ${translation?.status || 'NOT_FOUND'}, updatedAt: ${translation?.updatedAt}`);
 
         // If no translation or not published, try default locale
         if (!translation || translation.status !== 'PUBLISHED') {
@@ -98,13 +101,18 @@ export async function getPageContent(
                         },
                     },
                 });
+                console.log(`[getPageContent] Fallback to default locale ${defaultLocale.code} - status: ${translation?.status}`);
             }
         }
 
         // Still no published translation
         if (!translation || translation.status !== 'PUBLISHED') {
+            console.log(`[getPageContent] No published translation found for ${slug}/${locale}`);
             return null;
         }
+
+        const blocks = await hydrateBlocks((translation.blocks as unknown as ContentBlock[]) || []);
+        console.log(`[getPageContent] Returning ${blocks.length} blocks for ${slug}/${locale}`);
 
         return {
             id: page.id,
@@ -113,28 +121,16 @@ export async function getPageContent(
             seoTitle: translation.seoTitle,
             seoDescription: translation.seoDescription,
             ogImage: translation.ogImage,
-            blocks: await hydrateBlocks((translation.blocks as unknown as ContentBlock[]) || []),
+            blocks,
             status: translation.status,
             updatedAt: translation.updatedAt,
         };
     };
 
-    // In development, skip cache for easier debugging
-    if (process.env.NODE_ENV === 'development') {
-        return fetchFromDB();
-    }
-
-    // In production, use cache with tags
-    const fetchPage = unstable_cache(
-        fetchFromDB,
-        [`page-content-${slug}-${locale}`],
-        {
-            tags: [getPageCacheTag(slug, locale), getAllPagesCacheTag()],
-            revalidate: false, // Only revalidate via tags
-        }
-    );
-
-    return fetchPage();
+    // ALWAYS skip cache to ensure admin changes are visible immediately
+    // This is required because force-dynamic on the route doesn't prevent
+    // unstable_cache from caching the data layer
+    return fetchFromDB();
 }
 
 /**

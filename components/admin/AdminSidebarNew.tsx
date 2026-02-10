@@ -40,7 +40,7 @@ const navigation: NavSection[] = [
     {
         title: 'Content',
         items: [
-            { name: 'Pages', href: '/admin/content', icon: 'pages' },
+            { name: 'Pages', href: '/admin/pages', icon: 'pages' },
             { name: 'Partners', href: '/admin/partners', icon: 'users' },
             { name: 'Contact Inbox', href: '/admin/contact', icon: 'inbox' },
             { name: 'Global Settings', href: '/admin/settings', icon: 'settings' },

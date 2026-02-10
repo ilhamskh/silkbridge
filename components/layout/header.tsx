@@ -26,7 +26,7 @@ export default function Header() {
     const pathname = usePathname();
     const locale = useLocale() as Locale;
     const router = useRouter();
-    
+
     // Get navigation items from content layer (not messages)
     const navigation = getNavigationItems(locale);
     const labels = uiLabels[locale] || uiLabels.en;
@@ -76,7 +76,7 @@ export default function Header() {
                         </Link>
 
                         {/* Desktop Navigation */}
-                        <nav className="hidden lg:flex items-center gap-1">
+                        <nav className="hidden lg:flex items-center gap-1 font-sans">
                             {navigation.main.map((item) => {
                                 const isActive = pathname === `/${locale}${item.href}` ||
                                     (item.href === '/' && (pathname === `/${locale}` || pathname === `/${locale}/`));

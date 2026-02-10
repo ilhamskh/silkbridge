@@ -9,6 +9,10 @@ import { FaqSection } from '@/components/sections/FaqSection';
 import { getFaqsByGroup } from '@/lib/data/faqs';
 import type { ContentBlock } from '@/lib/blocks/schema';
 
+// Force dynamic rendering to see admin changes immediately
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 type Props = {
     params: Promise<{ locale: string }>;
 };

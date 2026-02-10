@@ -3,17 +3,38 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import * as React from 'react';
+import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { Link } from '@/i18n/routing';
 import { Icons } from '@/components/ui/Icons';
 import Button from '@/components/ui/button';
-import { HeroParallaxBlue } from '@/components/sections/HeroParallaxBlue';
-import { InteractiveServices } from '@/components/sections/InteractiveServices';
-import { WhyUsSection } from '@/components/sections/WhyUsSection';
-import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
-import { FaqSection } from '@/components/sections/FaqSection';
-import { Storyline } from '@/components/sections/Storyline';
-import ContactSection from '@/components/sections/ContactSection';
-import { PartnerCard } from '@/components/partners/PartnerCard';
+
+// Dynamic imports for heavy section components — only loaded when their block type is used
+const HeroParallaxBlue = dynamic(() =>
+    import('@/components/sections/HeroParallaxBlue').then(m => ({ default: m.HeroParallaxBlue }))
+);
+const InteractiveServices = dynamic(() =>
+    import('@/components/sections/InteractiveServices').then(m => ({ default: m.InteractiveServices }))
+);
+const WhyUsSection = dynamic(() =>
+    import('@/components/sections/WhyUsSection').then(m => ({ default: m.WhyUsSection }))
+);
+const HowItWorksSection = dynamic(() =>
+    import('@/components/sections/HowItWorksSection').then(m => ({ default: m.HowItWorksSection }))
+);
+const FaqSection = dynamic(() =>
+    import('@/components/sections/FaqSection').then(m => ({ default: m.FaqSection }))
+);
+const Storyline = dynamic(() =>
+    import('@/components/sections/Storyline').then(m => ({ default: m.Storyline }))
+);
+const ContactSection = dynamic(() =>
+    import('@/components/sections/ContactSection').then(m => ({ default: m.default }))
+);
+const PartnerCard = dynamic(() =>
+    import('@/components/partners/PartnerCard').then(m => ({ default: m.PartnerCard }))
+);
+
 import type {
     ContentBlock,
     HeroBlock,
@@ -1277,7 +1298,7 @@ function TestimonialsBlockRenderer({ block }: { block: TestimonialsBlock }) {
                             <div className="flex items-center gap-4 mt-auto pt-6 border-t border-gray-100">
                                 {testimonial.image ? (
                                     <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-gray-100">
-                                        <img src={testimonial.image} alt={testimonial.author} className="object-cover w-full h-full" />
+                                        <Image src={testimonial.image} alt={testimonial.author} fill sizes="48px" className="object-cover" />
                                     </div>
                                 ) : (
                                     <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">
@@ -1335,9 +1356,9 @@ function InsightsListBlockRenderer({ block }: { block: InsightsListBlock }) {
                             className="group cursor-pointer"
                         >
                             <Link href={item.href || '#'}>
-                                <div className="aspect-[4/3] rounded-2xl bg-gray-100 overflow-hidden mb-6">
+                                <div className="aspect-[4/3] rounded-2xl bg-gray-100 overflow-hidden mb-6 relative">
                                     {item.image ? (
-                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                        <Image src={item.image} alt={item.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-200">
                                             <Icons.image className="w-12 h-12" />
@@ -1375,38 +1396,71 @@ function LogoGridBlockRenderer({ block }: { block: LogoGridBlock }) {
     const isInView = useInView(ref, { once: true, margin: '-100px' });
 
     return (
-        <section ref={ref} className="py-16 bg-white border-y border-gray-100">
+        <section ref={ref} className="py-16 lg:py-20 bg-gradient-to-b from-white to-gray-50 border-y border-gray-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {(block.headline || block.eyebrow) && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={isInView ? { opacity: 1, y: 0 } : {}}
                         transition={{ duration: 0.6 }}
-                        className="text-center mb-10"
+                        className="text-center mb-12"
                     >
                         {block.eyebrow && (
-                            <span className="block text-sm font-semibold text-primary-600 uppercase tracking-wider mb-2">{block.eyebrow}</span>
+                            <span className="inline-block text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">{block.eyebrow}</span>
                         )}
                         {block.headline && (
-                            <h2 className="text-2xl font-bold text-gray-900">{block.headline}</h2>
+                            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-ink">{block.headline}</h2>
                         )}
                     </motion.div>
                 )}
 
-                <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 max-w-4xl mx-auto">
                     {block.logos.map((logo: any, index: number) => (
                         <motion.div
                             key={index}
-                            initial={{ opacity: 0 }}
-                            animate={isInView ? { opacity: 1 } : {}}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="h-12 w-auto relative"
+                            className="flex justify-center"
                         >
-                            {/* Placeholder for actual logo rendering - using text if simple, or img tag */}
-                            {logo.logo.startsWith('http') || logo.logo.startsWith('/') ? (
-                                <img src={logo.logo} alt={logo.name} className="h-full w-auto object-contain" />
+                            {logo.href ? (
+                                <a href={logo.href} className="group block">
+                                    <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                                        {logo.logo.startsWith('http') || logo.logo.startsWith('/') ? (
+                                            <Image 
+                                                src={logo.logo} 
+                                                alt={logo.name} 
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 768px) 128px, 160px"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                                <span className="text-2xl font-bold text-gray-400">{logo.name.slice(0, 2)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="mt-3 text-center text-sm font-medium text-muted group-hover:text-primary-600 transition-colors">{logo.name}</p>
+                                </a>
                             ) : (
-                                <span className="text-xl font-bold text-gray-400">{logo.name}</span>
+                                <div>
+                                    <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden shadow-md">
+                                        {logo.logo.startsWith('http') || logo.logo.startsWith('/') ? (
+                                            <Image 
+                                                src={logo.logo} 
+                                                alt={logo.name} 
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 768px) 128px, 160px"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                                <span className="text-2xl font-bold text-gray-400">{logo.name.slice(0, 2)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="mt-3 text-center text-sm font-medium text-muted">{logo.name}</p>
+                                </div>
                             )}
                         </motion.div>
                     ))}

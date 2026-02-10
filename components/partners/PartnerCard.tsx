@@ -95,6 +95,7 @@ export function PartnerCard({ partner, index }: PartnerCardProps) {
                                         src={images[currentImageIndex]}
                                         alt={`${partner.name} - Image ${currentImageIndex + 1}`}
                                         fill
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                 </motion.div>
@@ -304,6 +305,7 @@ export function PartnerCard({ partner, index }: PartnerCardProps) {
                                             src={img}
                                             alt={`Thumbnail ${i + 1}`}
                                             fill
+                                            sizes="80px"
                                             className="object-cover"
                                         />
                                     </button>

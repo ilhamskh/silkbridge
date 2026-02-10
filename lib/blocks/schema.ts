@@ -440,6 +440,29 @@ export const paragraphBlockSchema = z.object({
     text: z.string().min(1, 'Paragraph text is required'),
 });
 
+export const quoteBlockSchema = z.object({
+    type: z.literal('quote'),
+    text: z.string().min(1, 'Quote text is required'),
+    by: z.string().optional(),
+});
+
+export const bulletsBlockSchema = z.object({
+    type: z.literal('bullets'),
+    items: z.array(z.string().min(1)).min(1, 'At least one bullet item is required'),
+});
+
+export const calloutBlockSchema = z.object({
+    type: z.literal('callout'),
+    title: z.string().min(1, 'Callout title is required'),
+    text: z.string().min(1, 'Callout text is required'),
+    variant: z.enum(['info', 'success', 'warning', 'error']).optional(),
+});
+
+export const statsBlockSchema = z.object({
+    type: z.literal('stats'),
+    items: z.array(statsItemSchema).min(1, 'At least one stat item is required'),
+});
+
 export const imageBlockSchema = z.object({
     type: z.literal('image'),
     src: z.string().url('Must be a valid URL'),
@@ -477,6 +500,10 @@ export const contentBlockSchema = z.discriminatedUnion('type', [
     partnersEmptyBlockSchema,
     headingBlockSchema,
     paragraphBlockSchema,
+    quoteBlockSchema,
+    bulletsBlockSchema,
+    calloutBlockSchema,
+    statsBlockSchema,
     imageBlockSchema,
     dividerBlockSchema,
     galleryBlockSchema,
@@ -515,6 +542,10 @@ export type InteractiveServicesBlock = z.infer<typeof interactiveServicesBlockSc
 export type PartnersEmptyBlock = z.infer<typeof partnersEmptyBlockSchema>;
 export type HeadingBlock = z.infer<typeof headingBlockSchema>;
 export type ParagraphBlock = z.infer<typeof paragraphBlockSchema>;
+export type QuoteBlock = z.infer<typeof quoteBlockSchema>;
+export type BulletsBlock = z.infer<typeof bulletsBlockSchema>;
+export type CalloutBlock = z.infer<typeof calloutBlockSchema>;
+export type StatsBlock = z.infer<typeof statsBlockSchema>;
 export type ImageBlock = z.infer<typeof imageBlockSchema>;
 export type DividerBlock = z.infer<typeof dividerBlockSchema>;
 export type GalleryBlock = z.infer<typeof galleryBlockSchema>;

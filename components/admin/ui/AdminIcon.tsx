@@ -1,5 +1,3 @@
-'use client';
-
 // Comprehensive icon set for the admin panel
 // All icons use consistent 24x24 viewBox with stroke-based design
 

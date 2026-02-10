@@ -1,6 +1,10 @@
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { getPageContent } from '@/lib/blocks/content';
+
+// Force dynamic rendering to see admin changes immediately
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import BlockRenderer from '@/lib/blocks/BlockRenderer';
 import type { ContentBlock } from '@/lib/blocks/schema';
 

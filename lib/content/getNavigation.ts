@@ -118,7 +118,6 @@ export function getNavigationItems(locale: string): NavigationConfig {
             { href: '/about', label: labels.about },
             { href: '/services', label: labels.services },
             { href: '/partners', label: labels.partners },
-            { href: '/market-insights', label: labels.insights },
             { href: '/contact', label: labels.contact },
         ],
         footer: {
@@ -131,11 +130,9 @@ export function getNavigationItems(locale: string): NavigationConfig {
             company: [
                 { href: '/about', label: labels.aboutUs },
                 { href: '/partners', label: labels.ourPartners },
-                { href: '/market-insights', label: labels.marketInsights },
                 { href: '/contact', label: labels.contactUs },
             ],
             resources: [
-                { href: '/market-insights', label: labels.reports },
                 { href: '/partners', label: labels.portal },
                 { href: '/privacy', label: labels.privacy },
                 { href: '/terms', label: labels.terms },

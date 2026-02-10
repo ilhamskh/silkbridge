@@ -1,14 +1,10 @@
 import { notFound } from 'next/navigation';
-import { getPageBySlug, getEnabledLocales, getPageTranslation } from '@/lib/actions';
-import PageEditor from '@/components/admin/PageEditor';
+import { getPageConfig } from '@/lib/admin/page-config';
+import { getPageContentForAdmin } from '@/lib/blocks/content';
+import { getEnabledLocales } from '@/lib/actions';
+import PageEditorNew from '@/components/admin/PageEditorNew';
 
-interface Locale {
-    code: string;
-    name: string;
-    nativeName: string;
-    flag: string | null;
-    isDefault: boolean;
-}
+export const dynamic = 'force-dynamic';
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -19,60 +15,49 @@ export default async function EditPagePage({ params, searchParams }: Props) {
     const { slug } = await params;
     const { locale } = await searchParams;
 
-    const [page, locales] = await Promise.all([
-        getPageBySlug(slug),
-        getEnabledLocales() as Promise<Locale[]>,
-    ]);
-
-    if (!page) {
+    // Validate page exists in config (locked structure)
+    const pageConfig = getPageConfig(slug);
+    if (!pageConfig) {
         notFound();
     }
 
-    // Default to first locale if not specified
+    const locales = await getEnabledLocales();
     const currentLocale = locale || locales[0]?.code || 'en';
 
-    // Get the translation for the selected locale
-    let translation = await getPageTranslation(slug, currentLocale);
+    // Fetch content for admin (includes drafts, auto-creates missing translations)
+    const { page, translation, allTranslations } = await getPageContentForAdmin(slug, currentLocale);
 
-    // If translation doesn't exist, auto-create it from default locale
-    if (!translation) {
-        const defaultLocale = locales.find(l => l.isDefault) || locales[0];
-        const defaultTranslation = await getPageTranslation(slug, defaultLocale.code);
-
-        if (defaultTranslation) {
-            // Create a new translation by copying from default
-            const { prisma } = await import('@/lib/db');
-            translation = await prisma.pageTranslation.create({
-                data: {
-                    pageId: page.id,
-                    localeCode: currentLocale,
-                    title: defaultTranslation.title,
-                    seoTitle: defaultTranslation.seoTitle,
-                    seoDescription: defaultTranslation.seoDescription,
-                    ogImage: defaultTranslation.ogImage,
-                    blocks: defaultTranslation.blocks as object,
-                    status: 'DRAFT', // New translations start as draft
-                },
-                include: {
-                    page: true,
-                    locale: true,
-                },
-            });
-        }
+    if (!page || !translation) {
+        notFound();
     }
 
     return (
-        <div>
-            <PageEditor
-                page={{ id: page.id, slug: page.slug }}
-                translation={translation}
-                locales={locales.map((l: Locale) => ({
-                    code: l.code,
-                    name: l.name,
-                    flag: l.flag,
-                    isDefault: l.isDefault,
-                }))}
+        <div className="px-6 py-6">
+            {/* Key forces remount on locale change — resets all form state */}
+            <PageEditorNew
+                key={`${slug}:${currentLocale}`}
+                pageConfig={pageConfig}
+                pageId={page.id}
+                translation={{
+                    id: translation.id,
+                    title: translation.title,
+                    seoTitle: translation.seoTitle,
+                    seoDescription: translation.seoDescription,
+                    ogImage: translation.ogImage,
+                    blocks: translation.blocks,
+                    status: translation.status,
+                    updatedAt: translation.updatedAt,
+                    updatedBy: translation.updatedBy,
+                }}
+                locales={locales as Array<{
+                    code: string;
+                    name: string;
+                    nativeName: string;
+                    flag: string | null;
+                    isDefault: boolean;
+                }>}
                 currentLocale={currentLocale}
+                allTranslations={allTranslations}
             />
         </div>
     );

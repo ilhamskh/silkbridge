@@ -1,5 +1,3 @@
-'use client';
-
 interface AdminSkeletonProps {
     className?: string;
     variant?: 'text' | 'circular' | 'rectangular';

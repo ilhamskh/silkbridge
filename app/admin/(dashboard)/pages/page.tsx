@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import { getPages, getEnabledLocales } from '@/lib/actions';
+import { PAGE_CONFIGS } from '@/lib/admin/page-config';
+
+export const dynamic = 'force-dynamic';
 
 interface Locale {
     code: string;
@@ -30,13 +33,21 @@ export default async function PagesListPage() {
         getEnabledLocales() as Promise<Locale[]>,
     ]);
 
+    // Only show pages that exist in the config (locked structure)
+    const configuredPages = PAGE_CONFIGS
+        .map(config => {
+            const dbPage = pages.find(p => p.slug === config.slug);
+            return dbPage ? { ...dbPage, config } : null;
+        })
+        .filter(Boolean) as Array<Page & { config: (typeof PAGE_CONFIGS)[number] }>;
+
     return (
         <div className="space-y-6">
             {/* Header */}
             <div>
                 <h1 className="text-2xl font-semibold text-ink">Pages</h1>
                 <p className="text-muted mt-1">
-                    Manage your website pages and their translations
+                    Edit your website pages. Pages and sections are predefined — focus on content and translations.
                 </p>
             </div>
 
@@ -63,15 +74,15 @@ export default async function PagesListPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border-light">
-                            {pages.map((page) => (
+                            {configuredPages.map((page) => (
                                 <tr key={page.id} className="hover:bg-slate-50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div>
-                                            <p className="font-medium text-ink capitalize">
-                                                {page.slug}
+                                            <p className="font-medium text-ink">
+                                                {page.config.label}
                                             </p>
                                             <p className="text-sm text-muted">
-                                                /{page.slug === 'home' ? '' : page.slug}
+                                                {page.config.route}
                                             </p>
                                         </div>
                                     </td>
@@ -84,10 +95,10 @@ export default async function PagesListPage() {
                                                 <Link
                                                     href={`/admin/pages/${page.slug}?locale=${locale.code}`}
                                                     className={`inline-flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${translation?.status === 'PUBLISHED'
-                                                            ? 'bg-green-50 text-green-700 hover:bg-green-100'
-                                                            : translation
-                                                                ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
-                                                                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                                        ? 'bg-green-50 text-green-700 hover:bg-green-100'
+                                                        : translation
+                                                            ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                                                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                                                         }`}
                                                 >
                                                     {translation?.status === 'PUBLISHED'
