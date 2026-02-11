@@ -220,8 +220,9 @@ export async function updateSubmissionStatus(id: string, status: SubmissionStatu
 
 export async function getSubmissionStats() {
     try {
-        const [newCount, archivedCount, spamCount, total] = await Promise.all([
+        const [newCount, inProgressCount, archivedCount, spamCount, total] = await Promise.all([
             prisma.contactSubmission.count({ where: { status: 'NEW' } }),
+            prisma.contactSubmission.count({ where: { status: 'IN_PROGRESS' } }),
             prisma.contactSubmission.count({ where: { status: 'ARCHIVED' } }),
             prisma.contactSubmission.count({ where: { status: 'SPAM' } }),
             prisma.contactSubmission.count(),
@@ -231,6 +232,7 @@ export async function getSubmissionStats() {
             success: true,
             data: {
                 new: newCount,
+                inProgress: inProgressCount,
                 archived: archivedCount,
                 spam: spamCount,
                 total,

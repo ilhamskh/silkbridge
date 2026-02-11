@@ -86,20 +86,9 @@ export async function savePageTranslation(data: {
     blocks: unknown;
     status: 'DRAFT' | 'PUBLISHED';
 }) {
-    console.log('============================================');
-    console.log('[savePageTranslation] ACTION CALLED');
-    console.log('[savePageTranslation] pageId:', data.pageId);
-    console.log('[savePageTranslation] localeCode:', data.localeCode);
-    console.log('[savePageTranslation] status:', data.status);
-    console.log('[savePageTranslation] blocks type:', typeof data.blocks);
-    console.log('[savePageTranslation] blocks length:', Array.isArray(data.blocks) ? data.blocks.length : 'N/A');
-    console.log('============================================');
-
     const session = await requireAuth();
-    console.log('[savePageTranslation] Auth passed, user:', session.user.email);
 
     // Validate blocks
-    console.log('[savePageTranslation] Starting blocks validation...');
     const blocksResult = blocksArraySchema.safeParse(data.blocks);
     if (!blocksResult.success) {
         console.error('[savePageTranslation] Blocks validation FAILED:', blocksResult.error.issues);
@@ -108,7 +97,6 @@ export async function savePageTranslation(data: {
             error: 'Invalid blocks format: ' + blocksResult.error.issues.map((e) => e.message).join(', '),
         };
     }
-    console.log('[savePageTranslation] Blocks validation passed, validated blocks count:', blocksResult.data.length);
 
     // Merge _isHidden flags from raw data into validated blocks.
     // Zod strips unknown fields, but _isHidden is used by the admin
@@ -139,18 +127,9 @@ export async function savePageTranslation(data: {
             error: validationResult.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', '),
         };
     }
-    console.log('[savePageTranslation] Full validation passed');
-
     const page = await prisma.page.findUnique({ where: { id: data.pageId } });
     if (!page) {
         return { success: false, error: 'Page not found' };
-    }
-
-    console.log(`[savePageTranslation] Saving ${page.slug}/${data.localeCode} with status=${data.status}`);
-    console.log(`[savePageTranslation] Blocks count: ${validatedBlocks.length}`);
-    console.log(`[savePageTranslation] First block type: ${validatedBlocks[0]?.type}`);
-    if (validatedBlocks[0]?.type === 'hero') {
-        console.log(`[savePageTranslation] Hero tagline: ${(validatedBlocks[0] as any).tagline}`);
     }
 
     const translation = await prisma.pageTranslation.upsert({
@@ -182,12 +161,9 @@ export async function savePageTranslation(data: {
         },
     });
 
-    console.log(`[savePageTranslation] Successfully saved translation ID: ${translation.id}, status: ${translation.status}`);
-
     // Invalidate cache tags for instant updates on the public site
     revalidateTag(getPageCacheTag(page.slug, data.localeCode));
     revalidateTag('pages:all');
-    console.log(`[savePageTranslation] Revalidated cache tags`);
 
     // Revalidate admin pages
     revalidatePath('/admin/pages');
@@ -202,7 +178,6 @@ export async function savePageTranslation(data: {
     for (const loc of locales) {
         const localizedPath = publicRoute === '/' ? `/${loc.code}` : `/${loc.code}${publicRoute}`;
         revalidatePath(localizedPath);
-        console.log(`[savePageTranslation] Revalidated path: ${localizedPath}`);
     }
 
     return { success: true, translation };

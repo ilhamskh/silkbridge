@@ -13,12 +13,14 @@ import { MotionConfigProvider } from '@/components/ui/MotionConfigProvider';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://silkbridge.az';
 
 const inter = Inter({
+    weight: ['400', '500', '600', '700'],
     subsets: ['latin', 'latin-ext', 'cyrillic'],
     variable: '--font-inter',
     display: 'swap',
 });
 
 const manrope = Manrope({
+    weight: ['500', '600', '700', '800'],
     subsets: ['latin', 'latin-ext', 'cyrillic'],
     variable: '--font-manrope',
     display: 'swap',
@@ -122,7 +124,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
                     <Toaster position="top-right" richColors closeButton />
                     <Header />
                     <main className="min-h-screen font-sans antialiased">{children}</main>
-                    <Footer />
+                    <Footer locale={locale as Locale} />
                 </MotionConfigProvider>
             </NextIntlClientProvider>
             {/* Organization JSON-LD */}

@@ -4,9 +4,8 @@ import { getPageContent } from '@/lib/blocks/content';
 import BlockRenderer from '@/lib/blocks/BlockRenderer';
 import type { ContentBlock } from '@/lib/blocks/schema';
 
-// Force dynamic rendering to see admin changes immediately
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// ISR — revalidated on-demand via revalidateTag() in admin save actions
+export const revalidate = 60;
 
 interface PageProps {
     params: Promise<{ locale: string }>;

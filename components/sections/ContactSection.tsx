@@ -3,8 +3,8 @@
 import { useRef, useState, useEffect, Suspense } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { siteConfig } from '@/content/site-config';
-import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
+import { useSearchParams, usePathname } from 'next/navigation';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
@@ -21,14 +21,20 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: true, margin: '-100px' });
     const searchParams = useSearchParams();
+    const locale = useLocale();
+    const pathname = usePathname();
     const initialType = searchParams.get('type') || '';
 
     const [formState, setFormState] = useState({
         name: '',
         email: '',
+        phone: '',
         type: initialType,
         message: '',
+        website: '', // honeypot
     });
+
+    const [mountedAt] = useState(() => Date.now());
 
     // Update type if URL changes
     useEffect(() => {
@@ -38,10 +44,12 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
         }
     }, [searchParams]);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setStatus('loading');
+        setErrorMessage('');
 
         try {
             const response = await fetch('/api/contact', {
@@ -49,17 +57,34 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formState),
+                body: JSON.stringify({
+                    name: formState.name,
+                    email: formState.email,
+                    phone: formState.phone || undefined,
+                    type: formState.type.toUpperCase(),
+                    message: formState.message,
+                    website: formState.website, // honeypot
+                    _timestamp: mountedAt,
+                    locale,
+                    pagePath: pathname,
+                }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to send message');
+                const body = await response.json().catch(() => ({}));
+                // Surface field-level validation errors from the API
+                if (body.details) {
+                    const msgs = Object.values(body.details).flat().join('. ');
+                    throw new Error(msgs || body.error || 'Validation failed');
+                }
+                throw new Error(body.error || 'Failed to send message');
             }
 
             setStatus('success');
-            setFormState({ name: '', email: '', type: '', message: '' });
+            setFormState({ name: '', email: '', phone: '', type: '', message: '', website: '' });
             setTimeout(() => setStatus('idle'), 5000);
-        } catch (error) {
+        } catch (err) {
+            setErrorMessage(err instanceof Error ? err.message : 'Failed to send message.');
             setStatus('error');
             setTimeout(() => setStatus('idle'), 5000);
         }
@@ -67,11 +92,13 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
 
     const t = useTranslations('contactPage.form');
 
+    const tError = useTranslations('contactPage.form.error');
+    const tSuccess = useTranslations('contactPage.form.success');
+
     const inquiryTypes = [
         { value: 'patient', label: t('typePatient') },
         { value: 'tour', label: t('typeTour') },
         { value: 'business', label: t('typeBusiness') },
-        { value: 'other', label: t('typeOther') },
     ];
 
     return (
@@ -106,6 +133,18 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
                         transition={{ duration: 0.6, delay: 0.2 }}
                     >
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Honeypot - hidden from real users */}
+                            <div className="absolute opacity-0 pointer-events-none" aria-hidden="true" tabIndex={-1}>
+                                <input
+                                    type="text"
+                                    name="website"
+                                    value={formState.website}
+                                    onChange={(e) => setFormState({ ...formState, website: e.target.value })}
+                                    autoComplete="off"
+                                    tabIndex={-1}
+                                />
+                            </div>
+
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <Input
                                     label={t('nameLabel')}
@@ -126,15 +165,25 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
                                 />
                             </div>
 
-                            <Select
-                                label={t('typeLabel')}
-                                placeholder={t('typePlaceholder')}
-                                options={inquiryTypes}
-                                value={formState.type}
-                                onChange={(e) => setFormState({ ...formState, type: e.target.value })}
-                                required
-                                disabled={status === 'loading'}
-                            />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <Input
+                                    label={t('phoneLabel') || 'Phone'}
+                                    type="tel"
+                                    placeholder={t('phonePlaceholder') || '+994 XX XXX XX XX'}
+                                    value={formState.phone}
+                                    onChange={(e) => setFormState({ ...formState, phone: e.target.value })}
+                                    disabled={status === 'loading'}
+                                />
+                                <Select
+                                    label={t('typeLabel')}
+                                    placeholder={t('typePlaceholder')}
+                                    options={inquiryTypes}
+                                    value={formState.type}
+                                    onChange={(e) => setFormState({ ...formState, type: e.target.value })}
+                                    required
+                                    disabled={status === 'loading'}
+                                />
+                            </div>
 
                             <Textarea
                                 label={t('messageLabel')}
@@ -148,13 +197,13 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
 
                             {status === 'success' && (
                                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm">
-                                    ✓ {t('success.toast') || 'Message sent successfully!'}
+                                    ✓ {tSuccess('toast')}
                                 </div>
                             )}
 
                             {status === 'error' && (
                                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
-                                    ✗ {t('error.title') || 'Failed to send message.'}
+                                    ✗ {errorMessage || tError('title')}
                                 </div>
                             )}
 

@@ -70,7 +70,6 @@ export async function getPageContent(
         });
 
         if (!page) {
-            console.log(`[getPageContent] Page not found: ${slug}`);
             return null;
         }
 
@@ -83,8 +82,6 @@ export async function getPageContent(
                 },
             },
         });
-
-        console.log(`[getPageContent] ${slug}/${locale} - Translation status: ${translation?.status || 'NOT_FOUND'}, updatedAt: ${translation?.updatedAt}`);
 
         // If no translation or not published, try default locale
         if (!translation || translation.status !== 'PUBLISHED') {
@@ -101,18 +98,15 @@ export async function getPageContent(
                         },
                     },
                 });
-                console.log(`[getPageContent] Fallback to default locale ${defaultLocale.code} - status: ${translation?.status}`);
             }
         }
 
         // Still no published translation
         if (!translation || translation.status !== 'PUBLISHED') {
-            console.log(`[getPageContent] No published translation found for ${slug}/${locale}`);
             return null;
         }
 
         const blocks = await hydrateBlocks((translation.blocks as unknown as ContentBlock[]) || []);
-        console.log(`[getPageContent] Returning ${blocks.length} blocks for ${slug}/${locale}`);
 
         return {
             id: page.id,
@@ -127,10 +121,18 @@ export async function getPageContent(
         };
     };
 
-    // ALWAYS skip cache to ensure admin changes are visible immediately
-    // This is required because force-dynamic on the route doesn't prevent
-    // unstable_cache from caching the data layer
-    return fetchFromDB();
+    // Use ISR caching with tag-based revalidation.
+    // Admin saves call revalidateTag() in actions.ts to bust this instantly.
+    const cached = unstable_cache(
+        fetchFromDB,
+        [`page-content-${slug}-${locale}`],
+        {
+            tags: [getPageCacheTag(slug, locale), getAllPagesCacheTag()],
+            revalidate: 60, // Revalidate at most every 60 s as a safety net
+        }
+    );
+
+    return cached();
 }
 
 /**

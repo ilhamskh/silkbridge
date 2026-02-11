@@ -1,6 +1,3 @@
-'use client';
-
-import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { siteConfig } from '@/content/site-config';
 import { getNavigationItems, getFooterSectionLabels } from '@/lib/content/getNavigation';
@@ -22,8 +19,11 @@ const taglines: Record<string, string> = {
     ru: 'Связываем глобальные рынки здравоохранения с премиальными фармацевтическими услугами и медицинским туризмом мирового класса.',
 };
 
-export default function Footer() {
-    const locale = useLocale() as Locale;
+interface FooterProps {
+    locale: Locale;
+}
+
+export default function Footer({ locale }: FooterProps) {
     const currentYear = new Date().getFullYear();
 
     // Get navigation items from content layer

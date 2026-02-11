@@ -145,6 +145,7 @@ enum InquiryType {
 
 enum SubmissionStatus {
   NEW
+  IN_PROGRESS
   ARCHIVED
   SPAM
 }

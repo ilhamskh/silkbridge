@@ -30,7 +30,7 @@ const contactSchema = z.object({
         .max(30, 'Phone number too long')
         .optional()
         .transform((v) => v || null),
-    type: z.enum(['PHARMA', 'PATIENT', 'WELLNESS']),
+    type: z.enum(['PATIENT', 'TOUR', 'BUSINESS']),
     message: z
         .string()
         .min(10, 'Message must be at least 10 characters')

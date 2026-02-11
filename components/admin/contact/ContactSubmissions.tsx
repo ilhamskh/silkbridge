@@ -18,6 +18,7 @@ import {
     Sparkles,
     Filter,
     RefreshCw,
+    Clock,
 } from 'lucide-react';
 import {
     getSubmissions,
@@ -48,14 +49,22 @@ const typeLabels: Record<InquiryType, string> = {
 // Status badge colors
 const statusBadgeColors: Record<SubmissionStatus, string> = {
     NEW: 'bg-primary-100 text-primary-700',
+    IN_PROGRESS: 'bg-amber-100 text-amber-700',
     ARCHIVED: 'bg-slate-100 text-slate-600',
     SPAM: 'bg-red-100 text-red-700',
+};
+
+const statusLabels: Record<SubmissionStatus, string> = {
+    NEW: 'New',
+    IN_PROGRESS: 'In Progress',
+    ARCHIVED: 'Archived',
+    SPAM: 'Spam',
 };
 
 export default function ContactSubmissions() {
     const [isPending, startTransition] = useTransition();
     const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
-    const [stats, setStats] = useState({ new: 0, archived: 0, spam: 0, total: 0 });
+    const [stats, setStats] = useState({ new: 0, inProgress: 0, archived: 0, spam: 0, total: 0 });
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
     const [selectedSubmission, setSelectedSubmission] = useState<ContactSubmission | null>(null);
     const [filters, setFilters] = useState<{
@@ -111,7 +120,7 @@ export default function ContactSubmissions() {
     return (
         <div className="space-y-6">
             {/* Stats Cards */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                 <div
                     onClick={() => setFilters({})}
                     className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${!filters.status
@@ -148,6 +157,26 @@ export default function ContactSubmissions() {
                                 {stats.new}
                             </p>
                             <p className="text-sm text-slate-500">New</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    onClick={() => setFilters({ status: 'IN_PROGRESS' })}
+                    className={`cursor-pointer rounded-xl border p-4 transition-all hover:shadow-md ${filters.status === 'IN_PROGRESS'
+                        ? 'border-amber-300 bg-amber-50'
+                        : 'border-slate-200 bg-white'
+                        }`}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
+                            <Clock className="h-5 w-5 text-amber-600" />
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-slate-900">
+                                {stats.inProgress}
+                            </p>
+                            <p className="text-sm text-slate-500">In Progress</p>
                         </div>
                     </div>
                 </div>
@@ -303,11 +332,26 @@ export default function ContactSubmissions() {
                                                 <span
                                                     className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusBadgeColors[submission.status]}`}
                                                 >
-                                                    {submission.status}
+                                                    {statusLabels[submission.status]}
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
+                                                    {submission.status !== 'IN_PROGRESS' && submission.status !== 'ARCHIVED' && submission.status !== 'SPAM' && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleStatusChange(
+                                                                    submission.id,
+                                                                    'IN_PROGRESS'
+                                                                );
+                                                            }}
+                                                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-amber-100 hover:text-amber-600"
+                                                            title="Mark as in progress"
+                                                        >
+                                                            <Clock className="h-4 w-4" />
+                                                        </button>
+                                                    )}
                                                     {submission.status !== 'ARCHIVED' && (
                                                         <button
                                                             onClick={(e) => {
@@ -418,7 +462,7 @@ export default function ContactSubmissions() {
                                 <span
                                     className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusBadgeColors[selectedSubmission.status]}`}
                                 >
-                                    {selectedSubmission.status}
+                                    {statusLabels[selectedSubmission.status]}
                                 </span>
                                 <span
                                     className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${typeBadgeColors[selectedSubmission.type]}`}
@@ -489,7 +533,7 @@ export default function ContactSubmissions() {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex gap-3 border-t border-slate-200 pt-6">
+                            <div className="flex flex-wrap gap-3 border-t border-slate-200 pt-6">
                                 <a
                                     href={`mailto:${selectedSubmission.email}?subject=Re: Your inquiry to SILKBRIDGE`}
                                     className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-primary-700"
@@ -497,6 +541,18 @@ export default function ContactSubmissions() {
                                     <Mail className="h-4 w-4" />
                                     Reply via Email
                                 </a>
+
+                                {selectedSubmission.status === 'NEW' && (
+                                    <button
+                                        onClick={() =>
+                                            handleStatusChange(selectedSubmission.id, 'IN_PROGRESS')
+                                        }
+                                        className="flex items-center justify-center gap-2 rounded-lg border border-amber-300 px-4 py-2.5 font-medium text-amber-700 transition-colors hover:bg-amber-50"
+                                    >
+                                        <Clock className="h-4 w-4" />
+                                        In Progress
+                                    </button>
+                                )}
 
                                 {selectedSubmission.status !== 'ARCHIVED' && (
                                     <button

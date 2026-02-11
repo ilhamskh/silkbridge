@@ -3,9 +3,8 @@ import { notFound } from 'next/navigation';
 import { getPageContent } from '@/lib/blocks/content';
 import { getPartners } from '@/lib/content';
 
-// Force dynamic rendering to see admin changes immediately
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// ISR — revalidated on-demand via revalidateTag() in admin save actions
+export const revalidate = 60;
 import type { ContentBlock } from '@/lib/blocks/schema';
 import type { Metadata } from 'next';
 import { locales } from '@/i18n/config';
