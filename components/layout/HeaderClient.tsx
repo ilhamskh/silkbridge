@@ -19,8 +19,8 @@ interface HeaderClientProps {
     toggleMenuLabel: string;
 }
 
-export default function HeaderClient({ 
-    navItems, 
+export default function HeaderClient({
+    navItems,
     ctaLabel,
     selectLanguageLabel,
     toggleMenuLabel,

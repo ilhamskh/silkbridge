@@ -25,7 +25,7 @@ const taglines: Record<string, string> = {
 export default function Footer() {
     const locale = useLocale() as Locale;
     const currentYear = new Date().getFullYear();
-    
+
     // Get navigation items from content layer
     const navigation = getNavigationItems(locale);
     const sectionLabels = getFooterSectionLabels(locale);

@@ -27,7 +27,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  
+
   // Get navigation items from content layer
   const navigation = getNavigationItems(locale);
   const labels = mobileMenuLabels[locale] || mobileMenuLabels.en;

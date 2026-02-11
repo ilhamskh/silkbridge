@@ -34,7 +34,7 @@ function cleanMessages() {
 
     for (const fileName of MESSAGE_FILES) {
         const filePath = path.join(MESSAGES_DIR, fileName);
-        
+
         if (!fs.existsSync(filePath)) {
             console.log(`⚠️  ${fileName} not found, skipping`);
             continue;
@@ -42,7 +42,7 @@ function cleanMessages() {
 
         const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         const originalKeys = Object.keys(content);
-        
+
         let removed = [];
         for (const namespace of NAMESPACES_TO_REMOVE) {
             if (content[namespace]) {

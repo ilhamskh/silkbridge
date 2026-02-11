@@ -1427,9 +1427,9 @@ function LogoGridBlockRenderer({ block }: { block: LogoGridBlock }) {
                                 <a href={logo.href} className="group block">
                                     <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                                         {logo.logo.startsWith('http') || logo.logo.startsWith('/') ? (
-                                            <Image 
-                                                src={logo.logo} 
-                                                alt={logo.name} 
+                                            <Image
+                                                src={logo.logo}
+                                                alt={logo.name}
                                                 fill
                                                 className="object-cover"
                                                 sizes="(max-width: 768px) 128px, 160px"
@@ -1446,9 +1446,9 @@ function LogoGridBlockRenderer({ block }: { block: LogoGridBlock }) {
                                 <div>
                                     <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden shadow-md">
                                         {logo.logo.startsWith('http') || logo.logo.startsWith('/') ? (
-                                            <Image 
-                                                src={logo.logo} 
-                                                alt={logo.name} 
+                                            <Image
+                                                src={logo.logo}
+                                                alt={logo.name}
                                                 fill
                                                 className="object-cover"
                                                 sizes="(max-width: 768px) 128px, 160px"
