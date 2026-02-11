@@ -155,24 +155,6 @@ function HeroBlockRenderer({ block }: { block: HeroBlock }) {
                         </Link>
                     )}
                 </motion.div>
-
-                {block.quickLinks && block.quickLinks.length > 0 && (
-                    <motion.div
-                        variants={fadeUp}
-                        className="mt-16 pt-8 border-t border-white/20 flex flex-wrap justify-center gap-x-8 gap-y-4 max-w-4xl mx-auto"
-                    >
-                        {block.quickLinks.map((link, index) => (
-                            <Link
-                                key={index}
-                                href={link.href}
-                                className="text-sm font-medium text-white/70 hover:text-white transition-colors flex items-center gap-2 group"
-                            >
-                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 group-hover:bg-white transition-colors" />
-                                {link.text}
-                            </Link>
-                        ))}
-                    </motion.div>
-                )}
             </motion.div>
         </section>
     );

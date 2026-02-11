@@ -1,33 +1,39 @@
+#!/usr/bin/env tsx
+/**
+ * Update production home page with new 8-section structure
+ * Usage: PROD_DATABASE_URL='...' npx tsx scripts/update-prod-home.ts
+ */
+
 import { prisma } from '../lib/db';
 
-const homeBlocksEn = [
+const homeBlocks = [
     {
         type: 'hero',
         tagline: 'Based in Baku\nExcellence in Health Tourism & Pharma',
         subtagline: 'Silkbridge International connects you to world-class medical wellness, pharmaceutical market access, and comprehensive travel services in Azerbaijan.',
-        ctaPrimary: { text: 'Health Tourism', href: '/services' },
-        ctaSecondary: { text: 'Market Access', href: '/services' },
+        ctaPrimary: { text: 'Explore Services', href: '/services' },
+        ctaSecondary: { text: 'Contact Us', href: '/contact' },
     },
     {
         type: 'about',
         eyebrow: 'About Us',
-        headline: 'Bridging Wellness,',
-        headlineAccent: 'Pharma & Travel',
-        mission: 'We are a Baku-based consultancy dedicated to empowering businesses and individuals with seamless access to Azerbaijan\'s thriving health tourism, pharmaceutical market, and travel sectors.',
+        headline: 'Connecting Global Healthcare',
+        headlineAccent: 'to Azerbaijan',
+        mission: 'Silkbridge International is your gateway to Azerbaijan\'s growing healthcare and pharmaceutical markets. We bridge international medical expertise with local opportunities.',
         pillars: [
             {
-                title: 'Health Tourism',
-                description: 'Premium medical wellness packages and concierge services.',
-                icon: 'wellness',
-            },
-            {
-                title: 'Pharma Consulting',
-                description: 'Market entry, regulatory support, and distribution strategies.',
+                title: 'Market Entry',
+                description: 'Navigate regulatory requirements and establish your presence in Azerbaijan.',
                 icon: 'regulatory',
             },
             {
-                title: 'Travel Services',
-                description: 'Luxury tours, logistics, and cultural experiences.',
+                title: 'Health Tourism',
+                description: 'Premium medical and wellness tourism experiences in Baku and beyond.',
+                icon: 'wellness',
+            },
+            {
+                title: 'Strategic Partnerships',
+                description: 'Connect with leading healthcare providers and pharmaceutical distributors.',
                 icon: 'market',
             },
         ],
@@ -35,52 +41,53 @@ const homeBlocksEn = [
     {
         type: 'services',
         eyebrow: 'Our Services',
-        headline: 'Comprehensive Solutions',
+        headline: 'Comprehensive Healthcare Solutions',
         services: [
             {
-                title: 'Medical Wellness',
-                description: 'Access to top clinics and wellness centers in Azerbaijan.',
+                title: 'Pharmaceutical Market Entry',
+                description: 'End-to-end support for pharmaceutical companies entering the Azerbaijan market.',
                 features: [
-                    'Pre-treatment consultations',
-                    'Hospital coordination',
-                    'Post-care follow-up',
-                ],
-                cta: { text: 'Explore Services', href: '/services' },
-            },
-            {
-                title: 'Pharma Market Access',
-                description: 'Navigate regulatory landscapes and establish market presence.',
-                features: [
-                    'Regulatory compliance',
-                    'Distribution networks',
-                    'Market analysis',
+                    'Regulatory consulting and approvals',
+                    'Market analysis and strategy',
+                    'Distribution partner identification',
+                    'Ongoing compliance support',
                 ],
                 cta: { text: 'Learn More', href: '/services' },
+            },
+            {
+                title: 'Health & Wellness Tourism',
+                description: 'Curated medical tourism experiences combining world-class care with cultural exploration.',
+                features: [
+                    'Medical procedure coordination',
+                    'Luxury accommodation arrangements',
+                    'Concierge and translation services',
+                    'Post-treatment recovery tours',
+                ],
+                cta: { text: 'Explore Packages', href: '/services' },
             },
         ],
     },
     {
         type: 'insights',
-        eyebrow: 'Impact',
-        headline: 'Trusted by Global Clients',
-        subheadline: 'Excellence in service delivery and client satisfaction.',
+        eyebrow: 'Market Insights',
+        headline: 'Azerbaijan Healthcare by the Numbers',
         stats: [
-            { value: '200+', label: 'Clients Served' },
-            { value: '95%', label: 'Satisfaction Rate' },
-            { value: '10+', label: 'Countries' },
-            { value: '24/7', label: 'Support' },
+            { value: '$2.4B', label: 'Healthcare Market', note: '2024' },
+            { value: '15%', label: 'Annual Growth', note: 'CAGR' },
+            { value: '50K+', label: 'Medical Tourists', note: 'per year' },
+            { value: '200+', label: 'Healthcare Facilities' },
         ],
-        ctaText: 'Get Started',
-        ctaHref: '/contact',
+        ctaText: 'View Market Report',
+        ctaHref: '/insights',
     },
     {
         type: 'insightsList',
-        eyebrow: 'Latest Updates',
-        headline: 'Industry Insights',
+        eyebrow: 'Latest Insights',
+        headline: 'Industry News & Analysis',
         items: [
             {
                 title: 'Healthcare Innovation in Azerbaijan',
-                excerpt: 'Discover the latest trends and developments in Azerbaijan\'s growing healthcare sector.',
+                excerpt: 'Exploring the rapid modernization of healthcare infrastructure across Azerbaijan.',
                 date: '2026-02-01',
                 image: '/images/insights/healthcare.jpg',
                 href: '/insights/healthcare-innovation',
@@ -161,38 +168,48 @@ const homeBlocksEn = [
 ];
 
 async function main() {
-    console.log('🔧 Fixing home page blocks for English locale...');
+    console.log('🔧 Updating production home page...');
 
-    const page = await prisma.page.findUnique({
-        where: { slug: 'home' },
-    });
+    try {
+        // Find home page
+        const homePage = await prisma.page.findUnique({
+            where: { slug: 'home' },
+            include: { translations: true },
+        });
 
-    if (!page) {
-        console.error('❌ Home page not found!');
-        return;
-    }
+        if (!homePage) {
+            throw new Error('Home page not found in database');
+        }
 
-    console.log(`✅ Found page: ${page.slug} (ID: ${page.id})`);
+        console.log(`✅ Found page: home (ID: ${homePage.id})`);
 
-    const result = await prisma.pageTranslation.update({
-        where: {
-            pageId_localeCode: {
-                pageId: page.id,
-                localeCode: 'en',
+        // Update English translation
+        const enTranslation = homePage.translations.find((t) => t.localeCode === 'en');
+
+        if (!enTranslation) {
+            throw new Error('English translation not found for home page');
+        }
+
+        await prisma.pageTranslation.update({
+            where: { id: enTranslation.id },
+            data: {
+                blocks: homeBlocks as any,
+                status: 'PUBLISHED',
+                updatedAt: new Date(),
             },
-        },
-        data: {
-            blocks: homeBlocksEn as any,
-        },
-    });
+        });
 
-    console.log(`✅ Updated English translation (ID: ${result.id})`);
-    console.log(`   Blocks count: ${(result.blocks as any[]).length}`);
-    console.log('   Block types:', (result.blocks as any[]).map((b: any) => b.type).join(', '));
+        console.log(`✅ Updated English translation (ID: ${enTranslation.id})`);
+        console.log(`   Blocks count: ${homeBlocks.length}`);
+        console.log(`   Block types: ${homeBlocks.map((b) => b.type).join(', ')}`);
+        console.log('');
+        console.log('✅ Production home page updated successfully!');
+    } catch (error) {
+        console.error('❌ Error updating production home page:', error);
+        throw error;
+    } finally {
+        await prisma.$disconnect();
+    }
 }
 
-main()
-    .catch((e) => {
-        console.error('❌ Error:', e);
-        process.exit(1);
-    });
+main();
