@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { saveSiteSettings } from '@/lib/actions';
 import { useToast } from './ui/AdminToast';
 import { AdminCard, AdminCardHeader, AdminCardContent } from './ui/AdminCard';
@@ -68,6 +68,12 @@ export default function SettingsEditorNew({ settings, locales }: SettingsEditorN
         (settings?.socialLinks as SocialLinks) || {}
     );
 
+    // Upload state
+    const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+    const [isUploadingFavicon, setIsUploadingFavicon] = useState(false);
+    const logoInputRef = useRef<HTMLInputElement>(null);
+    const faviconInputRef = useRef<HTMLInputElement>(null);
+
     // Translations state
     const [translations, setTranslations] = useState<Record<string, { tagline: string; footerText: string }>>(
         settings?.translations.reduce((acc, t) => ({
@@ -89,6 +95,64 @@ export default function SettingsEditorNew({ settings, locales }: SettingsEditorN
                 [field]: value,
             }
         }));
+    };
+
+    // Logo upload handler
+    const handleLogoUpload = async (file: File) => {
+        setIsUploadingLogo(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('folder', 'brand');
+
+            const response = await fetch('/api/admin/uploads/blob', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Upload failed');
+            }
+
+            const data = await response.json();
+            setLogoUrl(data.url);
+            toast.success('Logo uploaded successfully');
+        } catch (error) {
+            console.error('Logo upload error:', error);
+            toast.error(error instanceof Error ? error.message : 'Failed to upload logo');
+        } finally {
+            setIsUploadingLogo(false);
+        }
+    };
+
+    // Favicon upload handler
+    const handleFaviconUpload = async (file: File) => {
+        setIsUploadingFavicon(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('folder', 'brand');
+
+            const response = await fetch('/api/admin/uploads/blob', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Upload failed');
+            }
+
+            const data = await response.json();
+            setFaviconUrl(data.url);
+            toast.success('Favicon uploaded successfully');
+        } catch (error) {
+            console.error('Favicon upload error:', error);
+            toast.error(error instanceof Error ? error.message : 'Failed to upload favicon');
+        } finally {
+            setIsUploadingFavicon(false);
+        }
     };
 
     const handleSave = useCallback(async () => {
@@ -186,36 +250,133 @@ export default function SettingsEditorNew({ settings, locales }: SettingsEditorN
                             title="Branding"
                             description="Logo and favicon settings"
                         />
-                        <AdminCardContent className="space-y-6">
-                            <AdminInput
-                                label="Logo URL"
-                                value={logoUrl}
-                                onChange={(e) => setLogoUrl(e.target.value)}
-                                placeholder="https://..."
-                                helperText="URL to your site logo"
-                            />
+                        <AdminCardContent className="space-y-8">
+                            {/* Logo Section */}
+                            <div className="space-y-4">
+                                <label className="block text-sm font-medium text-ink">
+                                    Site Logo
+                                </label>
 
-                            {logoUrl && (
-                                <div className="p-4 bg-surface rounded-xl">
-                                    <p className="text-xs font-medium text-muted uppercase tracking-wider mb-2">Preview</p>
-                                    <img
-                                        src={logoUrl}
-                                        alt="Logo preview"
-                                        className="h-12 object-contain"
-                                        onError={(e) => {
-                                            (e.target as HTMLImageElement).style.display = 'none';
+                                {/* Logo Preview */}
+                                {logoUrl && (
+                                    <div className="p-6 bg-surface rounded-xl border-2 border-border-light">
+                                        <p className="text-xs font-medium text-muted uppercase tracking-wider mb-3">
+                                            Current Logo
+                                        </p>
+                                        <div className="flex items-center justify-center bg-white p-6 rounded-lg">
+                                            <img
+                                                src={logoUrl}
+                                                alt="Logo preview"
+                                                className="h-16 object-contain"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).style.display = 'none';
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Upload Controls */}
+                                <div className="flex flex-wrap gap-3">
+                                    <input
+                                        ref={logoInputRef}
+                                        type="file"
+                                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handleLogoUpload(file);
                                         }}
+                                        className="hidden"
                                     />
+                                    <AdminButton
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => logoInputRef.current?.click()}
+                                        disabled={isUploadingLogo}
+                                        leftIcon={<AdminIcon name="image" />}
+                                    >
+                                        {isUploadingLogo ? 'Uploading...' : (logoUrl ? 'Change Logo' : 'Upload Logo')}
+                                    </AdminButton>
+                                    {logoUrl && (
+                                        <AdminButton
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setLogoUrl('')}
+                                            leftIcon={<AdminIcon name="trash" />}
+                                        >
+                                            Remove
+                                        </AdminButton>
+                                    )}
                                 </div>
-                            )}
+                                <p className="text-xs text-muted">
+                                    Recommended: SVG or PNG with transparent background. Max 2MB. Ideal size: 200×40px.
+                                </p>
+                            </div>
 
-                            <AdminInput
-                                label="Favicon URL"
-                                value={faviconUrl}
-                                onChange={(e) => setFaviconUrl(e.target.value)}
-                                placeholder="https://..."
-                                helperText="URL to your favicon (32x32px recommended)"
-                            />
+                            {/* Divider */}
+                            <div className="border-t border-border-light" />
+
+                            {/* Favicon Section */}
+                            <div className="space-y-4">
+                                <label className="block text-sm font-medium text-ink">
+                                    Favicon
+                                </label>
+
+                                {/* Favicon Preview */}
+                                {faviconUrl && (
+                                    <div className="p-6 bg-surface rounded-xl border-2 border-border-light">
+                                        <p className="text-xs font-medium text-muted uppercase tracking-wider mb-3">
+                                            Current Favicon
+                                        </p>
+                                        <div className="flex items-center justify-center bg-white p-6 rounded-lg">
+                                            <img
+                                                src={faviconUrl}
+                                                alt="Favicon preview"
+                                                className="h-8 w-8 object-contain"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).style.display = 'none';
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Upload Controls */}
+                                <div className="flex flex-wrap gap-3">
+                                    <input
+                                        ref={faviconInputRef}
+                                        type="file"
+                                        accept="image/png,image/x-icon,image/svg+xml"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handleFaviconUpload(file);
+                                        }}
+                                        className="hidden"
+                                    />
+                                    <AdminButton
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => faviconInputRef.current?.click()}
+                                        disabled={isUploadingFavicon}
+                                        leftIcon={<AdminIcon name="image" />}
+                                    >
+                                        {isUploadingFavicon ? 'Uploading...' : (faviconUrl ? 'Change Favicon' : 'Upload Favicon')}
+                                    </AdminButton>
+                                    {faviconUrl && (
+                                        <AdminButton
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setFaviconUrl('')}
+                                            leftIcon={<AdminIcon name="trash" />}
+                                        >
+                                            Remove
+                                        </AdminButton>
+                                    )}
+                                </div>
+                                <p className="text-xs text-muted">
+                                    Recommended: ICO or PNG format. Ideal size: 32×32px or 64×64px.
+                                </p>
+                            </div>
                         </AdminCardContent>
                     </AdminCard>
                 )}

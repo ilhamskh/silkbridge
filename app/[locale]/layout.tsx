@@ -9,6 +9,7 @@ import { locales, type Locale } from '@/i18n/config';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { MotionConfigProvider } from '@/components/ui/MotionConfigProvider';
+import { getSiteSettings } from '@/lib/content/getSettings';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://silkbridge.az';
 
@@ -117,12 +118,15 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     // Providing all messages to the client side
     const messages = await getMessages();
 
+    // Fetch site settings for logo and branding
+    const settings = await getSiteSettings(locale);
+
     return (
         <div lang={locale} className={`${inter.variable} ${manrope.variable}`}>
             <NextIntlClientProvider messages={messages}>
                 <MotionConfigProvider>
                     <Toaster position="top-right" richColors closeButton />
-                    <Header />
+                    <Header logoUrl={settings?.logoUrl} siteName={settings?.siteName} />
                     <main className="min-h-screen font-sans antialiased">{children}</main>
                     <Footer locale={locale as Locale} />
                 </MotionConfigProvider>

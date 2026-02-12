@@ -4,6 +4,7 @@ import { useState, useEffect, useTransition } from 'react';
 import { usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Link, useRouter } from '@/i18n/routing';
 import { locales, localeNames, localeFlags, type Locale } from '@/i18n/config';
 import { getNavigationItems } from '@/lib/content/getNavigation';
@@ -19,7 +20,12 @@ const uiLabels: Record<string, { selectLanguage: string; toggleMenu: string; get
     ru: { selectLanguage: 'Выбрать язык', toggleMenu: 'Меню', getConsultation: 'Консультация' },
 };
 
-export default function Header() {
+interface HeaderProps {
+    logoUrl?: string | null;
+    siteName?: string | null;
+}
+
+export default function Header({ logoUrl, siteName }: HeaderProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -72,7 +78,18 @@ export default function Header() {
                             href="/"
                             className={`transition-colors ${isScrolled || !hasDarkHero ? 'text-primary-700' : 'text-white'}`}
                         >
-                            <Logo className="h-8 w-auto" />
+                            {logoUrl ? (
+                                <Image
+                                    src={logoUrl}
+                                    alt={siteName || 'Silkbridge International'}
+                                    width={150}
+                                    height={32}
+                                    className="h-8 w-auto object-contain"
+                                    priority
+                                />
+                            ) : (
+                                <Logo className="h-8 w-auto" />
+                            )}
                         </Link>
 
                         {/* Desktop Navigation */}

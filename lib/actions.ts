@@ -436,8 +436,16 @@ export async function updateSiteSettings(data: {
         },
     });
 
+    // Invalidate settings cache for all locales
+    const { getSettingsCacheTag } = await import('@/lib/content/getSettings');
+    const locales = await prisma.locale.findMany({ where: { isEnabled: true }, select: { code: true } });
+    for (const loc of locales) {
+        revalidateTag(getSettingsCacheTag(loc.code));
+    }
+
     revalidatePath('/admin/settings');
-    revalidatePath('/');
+    revalidatePath('/', 'layout'); // Revalidate all layouts to update header
+
     return { success: true, settings };
 }
 
