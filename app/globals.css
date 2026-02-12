@@ -140,7 +140,8 @@
 
 /* Premium prose styling for blog articles */
 .prose-silkbridge {
-    @apply text-ink/90;
+    @apply text-ink/90 leading-[1.8];
+    font-size: 1.0625rem;
 }
 
 .prose-silkbridge>*:first-child {
@@ -151,13 +152,90 @@
     @apply mb-0;
 }
 
-/* Callout first-child special styling */
-.prose-silkbridge>div:first-child {
-    @apply mt-0;
+.prose-silkbridge h2 {
+    @apply font-heading text-h2 text-ink mt-12 mb-4 pb-2 border-b border-border-light;
+    scroll-margin-top: 5rem;
 }
 
-/* Smooth anchor scrolling offset */
-.prose-silkbridge h2,
 .prose-silkbridge h3 {
-    scroll-margin-top: 7rem;
+    @apply font-heading text-h3 text-ink mt-8 mb-3;
+    scroll-margin-top: 5rem;
+}
+
+.prose-silkbridge h4 {
+    @apply font-heading text-h4 text-ink mt-6 mb-2;
+}
+
+.prose-silkbridge p {
+    @apply mb-5;
+}
+
+.prose-silkbridge a {
+    @apply text-primary-600 underline underline-offset-2 decoration-primary-300 hover:decoration-primary-600 transition-colors;
+}
+
+.prose-silkbridge strong {
+    @apply font-semibold text-ink;
+}
+
+.prose-silkbridge em {
+    @apply italic;
+}
+
+.prose-silkbridge ul {
+    @apply list-disc pl-6 mb-5 space-y-1.5;
+}
+
+.prose-silkbridge ol {
+    @apply list-decimal pl-6 mb-5 space-y-1.5;
+}
+
+.prose-silkbridge li {
+    @apply text-ink/85;
+}
+
+.prose-silkbridge blockquote {
+    @apply border-l-4 border-primary-300 pl-5 py-1 my-6 italic text-muted bg-primary-50/40 rounded-r-card;
+}
+
+.prose-silkbridge blockquote p {
+    @apply mb-0;
+}
+
+.prose-silkbridge code {
+    @apply px-1.5 py-0.5 bg-primary-50 text-primary-800 text-[0.9em] rounded font-mono;
+}
+
+.prose-silkbridge pre {
+    @apply bg-primary-950 text-primary-100 rounded-card p-5 mb-5 overflow-x-auto text-body-sm;
+}
+
+.prose-silkbridge pre code {
+    @apply bg-transparent text-inherit p-0 rounded-none;
+}
+
+.prose-silkbridge hr {
+    @apply border-border-light my-10;
+}
+
+.prose-silkbridge img {
+    @apply rounded-card my-6 shadow-card max-w-full h-auto;
+}
+
+.prose-silkbridge table {
+    @apply w-full border-collapse mb-5 text-body-sm;
+}
+
+.prose-silkbridge th {
+    @apply bg-primary-50 text-left px-4 py-2.5 font-semibold text-ink border-b-2 border-primary-200;
+}
+
+.prose-silkbridge td {
+    @apply px-4 py-2.5 border-b border-border-light;
+}
+
+/* Admin editor input */
+.editor-input {
+    @apply w-full px-3.5 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400;
+    @apply focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all;
 }

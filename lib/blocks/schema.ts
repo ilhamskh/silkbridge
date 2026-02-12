@@ -408,8 +408,10 @@ export const insightsListBlockSchema = z.object({
     type: z.literal('insightsList'),
     eyebrow: z.string().optional(),
     headline: z.string().min(1),
-    items: z.array(insightItemSchema).min(1),
+    items: z.array(insightItemSchema).optional(), // Optional - can be provided statically or fetched dynamically
     viewAllHref: z.string().optional(),
+    useDynamicContent: z.boolean().optional(), // When true, fetch latest insights from DB
+    limit: z.number().min(1).max(12).optional(), // How many to show when using dynamic content
 });
 
 // Logo Grid Block (Simple partners display)

@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { getPageContent } from '@/lib/blocks/content';
-import BlockRenderer from '@/lib/blocks/BlockRenderer';
+import ServerBlockRenderer from '@/lib/blocks/ServerBlockRenderer';
 import type { ContentBlock } from '@/lib/blocks/schema';
 
 // ISR — revalidated on-demand via revalidateTag() in admin save actions
@@ -22,5 +22,5 @@ export default async function HomePage({ params }: PageProps) {
         notFound();
     }
 
-    return <BlockRenderer blocks={pageContent.blocks as ContentBlock[]} />;
+    return <ServerBlockRenderer blocks={pageContent.blocks as ContentBlock[]} locale={locale} />;
 }

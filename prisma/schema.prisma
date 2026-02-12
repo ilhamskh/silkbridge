@@ -293,3 +293,84 @@ model GalleryGroup {
 
   @@map("gallery_groups")
 }
+
+// ============================================
+// Insights (Blog) System
+// ============================================
+
+enum InsightPostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model InsightCategory {
+  id    String @id @default(cuid())
+  key   String @unique // "medical-tourism", "wellness", "pharmaceuticals", etc.
+  order Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  translations InsightCategoryTranslation[]
+  posts        InsightPost[]
+
+  @@map("insight_categories")
+}
+
+model InsightCategoryTranslation {
+  id         String @id @default(cuid())
+  categoryId String
+  localeCode String
+  name       String
+
+  // Relations
+  category InsightCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, localeCode])
+  @@map("insight_category_translations")
+}
+
+model InsightPost {
+  id         String  @id @default(cuid())
+  slug       String  @unique
+  categoryId String?
+  featured   Boolean @default(false)
+  isDeleted  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  category     InsightCategory?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  translations InsightPostTranslation[]
+
+  @@map("insight_posts")
+}
+
+model InsightPostTranslation {
+  id              String            @id @default(cuid())
+  postId          String
+  locale          String
+  status          InsightPostStatus @default(DRAFT)
+  publishedAt     DateTime?
+  title           String
+  excerpt         String            @default("")
+  bodyMarkdown    String            @default("") @db.Text
+  coverImageUrl   String?
+  coverImageAlt   String?
+  tags            String[]          @default([])
+  readTimeMinutes Int?
+  seoTitle        String?
+  seoDescription  String?
+  ogImageUrl      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  post InsightPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, locale])
+  @@map("insight_post_translations")
+}

@@ -115,7 +115,7 @@ export default function Header() {
                             {/* Language Switcher */}
                             <div className="relative group">
                                 <button
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg font-sans text-sm font-medium transition-colors
                     ${isScrolled || !hasDarkHero
                                             ? 'text-muted hover:text-primary-600 hover:bg-primary-50'
                                             : 'text-white/80 hover:text-white hover:bg-white/10'}
@@ -123,25 +123,25 @@ export default function Header() {
                                     aria-label={labels.selectLanguage}
                                 >
                                     <span className="text-base">{localeFlags[locale]}</span>
-                                    <span className="uppercase">{locale}</span>
+                                    <span className="uppercase font-semibold">{locale}</span>
                                     <Icons.chevronDown className="w-4 h-4" />
                                 </button>
-                                <div className="absolute right-0 mt-1 w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                                    <div className="py-2 bg-white rounded-xl shadow-card border border-border-light">
+                                <div className="absolute right-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 -translate-y-2">
+                                    <div className="py-1 bg-white rounded-card shadow-elevated border border-border-light">
                                         {locales.map((loc) => (
                                             <button
                                                 key={loc}
                                                 onClick={() => switchLocale(loc)}
                                                 disabled={isPending}
-                                                className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors
+                                                className={`w-full flex items-center gap-3 px-4 py-2.5 font-sans text-sm font-medium transition-colors
                           ${loc === locale ? 'bg-primary-50 text-primary-600' : 'text-ink hover:bg-surface'}
-                          ${isPending ? 'opacity-50' : ''}
+                          ${isPending ? 'opacity-50 cursor-not-allowed' : ''}
                         `}
                                             >
-                                                <span className="text-base">{localeFlags[loc]}</span>
-                                                <span>{localeNames[loc]}</span>
+                                                <span className="text-lg">{localeFlags[loc]}</span>
+                                                <span className="flex-1 text-left">{localeNames[loc]}</span>
                                                 {loc === locale && (
-                                                    <Icons.check className="w-4 h-4 ml-auto" />
+                                                    <Icons.check className="w-4 h-4 text-primary-600" />
                                                 )}
                                             </button>
                                         ))}
@@ -166,7 +166,7 @@ export default function Header() {
                             <Link href="/contact">
                                 <button
                                     className={`
-                                        px-3 py-2 rounded-full text-xs font-medium transition-all
+                                        font-sans px-3 py-2 rounded-full text-xs font-medium transition-all
                                         ${isScrolled || !hasDarkHero
                                             ? 'bg-primary-600 text-white hover:bg-primary-700'
                                             : 'bg-white/90 text-primary-700 hover:bg-white'}

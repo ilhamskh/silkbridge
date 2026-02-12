@@ -118,6 +118,7 @@ export function getNavigationItems(locale: string): NavigationConfig {
             { href: '/about', label: labels.about },
             { href: '/services', label: labels.services },
             { href: '/partners', label: labels.partners },
+            { href: '/insights', label: labels.insights },
             { href: '/contact', label: labels.contact },
         ],
         footer: {

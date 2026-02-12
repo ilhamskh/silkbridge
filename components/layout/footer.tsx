@@ -55,7 +55,7 @@ export default function Footer({ locale }: FooterProps) {
                     {/* Brand Column */}
                     <div className="lg:col-span-4">
                         <Logo className="h-8 w-auto text-white" />
-                        <p className="mt-6 text-white/60 text-body-sm leading-relaxed max-w-sm">
+                        <p className="mt-6 font-sans text-white/60 text-body-sm leading-relaxed max-w-sm">
                             {tagline}
                         </p>
                         {/* Social Links */}
@@ -85,7 +85,7 @@ export default function Footer({ locale }: FooterProps) {
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
                             {footerLinks.map((group) => (
                                 <div key={group.title}>
-                                    <h3 className="text-sm font-semibold text-white tracking-wide uppercase">
+                                    <h3 className="font-sans text-sm font-semibold text-white tracking-wide uppercase">
                                         {group.title}
                                     </h3>
                                     <ul className="mt-4 space-y-3">
@@ -93,7 +93,7 @@ export default function Footer({ locale }: FooterProps) {
                                             <li key={link.href}>
                                                 <Link
                                                     href={link.href}
-                                                    className="text-white/60 hover:text-white text-body-sm transition-colors"
+                                                    className="font-sans text-white/60 hover:text-white text-body-sm transition-colors"
                                                 >
                                                     {link.label}
                                                 </Link>
@@ -111,10 +111,10 @@ export default function Footer({ locale }: FooterProps) {
             <div className="border-t border-white/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <p className="text-white/40 text-sm">
+                        <p className="font-sans text-white/40 text-sm">
                             {uiLabels.copyright.replace('{year}', String(currentYear)).replace('{company}', siteConfig.name)}
                         </p>
-                        <div className="flex items-center gap-6 text-sm text-white/40">
+                        <div className="flex items-center gap-6 font-sans text-sm text-white/40">
                             <Link href="/privacy" className="hover:text-white transition-colors">
                                 {uiLabels.privacyPolicy}
                             </Link>

@@ -41,13 +41,14 @@ const navigation: NavSection[] = [
         title: 'Content',
         items: [
             { name: 'Pages', href: '/admin/pages', icon: 'pages' },
+            { name: 'Insights', href: '/admin/insights', icon: 'pages' },
             { name: 'Partners', href: '/admin/partners', icon: 'users' },
             { name: 'Contact Inbox', href: '/admin/contact', icon: 'inbox' },
             { name: 'Global Settings', href: '/admin/settings', icon: 'settings' },
         ],
     },
     {
-        title: 'Insights',
+        title: 'Analytics',
         items: [
             { name: 'Analytics', href: '/admin/analytics', icon: 'analytics' },
         ],

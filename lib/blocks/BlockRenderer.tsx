@@ -427,6 +427,11 @@ function InsightsListBlockRenderer({ block }: { block: InsightsListBlock }) {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: true, margin: '-100px' });
 
+    // If no items, don't render
+    if (!block.items || block.items.length === 0) {
+        return null;
+    }
+
     return (
         <section ref={ref} className="py-24 lg:py-32 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -671,3 +676,6 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
         </>
     );
 }
+
+// Export for use in server components
+export { InsightsListBlockRenderer };

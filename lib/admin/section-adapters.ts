@@ -524,7 +524,7 @@ export function blocksToInsightsListForm(blocks: ContentBlock[]): InsightsListSe
         eyebrow: block.eyebrow || '',
         headline: block.headline,
         viewAllHref: block.viewAllHref || '',
-        items: block.items.map(i => ({
+        items: (block.items || []).map(i => ({
             title: i.title,
             excerpt: i.excerpt,
             date: i.date || '',
