@@ -1,7 +1,7 @@
 'use client';
 
-import { PartnersEnhanced } from '@/components/sections/PartnersEnhanced';
-import type { ContentBlock, HeroBlock, PartnersBlock, CtaBlock } from '@/lib/blocks/schema';
+import { PartnersShowcase } from '@/components/sections/PartnersShowcase';
+import type { ContentBlock, HeroBlock, PartnersBlock } from '@/lib/blocks/schema';
 import type { PublicPartner } from '@/lib/content';
 
 // ============================================
@@ -20,14 +20,11 @@ interface PartnersPageClientProps {
 export default function PartnersPageClient({
     heroBlock,
     partnersBlock,
-    ctaBlock,
-    // partnersEmptyBlock, // Preserved for backward compatibility but handled internally by PartnersEnhanced
     partners,
     locale,
 }: PartnersPageClientProps) {
     const hero = heroBlock as HeroBlock | undefined;
     const partnersInfo = partnersBlock as PartnersBlock | undefined;
-    const cta = ctaBlock as CtaBlock | undefined;
 
     return (
         <div className="min-h-screen">
@@ -53,38 +50,14 @@ export default function PartnersPageClient({
                 </section>
             )}
 
-            {/* Enhanced Partners Section */}
-            <PartnersEnhanced
+            {/* Enhanced Partners Section (with integrated CTA panel) */}
+            <PartnersShowcase
                 partners={partners}
                 eyebrow={partnersInfo?.eyebrow}
                 headline={partnersInfo?.headline || 'Our Partners'}
                 description={partnersInfo?.description}
                 locale={locale}
             />
-
-            {/* CTA Section */}
-            {cta && (
-                <section className="py-16 lg:py-24 bg-gradient-to-br from-primary-600 to-primary-800">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                        <h2 className="font-heading text-display-sm lg:text-display text-white mb-6">
-                            {cta.headline}
-                        </h2>
-                        {cta.text && (
-                            <p className="text-lg text-primary-100 mb-8 leading-relaxed">
-                                {cta.text}
-                            </p>
-                        )}
-                        {cta.ctaText && cta.ctaHref && (
-                            <a
-                                href={cta.ctaHref}
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-pill hover:bg-primary-50 shadow-button hover:shadow-button-hover transition-all"
-                            >
-                                {cta.ctaText}
-                            </a>
-                        )}
-                    </div>
-                </section>
-            )}
         </div>
     );
 }

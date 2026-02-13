@@ -316,6 +316,40 @@
             "description": "Səhiyyə məqsədlərinizə çatmağınıza necə kömək edə biləcəyimizi müzakirə edək.",
             "button1": "Konsultasiya Planlaşdırın",
             "button2": "Tərəfdaşlarımıza Baxın"
+        },
+        "layout": {
+            "hero": {
+                "kicker": "XİDMƏTLƏR",
+                "title": "Sağlamlıq Turizmi və Əczaçılıq Əməkdaşlığı",
+                "cta1": "Konsultasiya Alın",
+                "cta2": "Əlaqə Saxlayın"
+            },
+            "priority": {
+                "healthCta": "Xəstə Sorğusu",
+                "pharmaCta": "Biznes Sorğusu",
+                "step1": "Məqsədinizi paylaşın",
+                "step2": "Yolunuzu planlaşdırırıq",
+                "step3": "Çatdırılmanı koordinasiya edirik"
+            },
+            "tourism": {
+                "heading": "Turizm və Qonaqpərvərlik Xidmətləri",
+                "cta": "Tur Sorğusu"
+            },
+            "capabilities": {
+                "heading": "Nəyi Əhatə Edirik",
+                "subheading": "Bütün xidmət sahələri üzrə imkanlar"
+            },
+            "promise": {
+                "heading": "Nə Gözləyə Bilərsiniz",
+                "p1": "Aydın koordinasiya",
+                "p2": "Şəffaf müddətlər",
+                "p3": "Təhlükəsiz idarəetmə"
+            },
+            "finalCta": {
+                "heading": "Məqsədinizi bizə deyin — doğru yolu tövsiyə edəcəyik.",
+                "cta1": "Konsultasiya Alın",
+                "cta2": "Əlaqə Saxlayın"
+            }
         }
     },
     "blog": {

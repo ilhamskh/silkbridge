@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { siteConfig } from '@/content/site-config';
 import { getPageContent } from '@/lib/blocks/content';
-import BlockRenderer from '@/lib/blocks/BlockRenderer';
+import ServerBlockRenderer from '@/lib/blocks/ServerBlockRenderer';
 import { FaqSection } from '@/components/sections/FaqSection';
 import { getFaqsByGroup } from '@/lib/data/faqs';
 import type { ContentBlock } from '@/lib/blocks/schema';
@@ -50,7 +50,7 @@ export default async function ServicesPage({ params }: Props) {
     setRequestLocale(locale);
 
     // Fetch page content from database
-    const pageContent = await getPageContent('services', locale as 'en' | 'az');
+    const pageContent = await getPageContent('services', locale as 'en' | 'az' | 'ru');
 
     if (!pageContent) {
         notFound();
@@ -59,19 +59,32 @@ export default async function ServicesPage({ params }: Props) {
     // Fetch FAQs for services from database
     const faqs = await getFaqsByGroup('services', locale);
 
+    // FAQ titles per locale
+    const faqTitle = locale === 'az'
+        ? 'Tez-tez Verilən Suallar'
+        : locale === 'ru'
+            ? 'Часто задаваемые вопросы'
+            : 'Frequently Asked Questions';
+    const faqSubtitle = locale === 'az'
+        ? 'Xidmətlərimiz haqqında ən çox verilən sualların cavabları'
+        : locale === 'ru'
+            ? 'Ответы на популярные вопросы о наших услугах'
+            : 'Find answers to common questions about our services';
+
     return (
         <div className="pt-24 lg:pt-32">
-            <BlockRenderer blocks={pageContent.blocks as ContentBlock[]} />
+            {/* Render content blocks from database */}
+            <ServerBlockRenderer
+                blocks={pageContent.blocks as ContentBlock[]}
+                locale={locale}
+            />
 
             {/* Database-driven FAQ Section */}
             {faqs && faqs.length > 0 && (
                 <FaqSection
                     faqs={faqs}
-                    title={locale === 'az' ? 'Tez-tez Verilən Suallar' : 'Frequently Asked Questions'}
-                    subtitle={locale === 'az'
-                        ? 'Xidmətlərimiz haqqında ən çox verilən sualların cavabları'
-                        : 'Find answers to common questions about our services'
-                    }
+                    title={faqTitle}
+                    subtitle={faqSubtitle}
                 />
             )}
         </div>

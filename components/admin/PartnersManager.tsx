@@ -190,12 +190,34 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
         });
     };
 
+    // Category filter
+    const [activeFilter, setActiveFilter] = useState<string>('ALL');
+
+    // Filter partners by category
+    const filteredPartners = activeFilter === 'ALL'
+        ? partners
+        : partners.filter(p => p.category === activeFilter);
+
+    // Get unique categories from actual data
+    const usedCategories = Array.from(new Set(partners.map(p => p.category)));
+
     return (
         <div>
             {/* Header Actions */}
-            <div className="flex justify-between items-center mb-6">
-                <div className="text-sm text-gray-500">
-                    {partners.length} partner{partners.length !== 1 ? 's' : ''}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-500">
+                        {partners.length} partner{partners.length !== 1 ? 's' : ''}
+                        {activeFilter !== 'ALL' && ` · ${filteredPartners.length} shown`}
+                    </div>
+                    <a
+                        href="/en/partners"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                    >
+                        View Partners Page <ExternalLink className="w-3 h-3" />
+                    </a>
                 </div>
                 <Button onClick={openCreateModal} className="gap-2">
                     <Plus className="w-4 h-4" />
@@ -203,8 +225,44 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                 </Button>
             </div>
 
+            {/* Category Filter Tabs */}
+            {partners.length > 0 && (
+                <div className="flex gap-1.5 overflow-x-auto pb-4 mb-4 -mx-1 px-1">
+                    <button
+                        onClick={() => setActiveFilter('ALL')}
+                        className={`
+                            px-3 py-1.5 text-xs font-medium rounded-full transition-all flex-shrink-0
+                            ${activeFilter === 'ALL'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }
+                        `}
+                    >
+                        All ({partners.length})
+                    </button>
+                    {usedCategories.map(cat => {
+                        const count = partners.filter(p => p.category === cat).length;
+                        return (
+                            <button
+                                key={cat}
+                                onClick={() => setActiveFilter(cat)}
+                                className={`
+                                    px-3 py-1.5 text-xs font-medium rounded-full transition-all flex-shrink-0
+                                    ${activeFilter === cat
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    }
+                                `}
+                            >
+                                {CATEGORY_LABELS[cat as PartnerCategory] || cat} ({count})
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+
             {/* Partners List */}
-            {partners.length === 0 ? (
+            {filteredPartners.length === 0 && partners.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
                     <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
                         <Plus className="w-6 h-6 text-blue-600" />
@@ -216,6 +274,10 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                     <Button onClick={openCreateModal} variant="secondary">
                         Add Partner
                     </Button>
+                </div>
+            ) : filteredPartners.length === 0 ? (
+                <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+                    <p className="text-gray-500">No partners in this category.</p>
                 </div>
             ) : (
                 <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -230,7 +292,7 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {partners.map((partner, index) => (
+                            {filteredPartners.map((partner, index) => (
                                 <tr key={partner.id} className="hover:bg-gray-50">
                                     <td className="px-4 py-3">
                                         <div className="flex flex-col gap-0.5">
@@ -243,7 +305,7 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                                             </button>
                                             <button
                                                 onClick={() => handleReorder(partner.id, 'down')}
-                                                disabled={index === partners.length - 1}
+                                                disabled={index === filteredPartners.length - 1}
                                                 className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30"
                                             >
                                                 <ChevronDown className="w-4 h-4" />

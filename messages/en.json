@@ -312,6 +312,40 @@
             "description": "Let's discuss how we can help you achieve your healthcare goals.",
             "button1": "Schedule a Consultation",
             "button2": "View Our Partners"
+        },
+        "layout": {
+            "hero": {
+                "kicker": "SERVICES",
+                "title": "Health Tourism & Pharmaceutical Collaboration",
+                "cta1": "Get Consultation",
+                "cta2": "Contact Us"
+            },
+            "priority": {
+                "healthCta": "Patient Inquiry",
+                "pharmaCta": "Business Inquiry",
+                "step1": "Share your goal",
+                "step2": "We plan your path",
+                "step3": "We coordinate delivery"
+            },
+            "tourism": {
+                "heading": "Tourism & Hospitality Services",
+                "cta": "Tour Inquiry"
+            },
+            "capabilities": {
+                "heading": "What We Cover",
+                "subheading": "Capabilities across all service areas"
+            },
+            "promise": {
+                "heading": "What You Can Expect",
+                "p1": "Clear coordination",
+                "p2": "Transparent timelines",
+                "p3": "Secure handling"
+            },
+            "finalCta": {
+                "heading": "Tell us your goal — we'll recommend the right track.",
+                "cta1": "Get Consultation",
+                "cta2": "Contact Us"
+            }
         }
     },
     "blog": {
