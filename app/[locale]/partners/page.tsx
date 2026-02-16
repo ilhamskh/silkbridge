@@ -54,19 +54,21 @@ export default async function PartnersPage({ params }: PageProps) {
         notFound();
     }
 
-    // Extract hero and other blocks for the page header
+    // Extract blocks for the page layout
     const blocks = pageContent.blocks as ContentBlock[];
-    const heroBlock = blocks.find((b) => b.type === 'hero');
+    const introBlock = blocks.find((b) => b.type === 'intro');
+    const heroBlock = blocks.find((b) => b.type === 'hero'); // fallback for legacy data
+    const statsRowBlock = blocks.find((b) => b.type === 'statsRow');
     const partnersBlock = blocks.find((b) => b.type === 'partners');
     const ctaBlock = blocks.find((b) => b.type === 'cta');
-    const partnersEmptyBlock = blocks.find((b) => b.type === 'partnersEmpty');
 
     return (
         <PartnersPageClient
+            introBlock={introBlock}
             heroBlock={heroBlock}
+            statsRowBlock={statsRowBlock}
             partnersBlock={partnersBlock}
             ctaBlock={ctaBlock}
-            partnersEmptyBlock={partnersEmptyBlock}
             partners={partners}
             locale={locale}
         />

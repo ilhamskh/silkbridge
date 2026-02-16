@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import { ArrowRight, ExternalLink, Users2, LayoutGrid, Handshake } from 'lucide-react';
-import { Landmark, Building2, Hotel, Plane, Bus, Compass, Cpu } from 'lucide-react';
+import { ExternalLink, Handshake } from 'lucide-react';
+import { Landmark, Building2, Hotel, Plane, Bus, Compass, Cpu, LayoutGrid } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import type { PublicPartner } from '@/lib/content';
 import { PartnerAccordion } from './PartnerAccordion';
@@ -92,18 +92,6 @@ function groupByCategory(partners: PublicPartner[]) {
 }
 
 // ============================================
-// Stats computation
-// ============================================
-
-function computeStats(partners: PublicPartner[]) {
-    const categories = new Set(partners.map(p => p.category || 'other'));
-    return {
-        partnerCount: partners.length,
-        categoryCount: categories.size,
-    };
-}
-
-// ============================================
 // Main Component
 // ============================================
 
@@ -119,53 +107,33 @@ export function PartnersShowcase({
     }
 
     const grouped = groupByCategory(partners);
-    const stats = computeStats(partners);
 
     return (
-        <section className="py-16 lg:py-24 bg-white">
-            {/* Top border accent */}
-            <div className="border-t-2 border-primary-100" />
-
+        <section className="py-16 lg:py-24 bg-surface">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* ============================================ */}
-                {/* Trust Band */}
+                {/* Section Header — matches About / Services pattern */}
                 {/* ============================================ */}
-                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12 pt-8">
-                    <div className="max-w-2xl">
-                        {eyebrow && (
-                            <span className="inline-block text-primary-600 text-caption font-semibold tracking-[0.15em] uppercase mb-3">
-                                {eyebrow}
-                            </span>
-                        )}
-                        <h2 className="font-heading text-display-sm lg:text-display text-ink">
-                            {headline}
-                        </h2>
-                        {description && (
-                            <p className="mt-3 text-body-lg text-muted max-w-prose">
-                                {description}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Stats Chips */}
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                        <StatsChip
-                            icon={Users2}
-                            label="Partners"
-                            value={stats.partnerCount}
-                        />
-                        <StatsChip
-                            icon={LayoutGrid}
-                            label="Categories"
-                            value={stats.categoryCount}
-                        />
-                    </div>
+                <div className="text-center max-w-3xl mx-auto mb-12 lg:mb-16">
+                    {eyebrow && (
+                        <span className="inline-block text-primary-600 text-sm font-medium tracking-wide uppercase mb-4">
+                            {eyebrow}
+                        </span>
+                    )}
+                    <h2 className="font-heading text-3xl sm:text-4xl text-ink">
+                        {headline}
+                    </h2>
+                    {description && (
+                        <p className="mt-4 text-muted text-lg leading-relaxed">
+                            {description}
+                        </p>
+                    )}
                 </div>
 
                 {/* ============================================ */}
                 {/* Desktop: Stacked Category Segments */}
                 {/* ============================================ */}
-                <div className="hidden lg:block space-y-10">
+                <div className="hidden lg:block space-y-12">
                     {grouped.map(({ category, partners: categoryPartners }) => {
                         const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.other;
                         const CategoryIcon = config.icon;
@@ -174,22 +142,19 @@ export function PartnersShowcase({
                             <div key={category}>
                                 {/* Category Header */}
                                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border-light">
-                                    <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
-                                        <CategoryIcon className="w-4 h-4 text-primary-600" />
+                                    <div className="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center">
+                                        <CategoryIcon className="w-5 h-5 text-primary-600" />
                                     </div>
-                                    <h3 className="font-heading text-h3 text-ink">
+                                    <h3 className="font-heading text-xl text-ink">
                                         {config.label}
                                     </h3>
-                                    <span className="px-2 py-0.5 text-caption font-medium bg-primary-50 text-primary-600 rounded-pill">
-                                        {categoryPartners.length}
-                                    </span>
-                                    <span className="text-body-sm text-muted ml-auto hidden xl:block">
-                                        {config.description}
+                                    <span className="text-sm text-muted">
+                                        {categoryPartners.length} {categoryPartners.length === 1 ? 'partner' : 'partners'}
                                     </span>
                                 </div>
 
                                 {/* Partners Grid */}
-                                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                     {categoryPartners.map(partner => (
                                         <PartnerTrustCard key={partner.id} partner={partner} />
                                     ))}
@@ -205,53 +170,8 @@ export function PartnersShowcase({
                 <div className="lg:hidden">
                     <PartnerAccordion groupedPartners={grouped} />
                 </div>
-
-                {/* ============================================ */}
-                {/* CTA Panel */}
-                {/* ============================================ */}
-                <div className="mt-12 bg-gradient-to-br from-primary-600 to-primary-800 rounded-card-lg p-8 lg:p-10 text-center">
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                        <Handshake className="w-6 h-6 text-primary-200" />
-                    </div>
-                    <h3 className="font-heading text-h2 text-white mb-3">
-                        Become a Partner
-                    </h3>
-                    <p className="text-body text-primary-100 max-w-xl mx-auto mb-6">
-                        Join our trusted partner network and connect with international
-                        clients. We&apos;re always looking for quality organizations to collaborate with.
-                    </p>
-                    <Link
-                        href="/contact"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-600 font-semibold rounded-pill hover:bg-primary-50 shadow-button hover:shadow-button-hover transition-all"
-                    >
-                        Get in Touch
-                        <ArrowRight className="w-4 h-4" />
-                    </Link>
-                </div>
             </div>
         </section>
-    );
-}
-
-// ============================================
-// Stats Chip
-// ============================================
-
-function StatsChip({
-    icon: Icon,
-    label,
-    value,
-}: {
-    icon: React.ComponentType<{ className?: string }>;
-    label: string;
-    value: number;
-}) {
-    return (
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-surface rounded-pill border border-border-light">
-            <Icon className="w-4 h-4 text-primary-600" />
-            <span className="text-body-sm text-ink font-semibold">{value}</span>
-            <span className="text-caption text-muted">{label}</span>
-        </div>
     );
 }
 
@@ -271,21 +191,21 @@ function PartnerTrustCard({ partner }: { partner: PublicPartner }) {
     return (
         <CardWrapper
             {...linkProps}
-            className="group block h-full rounded-card border border-border-light bg-white hover:border-primary-200 hover:shadow-card transition-all duration-200"
+            className="group block h-full p-6 bg-white rounded-2xl border border-border-light shadow-card hover:shadow-card-hover transition-all duration-200"
         >
             {/* Logo */}
-            <div className="h-20 flex items-center justify-center bg-surface/50 rounded-t-card border-b border-border-light overflow-hidden px-4">
+            <div className="h-16 flex items-center justify-center mb-5">
                 {partner.logoUrl ? (
                     <Image
                         src={partner.logoUrl}
                         alt={partner.name}
-                        width={100}
+                        width={120}
                         height={60}
                         className="object-contain max-w-full max-h-[3.5rem] group-hover:scale-105 transition-transform duration-300"
                     />
                 ) : (
-                    <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center">
-                        <span className="text-primary-600 font-heading font-bold text-lg">
+                    <div className="w-14 h-14 rounded-2xl bg-primary-50 flex items-center justify-center">
+                        <span className="text-primary-600 font-heading font-bold text-xl">
                             {partner.name.charAt(0)}
                         </span>
                     </div>
@@ -293,28 +213,26 @@ function PartnerTrustCard({ partner }: { partner: PublicPartner }) {
             </div>
 
             {/* Content */}
-            <div className="p-4">
-                <h4 className="font-medium text-body-sm text-ink line-clamp-1 group-hover:text-primary-600 transition-colors">
-                    {partner.name}
-                </h4>
-                {partner.description && (
-                    <p className="text-caption text-muted mt-1 line-clamp-2">
-                        {partner.description}
-                    </p>
-                )}
+            <h4 className="font-heading text-lg text-ink line-clamp-1 group-hover:text-primary-600 transition-colors">
+                {partner.name}
+            </h4>
+            {partner.description && (
+                <p className="text-sm text-muted mt-2 line-clamp-2 leading-relaxed">
+                    {partner.description}
+                </p>
+            )}
 
-                {/* Footer: category pill + visit link */}
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-border-light">
-                    <span className="px-2 py-0.5 text-[0.65rem] font-medium bg-primary-50 text-primary-600 rounded-pill leading-snug">
-                        {config.label}
+            {/* Footer */}
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-light">
+                <span className="text-sm text-muted">
+                    {config.label}
+                </span>
+                {partner.websiteUrl && (
+                    <span className="flex items-center gap-1.5 text-sm text-muted group-hover:text-primary-600 transition-colors">
+                        Visit
+                        <ExternalLink className="w-3.5 h-3.5" />
                     </span>
-                    {partner.websiteUrl && (
-                        <span className="flex items-center gap-1 text-caption text-muted group-hover:text-primary-600 transition-colors">
-                            Visit
-                            <ExternalLink className="w-3 h-3" />
-                        </span>
-                    )}
-                </div>
+                )}
             </div>
         </CardWrapper>
     );
@@ -326,24 +244,23 @@ function PartnerTrustCard({ partner }: { partner: PublicPartner }) {
 
 function EmptyPartnersState({ headline }: { headline: string }) {
     return (
-        <section className="py-16 lg:py-24 bg-white">
+        <section className="py-16 lg:py-24 bg-surface">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center py-20">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center mx-auto mb-6">
-                        <Handshake className="w-10 h-10 text-primary-600" />
+                    <div className="w-16 h-16 rounded-2xl bg-primary-50 flex items-center justify-center mx-auto mb-6">
+                        <Handshake className="w-8 h-8 text-primary-600" />
                     </div>
-                    <h2 className="font-heading text-display-sm text-ink mb-3">
+                    <h2 className="font-heading text-3xl sm:text-4xl text-ink mb-4">
                         {headline}
                     </h2>
-                    <p className="text-body-lg text-muted max-w-md mx-auto mb-8">
+                    <p className="text-lg text-muted max-w-md mx-auto mb-8 leading-relaxed">
                         We&apos;re building our partner network. Interested in collaborating?
                     </p>
                     <Link
                         href="/contact"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-pill hover:bg-primary-700 shadow-button hover:shadow-button-hover transition-all"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-700 shadow-button hover:shadow-button-hover transition-all"
                     >
-                        Become a Partner
-                        <ArrowRight className="w-4 h-4" />
+                        Get in Touch
                     </Link>
                 </div>
             </div>

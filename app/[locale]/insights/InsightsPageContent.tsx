@@ -89,13 +89,20 @@ export function InsightsPageContent({
     const featuredPost = posts.find((p) => p.featured);
     const regularPosts = posts.filter((p) => !p.featured || page > 1);
 
+
     function navigate(params: { category?: string | null; page?: number; search?: string }) {
         const sp = new URLSearchParams();
         const cat = params.category !== undefined ? params.category : activeCategory;
         if (cat) sp.set('category', cat);
         if (params.page && params.page > 1) sp.set('page', String(params.page));
+
+        // Handle search parameter - only add if it has a value after trimming
         const searchVal = params.search !== undefined ? params.search : searchQuery;
-        if (searchVal) sp.set('q', searchVal);
+        const trimmedSearch = searchVal?.trim();
+        if (trimmedSearch) {
+            sp.set('q', trimmedSearch);
+        }
+
         const qs = sp.toString();
         startTransition(() => {
             router.replace(`/${locale}/insights${qs ? `?${qs}` : ''}`);
@@ -109,7 +116,8 @@ export function InsightsPageContent({
             clearTimeout(debounceTimerRef.current);
         }
         debounceTimerRef.current = setTimeout(() => {
-            navigate({ search: value.trim() || undefined, page: 1 });
+            // Pass empty string to explicitly clear search, or the trimmed value
+            navigate({ search: value.trim(), page: 1 });
         }, 300);
     }
 
@@ -129,9 +137,10 @@ export function InsightsPageContent({
         if (debounceTimerRef.current) {
             clearTimeout(debounceTimerRef.current);
         }
-        // Trigger immediate search
-        navigate({ search: search.trim() || undefined, page: 1 });
+        // Trigger immediate search with trimmed value
+        navigate({ search: search.trim(), page: 1 });
     }
+
 
     // Sync local search state with URL on mount and searchParams changes
     useEffect(() => {
@@ -173,7 +182,7 @@ export function InsightsPageContent({
                                     type="button"
                                     onClick={() => {
                                         setSearch('');
-                                        navigate({ search: undefined, page: 1 });
+                                        navigate({ search: '', page: 1 });
                                     }}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-subtle hover:text-ink rounded-full hover:bg-surface transition-colors"
                                     aria-label="Clear search"

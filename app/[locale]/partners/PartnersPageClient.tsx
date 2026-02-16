@@ -1,7 +1,12 @@
 'use client';
 
 import { PartnersShowcase } from '@/components/sections/PartnersShowcase';
-import type { ContentBlock, HeroBlock, PartnersBlock } from '@/lib/blocks/schema';
+import {
+    IntroBlockRenderer,
+    StatsRowBlockRenderer,
+    CtaBlockRenderer,
+} from '@/lib/blocks/renderers/extended-blocks';
+import type { ContentBlock, HeroBlock, IntroBlock, PartnersBlock, StatsRowBlock, CtaBlock } from '@/lib/blocks/schema';
 import type { PublicPartner } from '@/lib/content';
 
 // ============================================
@@ -9,48 +14,56 @@ import type { PublicPartner } from '@/lib/content';
 // ============================================
 
 interface PartnersPageClientProps {
-    heroBlock?: ContentBlock;
+    introBlock?: ContentBlock;
+    heroBlock?: ContentBlock;  // fallback for legacy data
+    statsRowBlock?: ContentBlock;
     partnersBlock?: ContentBlock;
     ctaBlock?: ContentBlock;
-    partnersEmptyBlock?: ContentBlock;  // Keep for backward compatibility even if not used
     partners: PublicPartner[];
     locale: string;
 }
 
 export default function PartnersPageClient({
+    introBlock,
     heroBlock,
+    statsRowBlock,
     partnersBlock,
+    ctaBlock,
     partners,
     locale,
 }: PartnersPageClientProps) {
+    const intro = introBlock as IntroBlock | undefined;
     const hero = heroBlock as HeroBlock | undefined;
     const partnersInfo = partnersBlock as PartnersBlock | undefined;
+    const statsRow = statsRowBlock as StatsRowBlock | undefined;
+    const cta = ctaBlock as CtaBlock | undefined;
+
+    // Build intro block from hero data if no intro block exists (legacy compatibility)
+    const resolvedIntro: IntroBlock | undefined = intro
+        ? intro
+        : hero
+            ? {
+                type: 'intro' as const,
+                eyebrow: '',
+                headline: hero.tagline,
+                headlineAccent: undefined,
+                text: hero.subtagline,
+            }
+            : undefined;
 
     return (
-        <div className="min-h-screen">
-            {/* Hero Section */}
-            {hero && (
-                <section className="relative bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950 text-white pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
-                    {/* Decorative elements */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-700/20 rounded-full blur-3xl" />
-                        <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-primary-600/10 rounded-full blur-2xl" />
-                    </div>
-
-                    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                        <h1 className="font-heading text-display-lg lg:text-display-xl font-bold tracking-tight">
-                            {hero.tagline}
-                        </h1>
-                        {hero.subtagline && (
-                            <p className="mt-6 text-lg lg:text-xl text-primary-100 max-w-3xl mx-auto leading-relaxed">
-                                {hero.subtagline}
-                            </p>
-                        )}
-                    </div>
-                </section>
+        <div className="min-h-screen pt-24 lg:pt-32">
+            {/* Hero — identical to About & Services intro style */}
+            {resolvedIntro && (
+                <IntroBlockRenderer block={resolvedIntro} />
             )}
 
-            {/* Enhanced Partners Section (with integrated CTA panel) */}
+            {/* Stats Row — same renderer as About / Services */}
+            {statsRow && (
+                <StatsRowBlockRenderer block={statsRow} />
+            )}
+
+            {/* Partner List — server-fetched partners displayed in consistent landing style */}
             <PartnersShowcase
                 partners={partners}
                 eyebrow={partnersInfo?.eyebrow}
@@ -58,6 +71,11 @@ export default function PartnersPageClient({
                 description={partnersInfo?.description}
                 locale={locale}
             />
+
+            {/* CTA — same full-width renderer as About / Services */}
+            {cta && (
+                <CtaBlockRenderer block={cta} />
+            )}
         </div>
     );
 }

@@ -13,7 +13,7 @@ interface PartnerCardProps {
         logoUrl?: string;
         images: string[];
         location?: string;
-        specialties: string[];
+        specialties?: string[];
         websiteUrl?: string;
         description?: string;
     };
@@ -181,7 +181,7 @@ export function PartnerCard({ partner, index }: PartnerCardProps) {
                     )}
 
                     {/* Specialties */}
-                    {partner.specialties.length > 0 && (
+                    {partner.specialties && partner.specialties.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
                             {partner.specialties.slice(0, 3).map((specialty) => (
                                 <span
