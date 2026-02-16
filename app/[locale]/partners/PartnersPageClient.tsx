@@ -53,17 +53,17 @@ export default function PartnersPageClient({
 
     return (
         <div className="min-h-screen pt-24 lg:pt-32">
-            {/* Hero — identical to About & Services intro style */}
+            {/* Hero — identical IntroBlockRenderer used by About & Services */}
             {resolvedIntro && (
                 <IntroBlockRenderer block={resolvedIntro} />
             )}
 
-            {/* Stats Row — same renderer as About / Services */}
+            {/* Stats Row — same StatsRowBlockRenderer used by About / Services */}
             {statsRow && (
                 <StatsRowBlockRenderer block={statsRow} />
             )}
 
-            {/* Partner List — server-fetched partners displayed in consistent landing style */}
+            {/* Partner List — server-fetched, consistent landing style */}
             <PartnersShowcase
                 partners={partners}
                 eyebrow={partnersInfo?.eyebrow}
@@ -72,7 +72,7 @@ export default function PartnersPageClient({
                 locale={locale}
             />
 
-            {/* CTA — same full-width renderer as About / Services */}
+            {/* CTA — same CtaBlockRenderer used by About / Services */}
             {cta && (
                 <CtaBlockRenderer block={cta} />
             )}
