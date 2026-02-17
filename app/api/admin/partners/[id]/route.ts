@@ -1,15 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { revalidateTag } from 'next/cache';
 import { requireAuth } from '@/lib/auth';
 import { z } from 'zod';
 import { getPartnersCacheTag, getAllPartnersCacheTag } from '@/lib/content';
 
+const partnerGalleryItemSchema = z.object({
+    url: z.string().url(),
+    alt: z.string().optional().default(''),
+});
+
 const partnerUpdateSchema = z.object({
     name: z.string().min(1).optional(),
     logoUrl: z.string().url().optional().nullable(),
+    galleryImages: z.array(partnerGalleryItemSchema).max(8).optional(),
+    coverPhotoUrl: z.string().url().optional().nullable(),
+    coverPhotoAlt: z.string().optional().nullable(),
     websiteUrl: z.string().url().optional().nullable(),
-    category: z.enum(['GOVERNMENT', 'HOSPITAL', 'PHARMA', 'INVESTOR', 'ASSOCIATION']).optional(),
+    category: z.enum(['GOVERNMENT', 'HOSPITAL', 'PHARMA', 'INVESTOR', 'ASSOCIATION', 'HOTEL', 'AIRLINE', 'TRANSPORT', 'TOURISM', 'TECHNOLOGY']).optional(),
+    location: z.string().optional().nullable(),
+    specialties: z.array(z.string()).optional(),
     isActive: z.boolean().optional(),
     order: z.number().int().optional(),
     descriptions: z.record(z.string(), z.string()).optional(),
@@ -41,7 +52,7 @@ export async function PUT(
             );
         }
 
-        const { name, logoUrl, websiteUrl, category, isActive, order, descriptions } = parsed.data;
+        const { name, logoUrl, galleryImages, coverPhotoUrl, coverPhotoAlt, websiteUrl, category, location, specialties, isActive, order, descriptions } = parsed.data;
 
         // Update partner
         const partner = await prisma.partner.update({
@@ -49,8 +60,13 @@ export async function PUT(
             data: {
                 ...(name !== undefined && { name }),
                 ...(logoUrl !== undefined && { logoUrl }),
+                ...(galleryImages !== undefined && { galleryImages: galleryImages.length > 0 ? galleryImages : Prisma.DbNull }),
+                ...(coverPhotoUrl !== undefined && { coverPhotoUrl }),
+                ...(coverPhotoAlt !== undefined && { coverPhotoAlt }),
                 ...(websiteUrl !== undefined && { websiteUrl }),
                 ...(category !== undefined && { category }),
+                ...(location !== undefined && { location }),
+                ...(specialties !== undefined && { specialties }),
                 ...(isActive !== undefined && { isActive }),
                 ...(order !== undefined && { order }),
             },
@@ -78,8 +94,13 @@ export async function PUT(
             }
         }
 
+        const partnerWithTranslations = await prisma.partner.findUnique({
+            where: { id },
+            include: { translations: true },
+        });
+
         await revalidatePartners();
-        return NextResponse.json(partner);
+        return NextResponse.json(partnerWithTranslations ?? partner);
     } catch (error) {
         console.error('Failed to update partner:', error);
         return NextResponse.json({ error: 'Failed to update partner' }, { status: 500 });

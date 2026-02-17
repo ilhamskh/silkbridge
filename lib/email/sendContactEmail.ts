@@ -163,8 +163,20 @@ export async function sendContactEmail(payload: ContactEmailPayload): Promise<Em
  */
 export async function getRecipientForType(
     type: InquiryType,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    prismaClient: any
+    prismaClient: {
+        contactRoutingRule: {
+            findUnique: (args: {
+                where: { type: InquiryType };
+                include: { recipient: true };
+            }) => Promise<{ isActive: boolean; recipient: { isActive: boolean; email: string } | null } | null>;
+        };
+        contactRecipient: {
+            findFirst: (args: {
+                where: { isActive: boolean };
+                orderBy: { createdAt: 'asc' | 'desc' };
+            }) => Promise<{ email: string } | null>;
+        };
+    }
 ): Promise<string | null> {
     try {
         // Try to find routing rule for this type

@@ -1,11 +1,10 @@
-'use client';
-
 import { PartnersShowcase } from '@/components/sections/PartnersShowcase';
 import {
     IntroBlockRenderer,
     StatsRowBlockRenderer,
     CtaBlockRenderer,
 } from '@/lib/blocks/renderers/extended-blocks';
+import { getTranslations } from 'next-intl/server';
 import type { ContentBlock, HeroBlock, IntroBlock, PartnersBlock, StatsRowBlock, CtaBlock } from '@/lib/blocks/schema';
 import type { PublicPartner } from '@/lib/content';
 
@@ -23,7 +22,7 @@ interface PartnersPageClientProps {
     locale: string;
 }
 
-export default function PartnersPageClient({
+export default async function PartnersPageClient({
     introBlock,
     heroBlock,
     statsRowBlock,
@@ -32,6 +31,8 @@ export default function PartnersPageClient({
     partners,
     locale,
 }: PartnersPageClientProps) {
+    const t = await getTranslations({ locale, namespace: 'partnersPage' });
+
     const intro = introBlock as IntroBlock | undefined;
     const hero = heroBlock as HeroBlock | undefined;
     const partnersInfo = partnersBlock as PartnersBlock | undefined;
@@ -67,9 +68,8 @@ export default function PartnersPageClient({
             <PartnersShowcase
                 partners={partners}
                 eyebrow={partnersInfo?.eyebrow}
-                headline={partnersInfo?.headline || 'Our Partners'}
+                headline={partnersInfo?.headline || t('ui.fallbackHeadline')}
                 description={partnersInfo?.description}
-                locale={locale}
             />
 
             {/* CTA — same CtaBlockRenderer used by About / Services */}

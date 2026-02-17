@@ -1,9 +1,9 @@
-import Image from 'next/image';
-import { ExternalLink, Handshake } from 'lucide-react';
+import { Handshake } from 'lucide-react';
 import { Landmark, Building2, Hotel, Plane, Bus, Compass, Cpu, LayoutGrid } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import type { PublicPartner } from '@/lib/content';
-import { PartnerAccordion } from './PartnerAccordion';
+import { PartnerGalleryCard } from './PartnerGalleryCard';
+import { getTranslations } from 'next-intl/server';
 
 // ============================================
 // Category Configuration
@@ -11,48 +11,51 @@ import { PartnerAccordion } from './PartnerAccordion';
 
 const CATEGORY_CONFIG: Record<string, {
     icon: React.ComponentType<{ className?: string }>;
-    label: string;
-    description: string;
+    key: string;
 }> = {
     government: {
         icon: Landmark,
-        label: 'Government',
-        description: 'Official government agencies and regulatory bodies',
+        key: 'government',
     },
     hospital: {
         icon: Building2,
-        label: 'Healthcare',
-        description: 'Hospitals, clinics, and medical facilities',
+        key: 'hospital',
+    },
+    pharma: {
+        icon: Building2,
+        key: 'pharma',
+    },
+    investor: {
+        icon: LayoutGrid,
+        key: 'investor',
+    },
+    association: {
+        icon: LayoutGrid,
+        key: 'association',
     },
     hotel: {
         icon: Hotel,
-        label: 'Hotels',
-        description: 'Accommodation and hospitality partners',
+        key: 'hotel',
     },
     airline: {
         icon: Plane,
-        label: 'Airlines',
-        description: 'Air travel and flight service providers',
+        key: 'airline',
     },
     transport: {
         icon: Bus,
-        label: 'Transport',
-        description: 'Ground transportation and logistics',
+        key: 'transport',
     },
     tourism: {
         icon: Compass,
-        label: 'Tourism',
-        description: 'Tourism boards and travel agencies',
+        key: 'tourism',
     },
     technology: {
         icon: Cpu,
-        label: 'Technology',
-        description: 'Technology and digital service providers',
+        key: 'technology',
     },
     other: {
         icon: LayoutGrid,
-        label: 'Other',
-        description: 'Specialized industry partners',
+        key: 'other',
     },
 };
 
@@ -65,7 +68,12 @@ interface PartnersShowcaseProps {
     eyebrow?: string;
     headline: string;
     description?: string;
-    locale: string;
+}
+
+function normalizeCategory(category?: string | null): string {
+    if (!category) return 'other';
+    const lowered = category.toLowerCase();
+    return CATEGORY_CONFIG[lowered] ? lowered : 'other';
 }
 
 // ============================================
@@ -76,7 +84,7 @@ function groupByCategory(partners: PublicPartner[]) {
     const groups: Record<string, PublicPartner[]> = {};
 
     partners.forEach(partner => {
-        const cat = partner.category || 'other';
+        const cat = normalizeCategory(partner.category);
         if (!groups[cat]) groups[cat] = [];
         groups[cat].push(partner);
     });
@@ -95,15 +103,23 @@ function groupByCategory(partners: PublicPartner[]) {
 // Main Component
 // ============================================
 
-export function PartnersShowcase({
+export async function PartnersShowcase({
     partners,
     eyebrow,
     headline,
     description,
 }: PartnersShowcaseProps) {
+    const t = await getTranslations('partnersPage');
+
     // Empty state
     if (partners.length === 0) {
-        return <EmptyPartnersState headline={headline} />;
+        return (
+            <EmptyPartnersState
+                headline={headline}
+                description={t('ui.emptyDescription')}
+                ctaLabel={t('ui.contactCta')}
+            />
+        );
     }
 
     const grouped = groupByCategory(partners);
@@ -131,44 +147,58 @@ export function PartnersShowcase({
                 </div>
 
                 {/* ============================================ */}
-                {/* Desktop: Stacked Category Segments */}
+                {/* Category Spotlight Sections */}
                 {/* ============================================ */}
-                <div className="hidden lg:block space-y-12">
+                <div className="space-y-12 lg:space-y-16">
                     {grouped.map(({ category, partners: categoryPartners }) => {
                         const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.other;
                         const CategoryIcon = config.icon;
+                        const categoryLabel = t(`categories.${config.key}.label`);
+                        const localizedDescription = t(`categories.${config.key}.description`);
 
                         return (
-                            <div key={category}>
+                            <div key={category} className="space-y-6">
                                 {/* Category Header */}
-                                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border-light">
-                                    <div className="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center">
-                                        <CategoryIcon className="w-5 h-5 text-primary-600" />
+                                <div className="flex items-start justify-between gap-4 pb-4 border-b border-border-light">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center mt-0.5">
+                                            <CategoryIcon className="w-5 h-5 text-primary-600" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-heading text-xl sm:text-2xl text-ink">
+                                                {categoryLabel}
+                                            </h3>
+                                            <p className="mt-1 text-sm text-muted max-w-2xl">
+                                                {localizedDescription}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <h3 className="font-heading text-xl text-ink">
-                                        {config.label}
-                                    </h3>
-                                    <span className="text-sm text-muted">
-                                        {categoryPartners.length} {categoryPartners.length === 1 ? 'partner' : 'partners'}
+                                    <span className="text-sm text-muted whitespace-nowrap mt-1">
+                                        {categoryPartners.length} {categoryPartners.length === 1 ? t('ui.partner') : t('ui.partners')}
                                     </span>
                                 </div>
 
                                 {/* Partners Grid */}
-                                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                     {categoryPartners.map(partner => (
-                                        <PartnerTrustCard key={partner.id} partner={partner} />
+                                        <PartnerGalleryCard
+                                            key={partner.id}
+                                            partner={{
+                                                name: partner.name,
+                                                logoUrl: partner.logoUrl,
+                                                websiteUrl: partner.websiteUrl,
+                                                description: partner.description,
+                                                location: partner.location,
+                                                specialties: partner.specialties ?? [],
+                                                categoryLabel,
+                                                galleryImages: partner.galleryImages,
+                                            }}
+                                        />
                                     ))}
                                 </div>
                             </div>
                         );
                     })}
-                </div>
-
-                {/* ============================================ */}
-                {/* Mobile/Tablet: Accordion */}
-                {/* ============================================ */}
-                <div className="lg:hidden">
-                    <PartnerAccordion groupedPartners={grouped} />
                 </div>
             </div>
         </section>
@@ -176,73 +206,18 @@ export function PartnersShowcase({
 }
 
 // ============================================
-// Partner Trust Card (Desktop)
-// ============================================
-
-function PartnerTrustCard({ partner }: { partner: PublicPartner }) {
-    const category = partner.category || 'other';
-    const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.other;
-
-    const CardWrapper = partner.websiteUrl ? 'a' : 'div';
-    const linkProps = partner.websiteUrl
-        ? { href: partner.websiteUrl, target: '_blank' as const, rel: 'noopener noreferrer' }
-        : {};
-
-    return (
-        <CardWrapper
-            {...linkProps}
-            className="group block h-full p-6 bg-white rounded-2xl border border-border-light shadow-card hover:shadow-card-hover transition-all duration-200"
-        >
-            {/* Logo */}
-            <div className="h-16 flex items-center justify-center mb-5">
-                {partner.logoUrl ? (
-                    <Image
-                        src={partner.logoUrl}
-                        alt={partner.name}
-                        width={120}
-                        height={60}
-                        className="object-contain max-w-full max-h-[3.5rem] group-hover:scale-105 transition-transform duration-300"
-                    />
-                ) : (
-                    <div className="w-14 h-14 rounded-2xl bg-primary-50 flex items-center justify-center">
-                        <span className="text-primary-600 font-heading font-bold text-xl">
-                            {partner.name.charAt(0)}
-                        </span>
-                    </div>
-                )}
-            </div>
-
-            {/* Content */}
-            <h4 className="font-heading text-lg text-ink line-clamp-1 group-hover:text-primary-600 transition-colors">
-                {partner.name}
-            </h4>
-            {partner.description && (
-                <p className="text-sm text-muted mt-2 line-clamp-2 leading-relaxed">
-                    {partner.description}
-                </p>
-            )}
-
-            {/* Footer */}
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-light">
-                <span className="text-sm text-muted">
-                    {config.label}
-                </span>
-                {partner.websiteUrl && (
-                    <span className="flex items-center gap-1.5 text-sm text-muted group-hover:text-primary-600 transition-colors">
-                        Visit
-                        <ExternalLink className="w-3.5 h-3.5" />
-                    </span>
-                )}
-            </div>
-        </CardWrapper>
-    );
-}
-
-// ============================================
 // Empty Partners State
 // ============================================
 
-function EmptyPartnersState({ headline }: { headline: string }) {
+function EmptyPartnersState({
+    headline,
+    description,
+    ctaLabel,
+}: {
+    headline: string;
+    description: string;
+    ctaLabel: string;
+}) {
     return (
         <section className="py-16 lg:py-24 bg-surface">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -254,13 +229,13 @@ function EmptyPartnersState({ headline }: { headline: string }) {
                         {headline}
                     </h2>
                     <p className="text-lg text-muted max-w-md mx-auto mb-8 leading-relaxed">
-                        We&apos;re building our partner network. Interested in collaborating?
+                        {description}
                     </p>
                     <Link
                         href="/contact"
                         className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-700 shadow-button hover:shadow-button-hover transition-all"
                     >
-                        Get in Touch
+                        {ctaLabel}
                     </Link>
                 </div>
             </div>

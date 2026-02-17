@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { Plus, Pencil, Trash2, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
 import { AdminInput } from './ui/AdminInput';
 import { AdminTextarea } from './ui/AdminTextarea';
+import { SingleImageUploader } from './ui/SingleImageUploader';
+import { PartnerGalleryEditor, type PartnerGalleryImage } from './ui/PartnerGalleryEditor';
 import Button from '@/components/ui/button';
 
-type PartnerCategory = 'GOVERNMENT' | 'HOSPITAL' | 'PHARMA' | 'INVESTOR' | 'ASSOCIATION';
+type PartnerCategory = 'GOVERNMENT' | 'HOSPITAL' | 'PHARMA' | 'INVESTOR' | 'ASSOCIATION' | 'HOTEL' | 'AIRLINE' | 'TRANSPORT' | 'TOURISM' | 'TECHNOLOGY';
 
 const CATEGORY_LABELS: Record<PartnerCategory, string> = {
     GOVERNMENT: 'Government',
@@ -15,6 +17,11 @@ const CATEGORY_LABELS: Record<PartnerCategory, string> = {
     PHARMA: 'Pharma',
     INVESTOR: 'Investor',
     ASSOCIATION: 'Association',
+    HOTEL: 'Hotel',
+    AIRLINE: 'Airline',
+    TRANSPORT: 'Transport',
+    TOURISM: 'Tourism',
+    TECHNOLOGY: 'Technology',
 };
 
 const CATEGORY_COLORS: Record<PartnerCategory, string> = {
@@ -23,14 +30,24 @@ const CATEGORY_COLORS: Record<PartnerCategory, string> = {
     PHARMA: 'bg-purple-100 text-purple-700',
     INVESTOR: 'bg-amber-100 text-amber-700',
     ASSOCIATION: 'bg-slate-100 text-slate-700',
+    HOTEL: 'bg-orange-100 text-orange-700',
+    AIRLINE: 'bg-sky-100 text-sky-700',
+    TRANSPORT: 'bg-lime-100 text-lime-700',
+    TOURISM: 'bg-teal-100 text-teal-700',
+    TECHNOLOGY: 'bg-indigo-100 text-indigo-700',
 };
 
 interface Partner {
     id: string;
     name: string;
     logoUrl: string | null;
+    galleryImages?: unknown;
+    coverPhotoUrl: string | null;
+    coverPhotoAlt: string | null;
     websiteUrl: string | null;
     category: PartnerCategory;
+    location: string | null;
+    specialties: string[];
     isActive: boolean;
     order: number;
     translations: Array<{
@@ -51,6 +68,23 @@ interface PartnersManagerProps {
     locales: Locale[];
 }
 
+function normalizeGalleryImages(value: unknown): PartnerGalleryImage[] {
+    if (!Array.isArray(value)) return [];
+    return value
+        .map((item) => {
+            if (!item || typeof item !== 'object') return null;
+            const url = typeof (item as { url?: unknown }).url === 'string'
+                ? (item as { url: string }).url.trim()
+                : '';
+            const alt = typeof (item as { alt?: unknown }).alt === 'string'
+                ? (item as { alt: string }).alt
+                : '';
+            if (!url) return null;
+            return { url, alt };
+        })
+        .filter((item): item is PartnerGalleryImage => Boolean(item));
+}
+
 export function PartnersManager({ initialPartners, locales }: PartnersManagerProps) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -62,8 +96,13 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
     const [formData, setFormData] = useState({
         name: '',
         logoUrl: '',
+        coverPhotoUrl: '',
+        coverPhotoAlt: '',
+        galleryImages: [] as PartnerGalleryImage[],
         websiteUrl: '',
         category: 'ASSOCIATION' as PartnerCategory,
+        location: '',
+        specialties: '' as string, // comma-separated string for easy editing
         isActive: true,
         descriptions: {} as Record<string, string>,
         notes: {} as Record<string, string>,
@@ -73,8 +112,13 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
         setFormData({
             name: '',
             logoUrl: '',
+            coverPhotoUrl: '',
+            coverPhotoAlt: '',
+            galleryImages: [],
             websiteUrl: '',
             category: 'ASSOCIATION',
+            location: '',
+            specialties: '',
             isActive: true,
             descriptions: {},
             notes: {},
@@ -97,8 +141,13 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
         setFormData({
             name: partner.name,
             logoUrl: partner.logoUrl || '',
+            coverPhotoUrl: partner.coverPhotoUrl || '',
+            coverPhotoAlt: partner.coverPhotoAlt || '',
+            galleryImages: normalizeGalleryImages(partner.galleryImages),
             websiteUrl: partner.websiteUrl || '',
             category: partner.category,
+            location: partner.location || '',
+            specialties: (partner.specialties || []).join(', '),
             isActive: partner.isActive,
             descriptions,
             notes,
@@ -117,8 +166,15 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
         const payload = {
             name: formData.name,
             logoUrl: formData.logoUrl || null,
+            galleryImages: formData.galleryImages,
+            coverPhotoUrl: formData.coverPhotoUrl || null,
+            coverPhotoAlt: formData.coverPhotoAlt || null,
             websiteUrl: formData.websiteUrl || null,
             category: formData.category,
+            location: formData.location || null,
+            specialties: formData.specialties
+                ? formData.specialties.split(',').map(s => s.trim()).filter(Boolean)
+                : [],
             isActive: formData.isActive,
             descriptions: formData.descriptions,
             notes: formData.notes,
@@ -137,6 +193,17 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                 });
 
                 if (response.ok) {
+                    const savedPartner = await response.json();
+                    setPartners((prev) => {
+                        const exists = prev.some((p) => p.id === savedPartner.id);
+                        const next = exists
+                            ? prev.map((p) => (p.id === savedPartner.id ? savedPartner : p))
+                            : [...prev, savedPartner];
+                        return [...next].sort((a, b) => a.order - b.order);
+                    });
+                    if (!editingPartner) {
+                        setActiveFilter('ALL');
+                    }
                     router.refresh();
                     closeModal();
                 }
@@ -156,6 +223,7 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                 });
 
                 if (response.ok) {
+                    setPartners((prev) => prev.filter((p) => p.id !== partnerId));
                     router.refresh();
                 }
             } catch (error) {
@@ -409,11 +477,33 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                                 />
                             </div>
 
-                            <AdminInput
-                                label="Logo URL"
+                            {/* Logo Upload */}
+                            <SingleImageUploader
+                                label="Logo"
                                 value={formData.logoUrl}
-                                onChange={(e) => setFormData(prev => ({ ...prev, logoUrl: e.target.value }))}
-                                placeholder="https://... or /uploads/logo.png"
+                                onChange={(url) => setFormData(prev => ({ ...prev, logoUrl: url }))}
+                                helperText="Upload or paste the partner logo"
+                            />
+
+                            {/* Cover Photo Upload */}
+                            <SingleImageUploader
+                                label="Cover Photo (optional)"
+                                value={formData.coverPhotoUrl}
+                                onChange={(url) => setFormData(prev => ({ ...prev, coverPhotoUrl: url }))}
+                                helperText="Optional cover image for rich card display"
+                            />
+                            {formData.coverPhotoUrl && (
+                                <AdminInput
+                                    label="Cover Photo Alt Text"
+                                    value={formData.coverPhotoAlt}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, coverPhotoAlt: e.target.value }))}
+                                    placeholder="Describe the cover photo for accessibility"
+                                />
+                            )}
+
+                            <PartnerGalleryEditor
+                                value={formData.galleryImages}
+                                onChange={(galleryImages) => setFormData((prev) => ({ ...prev, galleryImages }))}
                             />
 
                             <div className="grid grid-cols-2 gap-4">
@@ -444,6 +534,24 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                                         <option value="inactive">Inactive</option>
                                     </select>
                                 </div>
+                            </div>
+
+                            {/* Location & Specialties */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <AdminInput
+                                    label="Location (optional)"
+                                    value={formData.location}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                                    placeholder="e.g., Baku, Azerbaijan"
+                                    helperText="City or country"
+                                />
+                                <AdminInput
+                                    label="Specialties (optional)"
+                                    value={formData.specialties}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, specialties: e.target.value }))}
+                                    placeholder="e.g., Cardiology, Oncology"
+                                    helperText="Comma-separated tags"
+                                />
                             </div>
 
                             {/* Localized Descriptions */}

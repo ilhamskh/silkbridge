@@ -423,6 +423,18 @@ export function ServiceDetailsBlockRenderer({ block }: { block: ServiceDetailsBl
                         transition={{ duration: 0.6 }}
                         className="lg:sticky lg:top-32"
                     >
+                        {/* Optional service image */}
+                        {block.image && (
+                            <div className="mb-6 rounded-2xl overflow-hidden border border-border-light">
+                                <img
+                                    src={block.image}
+                                    alt={block.imageAlt || block.title}
+                                    className="w-full h-auto object-cover"
+                                    loading="lazy"
+                                />
+                            </div>
+                        )}
+
                         <h2 className="font-heading text-3xl text-ink">{block.title}</h2>
                         <p className="mt-4 text-muted text-lg leading-relaxed">{block.description}</p>
 

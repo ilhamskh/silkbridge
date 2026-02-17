@@ -299,6 +299,8 @@ const introSection: SectionConfig = {
         { key: 'headline', label: 'Headline', type: 'text', required: true },
         { key: 'headlineAccent', label: 'Headline Accent', type: 'text' },
         { key: 'text', label: 'Introductory Text', type: 'textarea' },
+        { key: 'image', label: 'Background Image', type: 'image', hint: 'Optional background or accent image for the hero area.' },
+        { key: 'imageAlt', label: 'Image Alt Text', type: 'text', hint: 'Describe the image for accessibility.' },
     ],
 };
 
@@ -498,6 +500,8 @@ const serviceDetailsSection = (serviceId: string, label: string): SectionConfig 
         { key: 'title', label: 'Section Title', type: 'text', required: true },
         { key: 'description', label: 'Description', type: 'textarea', required: true },
         { key: 'features', label: 'Key Features (one per line)', type: 'textarea' },
+        { key: 'image', label: 'Section Image', type: 'image', hint: 'Upload an image to display alongside this service section.' },
+        { key: 'imageAlt', label: 'Image Alt Text', type: 'text', hint: 'Describe the image for accessibility.' },
         { key: 'ctaText', label: 'CTA Text', type: 'text' },
         { key: 'ctaHref', label: 'CTA Link', type: 'url' },
         {
@@ -617,7 +621,8 @@ export const PAGE_CONFIGS: PageConfig[] = [
         description: 'Partner organizations and partnership opportunities.',
         route: '/partners',
         sections: [
-            heroSection,
+            introSection,
+            statsRowSection,
             partnersSection,
             partnersEmptySection,
             ctaSection,

@@ -110,6 +110,8 @@ export const introBlockSchema = z.object({
     headline: z.string().min(1),
     headlineAccent: z.string().optional(),
     text: z.string().optional(),
+    image: z.string().optional(),     // Optional hero/background image URL
+    imageAlt: z.string().optional(),  // Alt text for accessibility
 });
 
 // Story Block (for about page)
@@ -211,6 +213,8 @@ export const serviceDetailsBlockSchema = z.object({
     ctaText: z.string().optional(),
     ctaHref: z.string().optional(),
     details: z.array(serviceDetailSchema).optional(),
+    image: z.string().optional(),     // Optional section image URL (Blob)
+    imageAlt: z.string().optional(),  // Alt text for accessibility
 });
 
 // Process Block

@@ -203,18 +203,28 @@ enum PartnerCategory {
   PHARMA
   INVESTOR
   ASSOCIATION
+  HOTEL
+  AIRLINE
+  TRANSPORT
+  TOURISM
+  TECHNOLOGY
 }
 
 model Partner {
-  id         String          @id @default(cuid())
-  name       String
-  logoUrl    String?
-  websiteUrl String?
-  category   PartnerCategory @default(ASSOCIATION)
-  isActive   Boolean         @default(true)
-  order      Int             @default(0)
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
+  id            String          @id @default(cuid())
+  name          String
+  logoUrl       String?
+  galleryImages Json? // Optional gallery: [{ url, alt }]
+  coverPhotoUrl String? // Optional cover photo for rich card display
+  coverPhotoAlt String? // Alt text for cover photo (accessibility)
+  websiteUrl    String?
+  category      PartnerCategory @default(ASSOCIATION)
+  location      String? // Optional city/country
+  specialties   String[]        @default([]) // Optional tags/specialties
+  isActive      Boolean         @default(true)
+  order         Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   // Relations
   translations PartnerTranslation[]

@@ -1,4 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { getPageContent } from '@/lib/blocks/content';
 import { getPartners } from '@/lib/content';
@@ -21,9 +22,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { locale } = await params;
     const pageContent = await getPageContent('partners', locale);
+    const t = await getTranslations({ locale, namespace: 'partnersPage' });
 
-    const title = pageContent?.seoTitle || pageContent?.title || 'Partners';
-    const description = pageContent?.seoDescription || 'Our trusted partners and collaborators.';
+    const title = pageContent?.seoTitle || pageContent?.title || t('metadata.title');
+    const description = pageContent?.seoDescription || t('metadata.description');
 
     return {
         title,

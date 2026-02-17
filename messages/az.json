@@ -180,6 +180,69 @@
         "headline": "Etibarlı Qlobal",
         "headlineAccent": "Səhiyyə Tərəfdaşları",
         "intro": "Müştərilərimizin harada olursa olsunlar dünya səviyyəli xidmət almasını təmin etmək üçün dörd qitədə aparıcı səhiyyə müəssisələri ilə münasibətlər qurmuşuq.",
+        "metadata": {
+            "title": "Tərəfdaşlar",
+            "description": "Etibarlı tərəfdaşlarımız və əməkdaşlarımız."
+        },
+        "categories": {
+            "government": {
+                "label": "Dövlət",
+                "description": "Rəsmi dövlət qurumları və tənzimləyici orqanlar"
+            },
+            "hospital": {
+                "label": "Səhiyyə",
+                "description": "Xəstəxanalar, klinikalar və tibbi müəssisələr"
+            },
+            "pharma": {
+                "label": "Əczaçılıq",
+                "description": "Əczaçılıq şirkətləri və həyat elmləri tərəfdaşları"
+            },
+            "investor": {
+                "label": "İnvestorlar",
+                "description": "Strateji investisiya və maliyyə tərəfdaşları"
+            },
+            "association": {
+                "label": "Assosiasiyalar",
+                "description": "Sənaye və peşəkar assosiasiyalar"
+            },
+            "hotel": {
+                "label": "Hotellər",
+                "description": "Yerləşdirmə və qonaqpərvərlik tərəfdaşları"
+            },
+            "airline": {
+                "label": "Aviaşirkətlər",
+                "description": "Hava nəqliyyatı və uçuş xidmət təminatçıları"
+            },
+            "transport": {
+                "label": "Nəqliyyat",
+                "description": "Yerüstü nəqliyyat və logistika tərəfdaşları"
+            },
+            "tourism": {
+                "label": "Turizm",
+                "description": "Turizm qurumları və səyahət agentlikləri"
+            },
+            "technology": {
+                "label": "Texnologiya",
+                "description": "Texnologiya və rəqəmsal xidmət tərəfdaşları"
+            },
+            "other": {
+                "label": "Digər",
+                "description": "İxtisaslaşmış sənaye tərəfdaşları"
+            }
+        },
+        "ui": {
+            "fallbackHeadline": "Tərəfdaşlarımız",
+            "partner": "tərəfdaş",
+            "partners": "tərəfdaş",
+            "visitWebsite": "Sayta keçid",
+            "closeGallery": "Qalereyanı bağla",
+            "previousImage": "Əvvəlki şəkil",
+            "nextImage": "Növbəti şəkil",
+            "image": "şəkil",
+            "galleryAriaLabel": "{name} şəkil qalereyası",
+            "emptyDescription": "Tərəfdaş şəbəkəmizi genişləndiririk. Əməkdaşlıq etmək istəyirsiniz?",
+            "contactCta": "Əlaqə saxlayın"
+        },
         "stats": {
             "hospitals": {
                 "value": "60+",

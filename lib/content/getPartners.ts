@@ -9,6 +9,28 @@
 import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/db';
 
+export interface PartnerGalleryImage {
+    url: string;
+    alt: string;
+}
+
+function normalizeGalleryImages(value: unknown): PartnerGalleryImage[] {
+    if (!Array.isArray(value)) return [];
+    return value
+        .map((item) => {
+            if (!item || typeof item !== 'object') return null;
+            const url = typeof (item as { url?: unknown }).url === 'string'
+                ? (item as { url: string }).url.trim()
+                : '';
+            const alt = typeof (item as { alt?: unknown }).alt === 'string'
+                ? (item as { alt: string }).alt.trim()
+                : '';
+            if (!url) return null;
+            return { url, alt };
+        })
+        .filter((item): item is PartnerGalleryImage => Boolean(item));
+}
+
 // Cache tag for partners
 export function getPartnersCacheTag(locale: string) {
     return `partners:${locale}`;
@@ -22,8 +44,13 @@ export interface PublicPartner {
     id: string;
     name: string;
     logoUrl: string | null;
+    galleryImages: PartnerGalleryImage[];
+    coverPhotoUrl: string | null;
+    coverPhotoAlt: string | null;
     websiteUrl: string | null;
     category: string;
+    location: string | null;
+    specialties: string[];
     description: string | null;
     order: number;
 }
@@ -62,8 +89,13 @@ export async function getPartners(locale: string): Promise<PublicPartner[]> {
                 id: partner.id,
                 name: partner.name,
                 logoUrl: partner.logoUrl,
+                galleryImages: normalizeGalleryImages(partner.galleryImages),
+                coverPhotoUrl: partner.coverPhotoUrl,
+                coverPhotoAlt: partner.coverPhotoAlt,
                 websiteUrl: partner.websiteUrl,
                 category: partner.category,
+                location: partner.location,
+                specialties: partner.specialties,
                 description: translation?.description || null,
                 order: partner.order,
             };

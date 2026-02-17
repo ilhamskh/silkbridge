@@ -1,15 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { revalidateTag } from 'next/cache';
 import { requireAuth } from '@/lib/auth';
 import { z } from 'zod';
 import { getPartnersCacheTag, getAllPartnersCacheTag } from '@/lib/content';
 
+const partnerGalleryItemSchema = z.object({
+    url: z.string().url(),
+    alt: z.string().optional().default(''),
+});
+
 const partnerCreateSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     logoUrl: z.string().url().optional().nullable(),
+    galleryImages: z.array(partnerGalleryItemSchema).max(8).optional().default([]),
+    coverPhotoUrl: z.string().url().optional().nullable(),
+    coverPhotoAlt: z.string().optional().nullable(),
     websiteUrl: z.string().url().optional().nullable(),
-    category: z.enum(['GOVERNMENT', 'HOSPITAL', 'PHARMA', 'INVESTOR', 'ASSOCIATION']),
+    category: z.enum(['GOVERNMENT', 'HOSPITAL', 'PHARMA', 'INVESTOR', 'ASSOCIATION', 'HOTEL', 'AIRLINE', 'TRANSPORT', 'TOURISM', 'TECHNOLOGY']),
+    location: z.string().optional().nullable(),
+    specialties: z.array(z.string()).optional().default([]),
     isActive: z.boolean().default(true),
     descriptions: z.record(z.string(), z.string()).optional(), // { en: "...", az: "..." }
 });
@@ -46,7 +57,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const { name, logoUrl, websiteUrl, category, isActive, descriptions } = parsed.data;
+        const { name, logoUrl, galleryImages, coverPhotoUrl, coverPhotoAlt, websiteUrl, category, location, specialties, isActive, descriptions } = parsed.data;
 
         // Get highest order value
         const lastPartner = await prisma.partner.findFirst({
@@ -59,8 +70,13 @@ export async function POST(request: NextRequest) {
             data: {
                 name,
                 logoUrl: logoUrl || null,
+                galleryImages: galleryImages.length > 0 ? galleryImages : Prisma.DbNull,
+                coverPhotoUrl: coverPhotoUrl || null,
+                coverPhotoAlt: coverPhotoAlt || null,
                 websiteUrl: websiteUrl || null,
                 category,
+                location: location || null,
+                specialties: specialties || [],
                 isActive,
                 order: newOrder,
                 translations: {

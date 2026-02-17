@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import type { SectionConfig, FieldSchema } from '@/lib/admin/page-config';
 import { AdminInput, AdminTextarea, AdminSelect, AdminButton } from '@/components/admin/ui';
+import { SingleImageUploader } from '@/components/admin/ui/SingleImageUploader';
 
 // ============================================
 // Section Accordion Editor
@@ -87,8 +88,8 @@ function SectionAccordion({
     return (
         <div
             className={`border rounded-xl overflow-hidden transition-colors ${isHidden
-                    ? 'border-gray-200 bg-gray-50 opacity-60'
-                    : 'border-gray-200 bg-white'
+                ? 'border-gray-200 bg-gray-50 opacity-60'
+                : 'border-gray-200 bg-white'
                 }`}
         >
             {/* Header */}
@@ -219,13 +220,12 @@ function FieldRenderer({
 
         case 'image':
             return (
-                <AdminInput
+                <SingleImageUploader
                     label={field.label}
                     value={(value as string) ?? ''}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder="Image URL"
+                    onChange={(url) => onChange(url)}
                     required={field.required}
-                    helperText={field.hint ?? 'Paste an image URL or upload via Settings.'}
+                    helperText={field.hint}
                     disabled={disabled}
                 />
             );
