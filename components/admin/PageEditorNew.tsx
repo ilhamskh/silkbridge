@@ -99,21 +99,9 @@ export default function PageEditorNew({
 
     // Save (draft or publish)
     const handleSave = async (status: 'DRAFT' | 'PUBLISHED') => {
-        console.log('============================================');
-        console.log('[Client] handleSave called with status:', status);
-        console.log('[Client] pageId:', pageId);
-        console.log('[Client] locale:', currentLocale);
-        console.log('[Client] sections count:', sections.length);
-        console.log('============================================');
-
         setIsSaving(true);
         try {
-            console.log('[Client] Converting sections to blocks...');
             const blocks = sectionsToBlocks(sections);
-            console.log('[Client] Converted blocks count:', blocks.length);
-            console.log('[Client] First block:', JSON.stringify(blocks[0], null, 2));
-
-            console.log('[Client] Calling savePageTranslation action...');
             const result = await savePageTranslation({
                 pageId,
                 localeCode: currentLocale,
@@ -125,9 +113,18 @@ export default function PageEditorNew({
                 status,
             });
 
-            console.log('[Client] Action returned, result:', result);
-
             if (result.success) {
+                if (result.translation) {
+                    setTitle(result.translation.title ?? title);
+                    setSeoTitle(result.translation.seoTitle ?? '');
+                    setSeoDescription(result.translation.seoDescription ?? '');
+                    const syncedSections = blocksToSections(
+                        pageConfig.slug,
+                        (result.translation.blocks as unknown as Record<string, unknown>[]) ?? []
+                    );
+                    setSections(syncedSections);
+                }
+
                 // Update local state: form is now in sync with server
                 setIsDirty(false);
                 setCurrentStatus(status);

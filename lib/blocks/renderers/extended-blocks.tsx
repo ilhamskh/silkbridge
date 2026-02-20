@@ -294,6 +294,27 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: true, margin: '-100px' });
 
+    const getMemberImage = (member: TeamBlock['members'][number]) => {
+        const rawImage = member.image as unknown;
+        if (typeof rawImage === 'string' && rawImage.trim().length > 0) {
+            return { src: rawImage, alt: member.name };
+        }
+
+        if (rawImage && typeof rawImage === 'object') {
+            const imageObj = rawImage as { url?: unknown; alt?: unknown };
+            if (typeof imageObj.url === 'string' && imageObj.url.trim().length > 0) {
+                return {
+                    src: imageObj.url,
+                    alt: typeof imageObj.alt === 'string' && imageObj.alt.trim().length > 0
+                        ? imageObj.alt
+                        : member.name,
+                };
+            }
+        }
+
+        return null;
+    };
+
     return (
         <section ref={ref} className="py-16 lg:py-24 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -314,26 +335,40 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {block.members.map((member, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={isInView ? { opacity: 1, y: 0 } : {}}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="text-center"
-                        >
-                            <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-                                <span className="text-2xl font-heading font-bold text-primary-600">
-                                    {member.name.split(' ').map(n => n[0]).join('')}
-                                </span>
-                            </div>
-                            <h4 className="mt-4 font-heading font-semibold text-ink">{member.name}</h4>
-                            <p className="text-sm text-primary-600">{member.role}</p>
-                            {member.bio && (
-                                <p className="mt-2 text-sm text-muted">{member.bio}</p>
-                            )}
-                        </motion.div>
-                    ))}
+                    {block.members.map((member, index) => {
+                        const imageData = getMemberImage(member);
+                        return (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                className="text-center"
+                            >
+                                {imageData ? (
+                                    <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border border-border-light">
+                                        <img
+                                            src={imageData.src}
+                                            alt={imageData.alt}
+                                            className="w-full h-full object-cover"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                                        <span className="text-2xl font-heading font-bold text-primary-600">
+                                            {member.name.split(' ').map(n => n[0]).join('')}
+                                        </span>
+                                    </div>
+                                )}
+                                <h4 className="mt-4 font-heading font-semibold text-ink">{member.name}</h4>
+                                <p className="text-sm text-primary-600">{member.role}</p>
+                                {member.bio && (
+                                    <p className="mt-2 text-sm text-muted">{member.bio}</p>
+                                )}
+                            </motion.div>
+                        );
+                    })}
                 </div>
             </div>
         </section>

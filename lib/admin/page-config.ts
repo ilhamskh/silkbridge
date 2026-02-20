@@ -715,23 +715,47 @@ export function blocksToSections(
     const pageConfig = getPageConfig(pageSlug);
     if (!pageConfig) return [];
 
+    // Track how many times each block type has been consumed so duplicate
+    // section block types (e.g. multiple "about" sections) map deterministically.
+    const blockTypeCursor = new Map<string, number>();
+
     return pageConfig.sections.map((sectionConfig) => {
-        // Find matching block in blocks array
-        const block = blocks.find(
+        const matches = blocks.filter(
             (b) => b.type === sectionConfig.blockType &&
                 // For serviceDetails, match by serviceId too
                 (sectionConfig.blockType !== 'serviceDetails' ||
                     (b as Record<string, unknown>).serviceId === sectionConfig.sectionId.replace('serviceDetails-', ''))
         );
 
+        const cursor = blockTypeCursor.get(sectionConfig.blockType) ?? 0;
+        const block = matches[cursor];
+        blockTypeCursor.set(sectionConfig.blockType, cursor + 1);
+
         const data: Record<string, unknown> = block ? { ...block } : { type: sectionConfig.blockType };
 
         // Wrap maxItems=1 plain-object fields into arrays for the editor
         for (const field of sectionConfig.fields) {
+            if (field.type === 'image') {
+                data[field.key] = normalizeImageValue(data[field.key]);
+            }
+
             if (field.type === 'array' && field.maxItems === 1 && data[field.key] != null) {
                 if (!Array.isArray(data[field.key])) {
                     data[field.key] = [data[field.key]];
                 }
+            }
+
+            if (field.type === 'array' && field.itemFields && Array.isArray(data[field.key])) {
+                data[field.key] = (data[field.key] as unknown[]).map((item) => {
+                    if (!item || typeof item !== 'object') return item;
+                    const normalizedItem = { ...(item as Record<string, unknown>) };
+                    for (const subField of field.itemFields ?? []) {
+                        if (subField.type === 'image') {
+                            normalizedItem[subField.key] = normalizeImageValue(normalizedItem[subField.key]);
+                        }
+                    }
+                    return normalizedItem;
+                });
             }
         }
 
@@ -754,8 +778,27 @@ export function blocksToSections(
 export function sectionsToBlocks(
     sections: Array<{ config: SectionConfig; data: Record<string, unknown>; isHidden: boolean }>
 ): Record<string, unknown>[] {
-    return sections.map(({ config, data, isHidden }) => {
+    return sections.flatMap(({ config, data, isHidden }) => {
         const processedData: Record<string, unknown> = { ...data };
+
+        for (const field of config.fields) {
+            if (field.type === 'image') {
+                processedData[field.key] = normalizeImageValue(processedData[field.key]);
+            }
+
+            if (field.type === 'array' && field.itemFields && Array.isArray(processedData[field.key])) {
+                processedData[field.key] = (processedData[field.key] as unknown[]).map((item) => {
+                    if (!item || typeof item !== 'object') return item;
+                    const normalizedItem = { ...(item as Record<string, unknown>) };
+                    for (const subField of field.itemFields ?? []) {
+                        if (subField.type === 'image') {
+                            normalizedItem[subField.key] = normalizeImageValue(normalizedItem[subField.key]);
+                        }
+                    }
+                    return normalizedItem;
+                });
+            }
+        }
 
         // Unwrap maxItems=1 array fields to plain objects for Zod validation
         for (const field of config.fields) {
@@ -781,12 +824,51 @@ export function sectionsToBlocks(
             }
         }
 
-        return {
+        // Skip completely empty optional sections to avoid generating invalid
+        // placeholder blocks that fail strict Zod validation.
+        if (config.canHide) {
+            const hasContent = config.fields.some((field) => hasMeaningfulValue(processedData[field.key]));
+            if (!hasContent) {
+                return [];
+            }
+        }
+
+        return [{
             ...processedData,
             type: config.blockType,
             _isHidden: isHidden || undefined,
-        };
+        }];
     });
+}
+
+function hasMeaningfulValue(value: unknown): boolean {
+    if (value === null || value === undefined) return false;
+    if (typeof value === 'string') return value.trim().length > 0;
+    if (typeof value === 'number') return true;
+    if (typeof value === 'boolean') return true;
+
+    if (Array.isArray(value)) {
+        if (value.length === 0) return false;
+        return value.some((item) => hasMeaningfulValue(item));
+    }
+
+    if (typeof value === 'object') {
+        return Object.values(value as Record<string, unknown>).some((nested) => hasMeaningfulValue(nested));
+    }
+
+    return false;
+}
+
+function normalizeImageValue(value: unknown): unknown {
+    if (typeof value === 'string') return value;
+    if (!value || typeof value !== 'object') return value;
+
+    const imageObject = value as { url?: unknown };
+    if (typeof imageObject.url === 'string') {
+        return imageObject.url;
+    }
+
+    return value;
 }
 
 /**

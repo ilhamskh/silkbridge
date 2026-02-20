@@ -86,145 +86,177 @@ export async function savePageTranslation(data: {
     blocks: unknown;
     status: 'DRAFT' | 'PUBLISHED';
 }) {
-    const session = await requireAuth();
+    try {
+        const session = await requireAuth();
 
-    // Validate blocks
-    const blocksResult = blocksArraySchema.safeParse(data.blocks);
-    if (!blocksResult.success) {
-        console.error('[savePageTranslation] Blocks validation FAILED:', blocksResult.error.issues);
-        return {
-            success: false,
-            error: 'Invalid blocks format: ' + blocksResult.error.issues.map((e) => e.message).join(', '),
-        };
-    }
+        // Validate blocks
+        const blocksResult = blocksArraySchema.safeParse(data.blocks);
+        if (!blocksResult.success) {
+            console.error('[savePageTranslation] Blocks validation FAILED:', blocksResult.error.issues);
 
-    // Merge _isHidden flags from raw data into validated blocks.
-    // Zod strips unknown fields, but _isHidden is used by the admin
-    // to toggle section visibility and must be preserved in storage.
-    const rawBlocks = data.blocks as Record<string, unknown>[];
-    const validatedBlocks = blocksResult.data.map((block, i) => {
-        const rawBlock = rawBlocks[i];
-        if (rawBlock?._isHidden === true) {
-            return { ...block, _isHidden: true };
+            const detailedErrors = blocksResult.error.issues.map((issue) => {
+                const path = [...issue.path];
+                const blockIndex = typeof path[0] === 'number' ? path[0] : undefined;
+                const fieldPath = path.slice(blockIndex !== undefined ? 1 : 0).join('.');
+                const rawBlocks = Array.isArray(data.blocks) ? (data.blocks as Record<string, unknown>[]) : [];
+                const blockType = blockIndex !== undefined ? String(rawBlocks[blockIndex]?.type ?? 'unknown') : 'unknown';
+                const prefix = blockIndex !== undefined
+                    ? `Block #${blockIndex + 1} (${blockType})`
+                    : 'Blocks';
+
+                return fieldPath
+                    ? `${prefix} → ${fieldPath}: ${issue.message}`
+                    : `${prefix}: ${issue.message}`;
+            });
+
+            return {
+                success: false,
+                error: detailedErrors.join(' | '),
+            };
         }
-        return block;
-    });
 
-    // Validate full input
-    const validationResult = pageTranslationSchema.safeParse({
-        title: data.title,
-        seoTitle: data.seoTitle,
-        seoDescription: data.seoDescription,
-        ogImage: data.ogImage,
-        blocks: blocksResult.data,
-        status: data.status,
-    });
+        // Merge _isHidden flags from raw data into validated blocks.
+        // Zod strips unknown fields, but _isHidden is used by the admin
+        // to toggle section visibility and must be preserved in storage.
+        const rawBlocks = data.blocks as Record<string, unknown>[];
+        const validatedBlocks = blocksResult.data.map((block, i) => {
+            const rawBlock = rawBlocks[i];
+            if (rawBlock?._isHidden === true) {
+                return { ...block, _isHidden: true };
+            }
+            return block;
+        });
 
-    if (!validationResult.success) {
-        console.error('[savePageTranslation] Full validation FAILED:', validationResult.error.issues);
-        return {
-            success: false,
-            error: validationResult.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', '),
-        };
-    }
-    const page = await prisma.page.findUnique({ where: { id: data.pageId } });
-    if (!page) {
-        return { success: false, error: 'Page not found' };
-    }
+        // Validate full input
+        const validationResult = pageTranslationSchema.safeParse({
+            title: data.title,
+            seoTitle: data.seoTitle,
+            seoDescription: data.seoDescription,
+            ogImage: data.ogImage,
+            blocks: blocksResult.data,
+            status: data.status,
+        });
 
-    const translation = await prisma.pageTranslation.upsert({
-        where: {
-            pageId_localeCode: {
+        if (!validationResult.success) {
+            console.error('[savePageTranslation] Full validation FAILED:', validationResult.error.issues);
+            return {
+                success: false,
+                error: validationResult.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', '),
+            };
+        }
+        const page = await prisma.page.findUnique({ where: { id: data.pageId } });
+        if (!page) {
+            return { success: false, error: 'Page not found' };
+        }
+
+        const translation = await prisma.pageTranslation.upsert({
+            where: {
+                pageId_localeCode: {
+                    pageId: data.pageId,
+                    localeCode: data.localeCode,
+                },
+            },
+            update: {
+                title: data.title,
+                seoTitle: data.seoTitle || null,
+                seoDescription: data.seoDescription || null,
+                ogImage: data.ogImage || null,
+                blocks: validatedBlocks as object,
+                status: data.status as PageStatus,
+                updatedBy: session.user.id,
+            },
+            create: {
                 pageId: data.pageId,
                 localeCode: data.localeCode,
+                title: data.title,
+                seoTitle: data.seoTitle || null,
+                seoDescription: data.seoDescription || null,
+                ogImage: data.ogImage || null,
+                blocks: validatedBlocks as object,
+                status: data.status as PageStatus,
+                updatedBy: session.user.id,
             },
-        },
-        update: {
-            title: data.title,
-            seoTitle: data.seoTitle || null,
-            seoDescription: data.seoDescription || null,
-            ogImage: data.ogImage || null,
-            blocks: validatedBlocks as object,
-            status: data.status as PageStatus,
-            updatedBy: session.user.id,
-        },
-        create: {
-            pageId: data.pageId,
-            localeCode: data.localeCode,
-            title: data.title,
-            seoTitle: data.seoTitle || null,
-            seoDescription: data.seoDescription || null,
-            ogImage: data.ogImage || null,
-            blocks: validatedBlocks as object,
-            status: data.status as PageStatus,
-            updatedBy: session.user.id,
-        },
-    });
+        });
 
-    // Invalidate cache tags for instant updates on the public site
-    revalidateTag(getPageCacheTag(page.slug, data.localeCode));
-    revalidateTag('pages:all');
+        // Invalidate cache tags for instant updates on the public site
+        revalidateTag(getPageCacheTag(page.slug, data.localeCode));
+        revalidateTag('pages:all');
 
-    // Revalidate admin pages
-    revalidatePath('/admin/pages');
-    revalidatePath(`/admin/pages/${page.slug}`);
+        // Revalidate admin pages
+        revalidatePath('/admin/pages');
+        revalidatePath(`/admin/pages/${page.slug}`);
 
-    // Revalidate public pages using the correct route from page config
-    const pageConfig = getPageConfig(page.slug);
-    const publicRoute = pageConfig?.route ?? `/${page.slug}`;
+        // Revalidate public pages using the correct route from page config
+        const pageConfig = getPageConfig(page.slug);
+        const publicRoute = pageConfig?.route ?? `/${page.slug}`;
 
-    // Revalidate for all locales (a save in 'en' may affect 'az' fallback)
-    const locales = await prisma.locale.findMany({ where: { isEnabled: true }, select: { code: true } });
-    for (const loc of locales) {
-        const localizedPath = publicRoute === '/' ? `/${loc.code}` : `/${loc.code}${publicRoute}`;
-        revalidatePath(localizedPath);
+        // Revalidate for all locales (a save in 'en' may affect 'az' fallback)
+        const locales = await prisma.locale.findMany({ where: { isEnabled: true }, select: { code: true } });
+        for (const loc of locales) {
+            const localizedPath = publicRoute === '/' ? `/${loc.code}` : `/${loc.code}${publicRoute}`;
+            revalidatePath(localizedPath);
+        }
+
+        return { success: true, translation };
+    } catch (error) {
+        console.error('[savePageTranslation] Unexpected error:', error);
+        return {
+            success: false,
+            error: 'Could not save changes right now. Please retry.',
+        };
     }
-
-    return { success: true, translation };
 }
 
 // Publish a page and trigger revalidation
 export async function publishPage(pageId: string, localeCode: string, slug: string) {
-    const session = await requireAuth();
+    try {
+        const session = await requireAuth();
 
-    const translation = await prisma.pageTranslation.findUnique({
-        where: {
-            pageId_localeCode: {
-                pageId,
-                localeCode,
+        const translation = await prisma.pageTranslation.findUnique({
+            where: {
+                pageId_localeCode: {
+                    pageId,
+                    localeCode,
+                },
             },
-        },
-    });
+        });
 
-    if (!translation) {
-        return { success: false, error: 'Translation not found' };
+        if (!translation) {
+            return { success: false, error: 'Translation not found' };
+        }
+
+        // Update status to published
+        await prisma.pageTranslation.update({
+            where: {
+                pageId_localeCode: {
+                    pageId,
+                    localeCode,
+                },
+            },
+            data: {
+                status: 'PUBLISHED',
+                updatedBy: session.user.id,
+            },
+        });
+
+        // Invalidate cache tags for instant updates on the public site
+        revalidateTag(getPageCacheTag(slug, localeCode));
+        revalidateTag('pages:all');
+
+        // Revalidate all relevant paths
+        revalidatePath('/admin/pages');
+        revalidatePath(`/admin/pages/${slug}`);
+        revalidatePath(`/${localeCode}`);
+        revalidatePath(`/${localeCode}/${slug === 'home' ? '' : slug}`);
+
+        return { success: true };
+    } catch (error) {
+        console.error('[publishPage] Unexpected error:', error);
+        return {
+            success: false,
+            error: 'Could not publish right now. Please retry.',
+        };
     }
-
-    // Update status to published
-    await prisma.pageTranslation.update({
-        where: {
-            pageId_localeCode: {
-                pageId,
-                localeCode,
-            },
-        },
-        data: {
-            status: 'PUBLISHED',
-            updatedBy: session.user.id,
-        },
-    });
-
-    // Invalidate cache tags for instant updates on the public site
-    revalidateTag(getPageCacheTag(slug, localeCode));
-    revalidateTag('pages:all');
-
-    // Revalidate all relevant paths
-    revalidatePath('/admin/pages');
-    revalidatePath(`/admin/pages/${slug}`);
-    revalidatePath(`/${localeCode}`);
-    revalidatePath(`/${localeCode}/${slug === 'home' ? '' : slug}`);
-
-    return { success: true };
 }
 
 // ============================================
