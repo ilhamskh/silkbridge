@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/db';
 import type { ContentBlock } from '@/lib/blocks/schema';
+import { mergeGlobalMediaBlocks, mergeGlobalOgImage } from '@/lib/blocks/global-media';
 
 // ============================================
 // Cache Tags
@@ -58,6 +59,45 @@ async function hydrateBlocks(blocks: ContentBlock[]): Promise<ContentBlock[]> {
     }));
 }
 
+async function getDefaultLocaleCode(): Promise<string | null> {
+    const defaultLocale = await prisma.locale.findFirst({
+        where: { isDefault: true },
+        select: { code: true },
+    });
+
+    return defaultLocale?.code ?? null;
+}
+
+async function getGlobalMediaSourceTranslation(pageId: string, preferredLocale?: string) {
+    const defaultLocaleCode = await getDefaultLocaleCode();
+    const preferred = preferredLocale ?? defaultLocaleCode ?? undefined;
+
+    if (preferred) {
+        const preferredTranslation = await prisma.pageTranslation.findUnique({
+            where: {
+                pageId_localeCode: {
+                    pageId,
+                    localeCode: preferred,
+                },
+            },
+            select: {
+                blocks: true,
+                ogImage: true,
+            },
+        });
+
+        if (preferredTranslation) return preferredTranslation;
+    }
+
+    return prisma.pageTranslation.findFirst({
+        where: { pageId },
+        select: {
+            blocks: true,
+            ogImage: true,
+        },
+    });
+}
+
 export async function getPageContent(
     slug: string,
     locale: string
@@ -106,7 +146,16 @@ export async function getPageContent(
             return null;
         }
 
-        const blocks = await hydrateBlocks((translation.blocks as unknown as ContentBlock[]) || []);
+        const mediaSource = await getGlobalMediaSourceTranslation(page.id);
+        const localeBlocks = (translation.blocks as unknown as ContentBlock[]) || [];
+        const mergedBlocks = mediaSource
+            ? mergeGlobalMediaBlocks(
+                localeBlocks,
+                (mediaSource.blocks as unknown as ContentBlock[]) || []
+            )
+            : localeBlocks;
+
+        const blocks = await hydrateBlocks(mergedBlocks);
 
         return {
             id: page.id,
@@ -114,7 +163,7 @@ export async function getPageContent(
             title: translation.title,
             seoTitle: translation.seoTitle,
             seoDescription: translation.seoDescription,
-            ogImage: translation.ogImage,
+            ogImage: mergeGlobalOgImage(translation.ogImage, mediaSource?.ogImage),
             blocks,
             status: translation.status,
             updatedAt: translation.updatedAt,
@@ -238,6 +287,16 @@ export async function getPageContentForAdmin(
         }
     }
 
+    const mediaSource = await getGlobalMediaSourceTranslation(page.id);
+    const mergedTranslationBlocks = translation
+        ? (mediaSource
+            ? mergeGlobalMediaBlocks(
+                ((translation.blocks as unknown as ContentBlock[]) || []),
+                ((mediaSource.blocks as unknown as ContentBlock[]) || [])
+            )
+            : ((translation.blocks as unknown as ContentBlock[]) || []))
+        : [];
+
     return {
         page: { id: page.id, slug: page.slug },
         translation: translation
@@ -246,8 +305,8 @@ export async function getPageContentForAdmin(
                 title: translation.title,
                 seoTitle: translation.seoTitle,
                 seoDescription: translation.seoDescription,
-                ogImage: translation.ogImage,
-                blocks: (translation.blocks as unknown as ContentBlock[]) || [],
+                ogImage: mergeGlobalOgImage(translation.ogImage, mediaSource?.ogImage),
+                blocks: mergedTranslationBlocks,
                 status: translation.status as 'DRAFT' | 'PUBLISHED',
                 updatedAt: translation.updatedAt,
                 updatedBy: translation.updatedBy,

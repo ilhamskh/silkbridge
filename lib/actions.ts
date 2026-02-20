@@ -16,6 +16,8 @@ import {
     getSettingsCacheTag,
 } from '@/lib/content';
 import { getPageConfig } from '@/lib/admin/page-config';
+import { mergeGlobalMediaBlocks } from '@/lib/blocks/global-media';
+import type { ContentBlock } from '@/lib/blocks/schema';
 
 type PageStatus = 'DRAFT' | 'PUBLISHED';
 
@@ -177,6 +179,42 @@ export async function savePageTranslation(data: {
                 updatedBy: session.user.id,
             },
         });
+
+        // Keep uploaded media global across locales while preserving localized text fields.
+        const siblingTranslations = await prisma.pageTranslation.findMany({
+            where: {
+                pageId: data.pageId,
+                id: { not: translation.id },
+            },
+            select: {
+                id: true,
+                blocks: true,
+                ogImage: true,
+            },
+        });
+
+        for (const sibling of siblingTranslations) {
+            const currentBlocks = (sibling.blocks as unknown as ContentBlock[]) || [];
+            const mergedBlocks = mergeGlobalMediaBlocks(
+                currentBlocks,
+                validatedBlocks as unknown as ContentBlock[]
+            );
+            const nextOgImage = data.ogImage ?? null;
+
+            const blocksChanged = JSON.stringify(currentBlocks) !== JSON.stringify(mergedBlocks);
+            const ogImageChanged = (sibling.ogImage ?? null) !== nextOgImage;
+
+            if (!blocksChanged && !ogImageChanged) continue;
+
+            await prisma.pageTranslation.update({
+                where: { id: sibling.id },
+                data: {
+                    blocks: mergedBlocks as unknown as object,
+                    ogImage: nextOgImage,
+                    updatedBy: session.user.id,
+                },
+            });
+        }
 
         // Invalidate cache tags for instant updates on the public site
         revalidateTag(getPageCacheTag(page.slug, data.localeCode));
