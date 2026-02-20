@@ -5,6 +5,7 @@ import {
     CtaBlockRenderer,
 } from '@/lib/blocks/renderers/extended-blocks';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/routing';
 import type { ContentBlock, HeroBlock, IntroBlock, PartnersBlock, StatsRowBlock, CtaBlock } from '@/lib/blocks/schema';
 import type { PublicPartner } from '@/lib/content';
 
@@ -75,6 +76,28 @@ export default async function PartnersPageClient({
             {/* CTA — same CtaBlockRenderer used by About / Services */}
             {cta && (
                 <CtaBlockRenderer block={cta} />
+            )}
+
+            {!cta && (
+                <section className="relative py-20 lg:py-24 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950" />
+                    <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                        <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl text-white leading-tight">
+                            {t('cta.headline')}
+                        </h2>
+                        <p className="mt-5 text-lg sm:text-xl text-white/90 max-w-3xl mx-auto">
+                            {t('cta.description')}
+                        </p>
+                        <div className="mt-8">
+                            <Link
+                                href="/contact"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-900 font-semibold rounded-full hover:bg-primary-50 transition-colors"
+                            >
+                                {t('cta.button')}
+                            </Link>
+                        </div>
+                    </div>
+                </section>
             )}
         </div>
     );

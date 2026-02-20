@@ -237,11 +237,13 @@
             "partner": "партнёр",
             "partners": "партнёров",
             "visitWebsite": "Перейти на сайт",
+            "viewGallery": "Открыть галерею",
             "closeGallery": "Закрыть галерею",
             "previousImage": "Предыдущее изображение",
             "nextImage": "Следующее изображение",
             "image": "изображение",
             "galleryAriaLabel": "Галерея изображений {name}",
+            "noPartnersAvailable": "Партнёров пока нет.",
             "emptyDescription": "Мы расширяем нашу партнёрскую сеть. Хотите сотрудничать?",
             "contactCta": "Связаться с нами"
         },

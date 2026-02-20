@@ -231,11 +231,13 @@
             "partner": "partner",
             "partners": "partners",
             "visitWebsite": "Visit website",
+            "viewGallery": "View gallery",
             "closeGallery": "Close gallery",
             "previousImage": "Previous image",
             "nextImage": "Next image",
             "image": "image",
             "galleryAriaLabel": "{name} image gallery",
+            "noPartnersAvailable": "No partners available yet.",
             "emptyDescription": "We're building our partner network. Interested in collaborating?",
             "contactCta": "Get in touch"
         },

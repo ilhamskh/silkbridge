@@ -1,5 +1,4 @@
 import { Handshake } from 'lucide-react';
-import { Landmark, Building2, Hotel, Plane, Bus, Compass, Cpu, LayoutGrid } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import type { PublicPartner } from '@/lib/content';
 import { PartnerGalleryCard } from './PartnerGalleryCard';
@@ -9,55 +8,19 @@ import { getTranslations } from 'next-intl/server';
 // Category Configuration
 // ============================================
 
-const CATEGORY_CONFIG: Record<string, {
-    icon: React.ComponentType<{ className?: string }>;
-    key: string;
-}> = {
-    government: {
-        icon: Landmark,
-        key: 'government',
-    },
-    hospital: {
-        icon: Building2,
-        key: 'hospital',
-    },
-    pharma: {
-        icon: Building2,
-        key: 'pharma',
-    },
-    investor: {
-        icon: LayoutGrid,
-        key: 'investor',
-    },
-    association: {
-        icon: LayoutGrid,
-        key: 'association',
-    },
-    hotel: {
-        icon: Hotel,
-        key: 'hotel',
-    },
-    airline: {
-        icon: Plane,
-        key: 'airline',
-    },
-    transport: {
-        icon: Bus,
-        key: 'transport',
-    },
-    tourism: {
-        icon: Compass,
-        key: 'tourism',
-    },
-    technology: {
-        icon: Cpu,
-        key: 'technology',
-    },
-    other: {
-        icon: LayoutGrid,
-        key: 'other',
-    },
-};
+const CATEGORY_KEYS = new Set([
+    'government',
+    'hospital',
+    'pharma',
+    'investor',
+    'association',
+    'hotel',
+    'airline',
+    'transport',
+    'tourism',
+    'technology',
+    'other',
+]);
 
 // ============================================
 // Partner Showcase Props
@@ -73,30 +36,7 @@ interface PartnersShowcaseProps {
 function normalizeCategory(category?: string | null): string {
     if (!category) return 'other';
     const lowered = category.toLowerCase();
-    return CATEGORY_CONFIG[lowered] ? lowered : 'other';
-}
-
-// ============================================
-// Group partners by category
-// ============================================
-
-function groupByCategory(partners: PublicPartner[]) {
-    const groups: Record<string, PublicPartner[]> = {};
-
-    partners.forEach(partner => {
-        const cat = normalizeCategory(partner.category);
-        if (!groups[cat]) groups[cat] = [];
-        groups[cat].push(partner);
-    });
-
-    // Sort categories by count (larger groups first), with 'other' last
-    return Object.entries(groups)
-        .sort(([a, aPartners], [b, bPartners]) => {
-            if (a === 'other') return 1;
-            if (b === 'other') return -1;
-            return bPartners.length - aPartners.length;
-        })
-        .map(([category, partners]) => ({ category, partners }));
+    return CATEGORY_KEYS.has(lowered) ? lowered : 'other';
 }
 
 // ============================================
@@ -116,13 +56,11 @@ export async function PartnersShowcase({
         return (
             <EmptyPartnersState
                 headline={headline}
-                description={t('ui.emptyDescription')}
+                description={t('ui.noPartnersAvailable')}
                 ctaLabel={t('ui.contactCta')}
             />
         );
     }
-
-    const grouped = groupByCategory(partners);
 
     return (
         <section className="py-16 lg:py-24 bg-surface">
@@ -146,57 +84,25 @@ export async function PartnersShowcase({
                     )}
                 </div>
 
-                {/* ============================================ */}
-                {/* Category Spotlight Sections */}
-                {/* ============================================ */}
-                <div className="space-y-12 lg:space-y-16">
-                    {grouped.map(({ category, partners: categoryPartners }) => {
-                        const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.other;
-                        const CategoryIcon = config.icon;
-                        const categoryLabel = t(`categories.${config.key}.label`);
-                        const localizedDescription = t(`categories.${config.key}.description`);
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                    {partners.map((partner) => {
+                        const normalizedCategory = normalizeCategory(partner.category);
+                        const categoryLabel = t(`categories.${normalizedCategory}.label`);
 
                         return (
-                            <div key={category} className="space-y-6">
-                                {/* Category Header */}
-                                <div className="flex items-start justify-between gap-4 pb-4 border-b border-border-light">
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center mt-0.5">
-                                            <CategoryIcon className="w-5 h-5 text-primary-600" />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-heading text-xl sm:text-2xl text-ink">
-                                                {categoryLabel}
-                                            </h3>
-                                            <p className="mt-1 text-sm text-muted max-w-2xl">
-                                                {localizedDescription}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <span className="text-sm text-muted whitespace-nowrap mt-1">
-                                        {categoryPartners.length} {categoryPartners.length === 1 ? t('ui.partner') : t('ui.partners')}
-                                    </span>
-                                </div>
-
-                                {/* Partners Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                    {categoryPartners.map(partner => (
-                                        <PartnerGalleryCard
-                                            key={partner.id}
-                                            partner={{
-                                                name: partner.name,
-                                                logoUrl: partner.logoUrl,
-                                                websiteUrl: partner.websiteUrl,
-                                                description: partner.description,
-                                                location: partner.location,
-                                                specialties: partner.specialties ?? [],
-                                                categoryLabel,
-                                                galleryImages: partner.galleryImages,
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                            <PartnerGalleryCard
+                                key={partner.id}
+                                partner={{
+                                    name: partner.name,
+                                    logoUrl: partner.logoUrl,
+                                    websiteUrl: partner.websiteUrl,
+                                    description: partner.description,
+                                    location: partner.location,
+                                    specialties: partner.specialties ?? [],
+                                    categoryLabel,
+                                    galleryImages: partner.galleryImages,
+                                }}
+                            />
                         );
                     })}
                 </div>

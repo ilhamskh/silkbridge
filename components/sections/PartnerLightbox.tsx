@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { GalleryImage } from './PartnerGalleryCard';
 
 interface PartnerLightboxProps {
@@ -85,15 +85,15 @@ export function PartnerLightbox({
                 return;
             }
 
-            if (event.key === 'ArrowRight' && images.length > 1) {
-                event.preventDefault();
-                onNextRef.current();
-                return;
-            }
-
             if (event.key === 'ArrowLeft' && images.length > 1) {
                 event.preventDefault();
                 onPrevRef.current();
+                return;
+            }
+
+            if (event.key === 'ArrowRight' && images.length > 1) {
+                event.preventDefault();
+                onNextRef.current();
                 return;
             }
 
@@ -138,7 +138,13 @@ export function PartnerLightbox({
             role="dialog"
             aria-modal="true"
             aria-label={galleryAriaLabel}
-            onClick={onClose}
+            onPointerDown={(event) => {
+                event.preventDefault();
+            }}
+            onClick={(event) => {
+                event.stopPropagation();
+                onClose();
+            }}
         >
             <div
                 ref={dialogRef}
@@ -155,13 +161,13 @@ export function PartnerLightbox({
                     <X className="w-6 h-6" />
                 </button>
 
-                <div className="relative aspect-[16/10] bg-black rounded-xl overflow-hidden">
+                <div className="relative w-full h-[85vh] max-h-[85vh] bg-black rounded-xl overflow-hidden border border-white/10">
                     <Image
                         src={images[currentIndex].url}
                         alt={images[currentIndex].alt || `${partnerName} ${imageLabel} ${currentIndex + 1}`}
                         fill
                         sizes="90vw"
-                        className="object-contain"
+                        className="object-contain transition-transform duration-200"
                         priority
                     />
                 </div>
@@ -171,7 +177,7 @@ export function PartnerLightbox({
                         <button
                             type="button"
                             onClick={onPrev}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/15 hover:bg-white/25 text-white"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/15 hover:bg-white/25 text-white"
                             aria-label={previousLabel}
                         >
                             <ChevronLeft className="w-5 h-5" />
@@ -179,7 +185,7 @@ export function PartnerLightbox({
                         <button
                             type="button"
                             onClick={onNext}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/15 hover:bg-white/25 text-white"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/15 hover:bg-white/25 text-white"
                             aria-label={nextLabel}
                         >
                             <ChevronRight className="w-5 h-5" />

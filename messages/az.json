@@ -235,11 +235,13 @@
             "partner": "tərəfdaş",
             "partners": "tərəfdaş",
             "visitWebsite": "Sayta keçid",
+            "viewGallery": "Qalereyaya bax",
             "closeGallery": "Qalereyanı bağla",
             "previousImage": "Əvvəlki şəkil",
             "nextImage": "Növbəti şəkil",
             "image": "şəkil",
             "galleryAriaLabel": "{name} şəkil qalereyası",
+            "noPartnersAvailable": "Hazırda tərəfdaş yoxdur.",
             "emptyDescription": "Tərəfdaş şəbəkəmizi genişləndiririk. Əməkdaşlıq etmək istəyirsiniz?",
             "contactCta": "Əlaqə saxlayın"
         },
