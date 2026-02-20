@@ -5,6 +5,7 @@
 import { AdminInput } from '../ui/AdminInput';
 import { AdminTextarea } from '../ui/AdminTextarea';
 import { AdminButton } from '../ui/AdminButton';
+import { SingleImageUploader } from '../ui/SingleImageUploader';
 
 // Story Section Form
 export function StorySectionForm({ data, onChange }: any) {
@@ -329,10 +330,11 @@ export function TeamSectionForm({ data, onChange }: any) {
                                     placeholder="Bio..."
                                     rows={2}
                                 />
-                                <AdminInput
+                                <SingleImageUploader
+                                    label="Photo"
                                     value={member.image?.url || ''}
-                                    onChange={(e: any) => updateMember(index, 'image', e.target.value ? { url: e.target.value, alt: member.name } : undefined)}
-                                    placeholder="Photo URL (optional)"
+                                    onChange={(url) => updateMember(index, 'image', url ? { url, alt: member.name } : undefined)}
+                                    helperText="Optional photo of the team member."
                                 />
                             </div>
                         </div>

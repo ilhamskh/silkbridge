@@ -2,6 +2,7 @@
 
 import { AdminInput } from '../ui/AdminInput';
 import { AdminButton } from '../ui/AdminButton';
+import { SingleImageUploader } from '../ui/SingleImageUploader';
 import type { LogoGridSectionForm as LogoGridData } from '@/lib/admin/section-adapters';
 
 interface LogoGridSectionFormProps {
@@ -125,16 +126,15 @@ export function LogoGridSectionForm({ data, onChange }: LogoGridSectionFormProps
                                 </div>
 
                                 <div className="p-2 bg-white rounded border border-gray-200">
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                                        Logo Image
-                                    </label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <AdminInput
-                                            value={item.logo?.url || ''}
-                                            onChange={(e) => updateLogo(index, 'logo', { ...item.logo, url: e.target.value })}
-                                            placeholder="URL"
-                                            className="text-xs"
-                                        />
+                                    <SingleImageUploader
+                                        label="Logo Image"
+                                        value={item.logo?.url || ''}
+                                        onChange={(url) => updateLogo(index, 'logo', { ...item.logo, url })}
+                                    />
+                                    <div className="mt-2">
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                                            Alt Text
+                                        </label>
                                         <AdminInput
                                             value={item.logo?.alt || ''}
                                             onChange={(e) => updateLogo(index, 'logo', { ...item.logo, alt: e.target.value })}

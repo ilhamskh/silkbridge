@@ -3,6 +3,7 @@
 import { AdminInput } from '../ui/AdminInput';
 import { AdminTextarea } from '../ui/AdminTextarea';
 import { AdminButton } from '../ui/AdminButton';
+import { SingleImageUploader } from '../ui/SingleImageUploader';
 import type { TestimonialsSectionForm as TestimonialsData } from '@/lib/admin/section-adapters';
 
 interface TestimonialsSectionFormProps {
@@ -154,27 +155,21 @@ export function TestimonialsSectionForm({ data, onChange }: TestimonialsSectionF
 
                                 <div className="border-t border-gray-200 pt-4 mt-2">
                                     <h6 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Author Image</h6>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                                Image URL
-                                            </label>
-                                            <AdminInput
-                                                value={item.image?.url || ''}
-                                                onChange={(e) => updateTestimonial(index, 'image', { ...item.image, url: e.target.value })}
-                                                placeholder="https://..."
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                                Alt Text
-                                            </label>
-                                            <AdminInput
-                                                value={item.image?.alt || ''}
-                                                onChange={(e) => updateTestimonial(index, 'image', { ...item.image, alt: e.target.value })}
-                                                placeholder="Portrait of John Doe"
-                                            />
-                                        </div>
+                                    <SingleImageUploader
+                                        label="Author Photo"
+                                        value={item.image?.url || ''}
+                                        onChange={(url) => updateTestimonial(index, 'image', { ...item.image, url })}
+                                        helperText="Optional photo of the testimonial author."
+                                    />
+                                    <div className="mt-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                            Alt Text
+                                        </label>
+                                        <AdminInput
+                                            value={item.image?.alt || ''}
+                                            onChange={(e) => updateTestimonial(index, 'image', { ...item.image, alt: e.target.value })}
+                                            placeholder="Portrait of John Doe"
+                                        />
                                     </div>
                                 </div>
                             </div>
