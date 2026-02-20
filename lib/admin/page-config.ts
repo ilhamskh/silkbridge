@@ -237,7 +237,7 @@ const insightsListSection: SectionConfig = {
                 { key: 'title', label: 'Title', type: 'text', required: true },
                 { key: 'excerpt', label: 'Excerpt', type: 'textarea', required: true },
                 { key: 'date', label: 'Date', type: 'text' },
-                { key: 'image', label: 'Image URL', type: 'text' },
+                { key: 'image', label: 'Article Image', type: 'image' },
                 { key: 'href', label: 'Link', type: 'url' },
             ]
         },
@@ -261,7 +261,7 @@ const testimonialsSection: SectionConfig = {
                 { key: 'author', label: 'Author Name', type: 'text', required: true },
                 { key: 'role', label: 'Role / Title', type: 'text' },
                 { key: 'company', label: 'Company', type: 'text' },
-                { key: 'image', label: 'Avatar URL', type: 'text' },
+                { key: 'image', label: 'Author Photo', type: 'image' },
             ]
         },
     ],
@@ -280,7 +280,7 @@ const logoGridSection: SectionConfig = {
         {
             key: 'logos', label: 'Logos', type: 'array', maxItems: 12, itemFields: [
                 { key: 'name', label: 'Name', type: 'text', required: true },
-                { key: 'logo', label: 'Logo URL', type: 'text', required: true },
+                { key: 'logo', label: 'Logo Image', type: 'image', required: true },
                 { key: 'href', label: 'Link', type: 'url' },
             ]
         },
