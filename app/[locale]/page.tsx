@@ -22,5 +22,10 @@ export default async function HomePage({ params }: PageProps) {
         notFound();
     }
 
-    return <ServerBlockRenderer blocks={pageContent.blocks as ContentBlock[]} locale={locale} />;
+    // Filter out insights blocks from homepage
+    const filteredBlocks = (pageContent.blocks as ContentBlock[]).filter(
+        (block) => block.type !== 'insights' && block.type !== 'insightsList'
+    );
+
+    return <ServerBlockRenderer blocks={filteredBlocks} locale={locale} />;
 }
