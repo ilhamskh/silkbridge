@@ -88,9 +88,9 @@ export function PartnersBlockRenderer({ block }: { block: PartnersBlock }) {
                 </motion.div>
 
                 {loading && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                    <div className="flex flex-wrap justify-evenly gap-6 lg:gap-8">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse">
+                            <div key={i} className="animate-pulse w-full md:w-auto md:flex-1 max-w-sm">
                                 <div className="bg-gray-200 rounded-2xl h-80"></div>
                             </div>
                         ))}
@@ -98,7 +98,7 @@ export function PartnersBlockRenderer({ block }: { block: PartnersBlock }) {
                 )}
 
                 {!loading && partners.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                    <div className="flex flex-wrap justify-evenly gap-6 lg:gap-8">
                         {partners.map((partner, index) => (
                             <PartnerCard
                                 key={partner.id}
