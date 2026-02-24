@@ -264,6 +264,7 @@ export default function SettingsEditorNew({ settings, locales }: SettingsEditorN
                                             Current Logo
                                         </p>
                                         <div className="flex items-center justify-center bg-white p-6 rounded-lg">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={logoUrl}
                                                 alt="Logo preview"
@@ -329,6 +330,7 @@ export default function SettingsEditorNew({ settings, locales }: SettingsEditorN
                                             Current Favicon
                                         </p>
                                         <div className="flex items-center justify-center bg-white p-6 rounded-lg">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={faviconUrl}
                                                 alt="Favicon preview"

@@ -383,11 +383,14 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-3">
                                             {partner.logoUrl ? (
-                                                <img
-                                                    src={partner.logoUrl}
-                                                    alt={partner.name}
-                                                    className="w-10 h-10 object-contain rounded border bg-white"
-                                                />
+                                                <>
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img
+                                                        src={partner.logoUrl}
+                                                        alt={partner.name}
+                                                        className="w-10 h-10 object-contain rounded border bg-white"
+                                                    />
+                                                </>
                                             ) : (
                                                 <div className="w-10 h-10 rounded bg-blue-50 flex items-center justify-center">
                                                     <span className="text-blue-600 font-bold">
