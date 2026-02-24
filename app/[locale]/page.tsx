@@ -24,7 +24,16 @@ export default async function HomePage({ params }: PageProps) {
     const pageContent = await getPageContent('home', locale as 'en' | 'az');
 
     if (!pageContent) {
-        notFound();
+        // Temporarily log and render empty instead of 404 to debug production issue
+        console.error(`[HomePage] No pageContent found for locale: ${locale}`);
+        return (
+            <div className="min-h-screen flex items-center justify-center pt-32 pb-20">
+                <div className="text-center p-8 bg-amber-50 rounded-xl border border-amber-200">
+                    <h1 className="text-2xl font-bold text-amber-800">Content Missing</h1>
+                    <p className="mt-2 text-amber-700">The homepage content is currently unavailable or drafting.</p>
+                </div>
+            </div>
+        );
     }
 
     // Filter out insights blocks from homepage
