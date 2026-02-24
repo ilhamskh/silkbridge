@@ -88,9 +88,9 @@ export function PartnersBlockRenderer({ block }: { block: PartnersBlock }) {
                 </motion.div>
 
                 {loading && (
-                    <div className="flex flex-wrap justify-evenly gap-6 lg:gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse w-full md:w-auto md:flex-1 max-w-sm">
+                            <div key={i} className="animate-pulse">
                                 <div className="bg-gray-200 rounded-2xl h-80"></div>
                             </div>
                         ))}
@@ -98,7 +98,7 @@ export function PartnersBlockRenderer({ block }: { block: PartnersBlock }) {
                 )}
 
                 {!loading && partners.length > 0 && (
-                    <div className="flex flex-wrap justify-evenly gap-6 lg:gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                         {partners.map((partner, index) => (
                             <PartnerCard
                                 key={partner.id}
@@ -334,7 +334,7 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                     </motion.div>
                 )}
 
-                <div className="flex flex-wrap justify-evenly gap-6">
+                <div className="flex flex-wrap justify-center gap-6">
                     {block.members.map((member, index) => {
                         const imageData = getMemberImage(member);
                         return (
@@ -343,8 +343,7 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="text-center flex-1 min-w-[160px] max-w-[220px]"
-
+                                className="text-center flex-none w-full sm:w-52"
                             >
                                 {imageData ? (
                                     <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border border-border-light">

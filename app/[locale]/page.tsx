@@ -1,5 +1,4 @@
 import { setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { getPageContent } from '@/lib/blocks/content';
 import ServerBlockRenderer from '@/lib/blocks/ServerBlockRenderer';
