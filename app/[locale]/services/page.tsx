@@ -5,8 +5,6 @@ import { routing } from '@/i18n/routing';
 import { siteConfig } from '@/content/site-config';
 import { getPageContent } from '@/lib/blocks/content';
 import ServerBlockRenderer from '@/lib/blocks/ServerBlockRenderer';
-import { FaqSection } from '@/components/sections/FaqSection';
-import { getFaqsByGroup } from '@/lib/data/faqs';
 import type { ContentBlock } from '@/lib/blocks/schema';
 
 // ISR — revalidated on-demand via revalidateTag() in admin save actions
@@ -56,37 +54,13 @@ export default async function ServicesPage({ params }: Props) {
         notFound();
     }
 
-    // Fetch FAQs for services from database
-    const faqs = await getFaqsByGroup('services', locale);
-
-    // FAQ titles per locale
-    const faqTitle = locale === 'az'
-        ? 'Tez-tez Verilən Suallar'
-        : locale === 'ru'
-            ? 'Часто задаваемые вопросы'
-            : 'Frequently Asked Questions';
-    const faqSubtitle = locale === 'az'
-        ? 'Xidmətlərimiz haqqında ən çox verilən sualların cavabları'
-        : locale === 'ru'
-            ? 'Ответы на популярные вопросы о наших услугах'
-            : 'Find answers to common questions about our services';
-
     return (
         <div className="pt-24 lg:pt-32">
-            {/* Render content blocks from database */}
+            {/* Render content blocks from database (includes FAQ blocks) */}
             <ServerBlockRenderer
                 blocks={pageContent.blocks as ContentBlock[]}
                 locale={locale}
             />
-
-            {/* Database-driven FAQ Section */}
-            {faqs && faqs.length > 0 && (
-                <FaqSection
-                    faqs={faqs}
-                    title={faqTitle}
-                    subtitle={faqSubtitle}
-                />
-            )}
         </div>
     );
 }

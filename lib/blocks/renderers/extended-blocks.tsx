@@ -263,7 +263,7 @@ export function ValuesBlockRenderer({ block }: { block: ValuesBlock }) {
                     </motion.div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex flex-wrap justify-center gap-6">
                     {block.values.map((value, index) => {
                         const Icon = value.icon ? iconMap[value.icon] || Icons.regulatory : Icons.regulatory;
                         return (
@@ -272,7 +272,7 @@ export function ValuesBlockRenderer({ block }: { block: ValuesBlock }) {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="p-8 bg-white rounded-2xl border border-border-light"
+                                className="p-8 bg-white rounded-2xl border border-border-light flex-1 min-w-[280px] max-w-lg"
                             >
                                 <Icon className="w-10 h-10 text-primary-600" />
                                 <h3 className="mt-4 font-heading text-xl text-ink">{value.title}</h3>
@@ -334,7 +334,7 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                     </motion.div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="flex flex-wrap justify-center gap-6">
                     {block.members.map((member, index) => {
                         const imageData = getMemberImage(member);
                         return (
@@ -343,7 +343,7 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="text-center"
+                                className="text-center flex-none w-full sm:w-52"
                             >
                                 {imageData ? (
                                     <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border border-border-light">
@@ -557,7 +557,7 @@ export function ProcessBlockRenderer({ block }: { block: ProcessBlock }) {
                     </motion.div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="flex flex-wrap justify-center gap-6">
                     {block.steps.map((step, index) => {
                         const Icon = step.icon ? iconMap[step.icon] || Icons.regulatory : Icons.regulatory;
                         return (
@@ -566,7 +566,7 @@ export function ProcessBlockRenderer({ block }: { block: ProcessBlock }) {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="relative p-6 bg-white rounded-2xl border border-border-light"
+                                className="relative p-6 bg-white rounded-2xl border border-border-light flex-none w-full sm:w-64"
                             >
                                 <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold text-sm">
                                     {index + 1}
@@ -596,14 +596,14 @@ export function StatsRowBlockRenderer({ block }: { block: StatsRowBlock }) {
     return (
         <section ref={ref} className="py-12 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="flex flex-wrap justify-center gap-8">
                     {block.stats.map((stat, index) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ duration: 0.4, delay: index * 0.1 }}
-                            className="text-center"
+                            className="text-center flex-none w-36 md:w-48"
                         >
                             <p className="font-heading text-4xl font-bold text-primary-600">
                                 {stat.value}
@@ -649,14 +649,14 @@ export function AreasBlockRenderer({ block }: { block: AreasBlock }) {
                     )}
                 </motion.div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                <div className="flex flex-wrap justify-center gap-4 lg:gap-6">
                     {block.areas.map((area, index) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ duration: 0.4, delay: 0.1 + index * 0.05 }}
-                            className="group relative overflow-hidden rounded-card-lg bg-surface border border-border-light hover:shadow-card transition-all duration-300"
+                            className="group relative overflow-hidden rounded-card-lg bg-surface border border-border-light hover:shadow-card transition-all duration-300 flex-none w-[calc(50%-8px)] sm:w-52 md:w-56"
                         >
                             {area.image ? (
                                 <div className="aspect-[4/3] relative">

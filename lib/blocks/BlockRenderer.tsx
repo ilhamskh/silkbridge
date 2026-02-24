@@ -196,7 +196,7 @@ function AboutBlockRenderer({ block }: { block: AboutBlock }) {
                 </motion.div>
 
                 {block.pillars && block.pillars.length > 0 && (
-                    <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="mt-16 flex flex-wrap justify-center gap-6">
                         {block.pillars.map((pillar, index) => {
                             const Icon = pillar.icon ? iconMap[pillar.icon] || Icons.regulatory : Icons.regulatory;
                             return (
@@ -205,7 +205,7 @@ function AboutBlockRenderer({ block }: { block: AboutBlock }) {
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                                     transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                                    className="p-8 bg-white rounded-2xl border border-border-light shadow-card hover:shadow-card-hover transition-shadow"
+                                    className="p-8 bg-white rounded-2xl border border-border-light shadow-card hover:shadow-card-hover transition-shadow w-full md:w-80"
                                 >
                                     <div className="w-14 h-14 rounded-2xl bg-primary-50 flex items-center justify-center">
                                         <Icon className="w-7 h-7 text-primary-600" />
@@ -319,14 +319,14 @@ function InsightsBlockRenderer({ block }: { block: InsightsBlock }) {
                 </motion.div>
 
                 {block.stats && block.stats.length > 0 && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="flex flex-wrap justify-center gap-6">
                         {block.stats.map((stat, index) => (
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                                className="text-center p-6 bg-surface rounded-xl"
+                                className="text-center p-6 bg-surface rounded-xl flex-none w-36 lg:w-48"
                             >
                                 <p className="font-heading text-3xl font-bold text-primary-600">
                                     {stat.value}
@@ -385,14 +385,14 @@ function TestimonialsBlockRenderer({ block }: { block: TestimonialsBlock }) {
                     <h2 className="font-heading text-3xl sm:text-4xl text-ink">{block.headline}</h2>
                 </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="flex flex-wrap justify-center gap-8">
                     {block.testimonials.map((testimonial: any, index: number) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col"
+                            className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col w-full md:w-80 lg:w-96 flex-none"
                         >
                             <div className="mb-6 flex-grow">
                                 <Icons.quote className="w-8 h-8 text-primary-200 mb-4" />
@@ -456,14 +456,14 @@ function InsightsListBlockRenderer({ block }: { block: InsightsListBlock }) {
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="flex flex-wrap justify-center gap-8">
                     {block.items.map((item: any, index: number) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="group cursor-pointer"
+                            className="group cursor-pointer w-full md:w-80 lg:w-96 flex-none"
                         >
                             <Link href={item.href || '#'}>
                                 <div className="aspect-[4/3] rounded-2xl bg-gray-100 overflow-hidden mb-6 relative">
@@ -524,14 +524,14 @@ function LogoGridBlockRenderer({ block }: { block: LogoGridBlock }) {
                     </motion.div>
                 )}
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 max-w-4xl mx-auto">
+                <div className="flex flex-wrap justify-center gap-8 md:gap-12">
                     {block.logos.map((logo: any, index: number) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="flex justify-center"
+                            className="flex-none"
                         >
                             {logo.href ? (
                                 <a href={logo.href} className="group block">
