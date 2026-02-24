@@ -334,7 +334,7 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                     </motion.div>
                 )}
 
-                <div className="flex flex-wrap justify-center gap-6">
+                <div className="flex flex-wrap justify-evenly gap-6">
                     {block.members.map((member, index) => {
                         const imageData = getMemberImage(member);
                         return (
@@ -343,7 +343,8 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="text-center flex-none w-full sm:w-52"
+                                className="text-center flex-1 min-w-[160px] max-w-[220px]"
+
                             >
                                 {imageData ? (
                                     <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border border-border-light">
