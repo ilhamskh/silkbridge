@@ -334,7 +334,7 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                     </motion.div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {block.members.map((member, index) => {
                         const imageData = getMemberImage(member);
                         return (
@@ -343,10 +343,10 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-border-light"
+                                className="text-center"
                             >
                                 {imageData ? (
-                                    <div className="w-16 h-16 flex-shrink-0 rounded-full overflow-hidden border border-border-light">
+                                    <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border border-border-light">
                                         <img
                                             src={imageData.src}
                                             alt={imageData.alt}
@@ -355,19 +355,17 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="w-16 h-16 flex-shrink-0 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-                                        <span className="text-xl font-heading font-bold text-primary-600">
+                                    <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                                        <span className="text-3xl font-heading font-bold text-primary-600">
                                             {member.name.split(' ').map(n => n[0]).join('')}
                                         </span>
                                     </div>
                                 )}
-                                <div className="min-w-0">
-                                    <h4 className="font-heading font-semibold text-ink leading-tight">{member.name}</h4>
-                                    <p className="text-sm text-primary-600 mt-0.5">{member.role}</p>
-                                    {member.bio && (
-                                        <p className="mt-1.5 text-sm text-muted leading-relaxed">{member.bio}</p>
-                                    )}
-                                </div>
+                                <h4 className="mt-4 font-heading font-semibold text-ink">{member.name}</h4>
+                                <p className="text-sm text-primary-600">{member.role}</p>
+                                {member.bio && (
+                                    <p className="mt-2 text-sm text-muted">{member.bio}</p>
+                                )}
                             </motion.div>
                         );
                     })}
@@ -376,6 +374,7 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
         </section>
     );
 }
+
 
 // ============================================
 // CTA Block
