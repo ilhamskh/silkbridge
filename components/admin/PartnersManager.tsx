@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Pencil, Trash2, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, Pencil, Trash2, ExternalLink, ChevronUp, ChevronDown, X } from 'lucide-react';
 import { AdminInput } from './ui/AdminInput';
 import { AdminTextarea } from './ui/AdminTextarea';
 import { SingleImageUploader } from './ui/SingleImageUploader';
@@ -456,10 +456,17 @@ export function PartnersManager({ initialPartners, locales }: PartnersManagerPro
             {isCreating && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                     <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
-                        <div className="p-6 border-b border-gray-200">
+                        <div className="p-6 border-b border-gray-200 flex items-center justify-between gap-4">
                             <h2 className="text-xl font-semibold text-gray-900">
                                 {editingPartner ? 'Edit Partner' : 'Add New Partner'}
                             </h2>
+                            <button
+                                onClick={closeModal}
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                                aria-label="Close"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
                         </div>
 
                         <div className="p-6 space-y-6">

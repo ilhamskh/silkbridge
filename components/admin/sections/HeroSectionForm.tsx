@@ -31,18 +31,55 @@ export function HeroSectionForm({ data, onChange }: HeroSectionFormProps) {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Main Tagline <span className="text-red-500">*</span>
-                </label>
-                <AdminTextarea
-                    value={formData.tagline}
-                    onChange={(e) => handleChange('tagline', e.target.value)}
-                    placeholder="Based in Baku&#10;Your Gateway to Azerbaijan"
-                    rows={3}
-                    className="w-full"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                    💡 Use line breaks (\n) for multi-line headlines. Example: "Based in Baku\nYour Gateway to Azerbaijan"
+                <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-sm font-medium text-gray-700">
+                        Main Tagline (headline) <span className="text-red-500">*</span>
+                    </label>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            const lines = formData.tagline ? formData.tagline.split('\n') : [''];
+                            handleChange('tagline', [...lines, ''].join('\n'));
+                        }}
+                        className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                        + Add line
+                    </button>
+                </div>
+
+                <div className="space-y-2">
+                    {(formData.tagline ? formData.tagline.split('\n') : ['']).map((line, i, arr) => (
+                        <div key={i} className="flex items-center gap-2">
+                            <span className="text-xs text-gray-400 w-5 text-right flex-shrink-0">{i + 1}</span>
+                            <AdminInput
+                                value={line}
+                                onChange={(e) => {
+                                    const lines = arr.slice();
+                                    lines[i] = e.target.value;
+                                    handleChange('tagline', lines.join('\n'));
+                                }}
+                                placeholder={i === 0 ? 'e.g. Based in Baku' : 'e.g. Your Gateway to Azerbaijan'}
+                                className="flex-1"
+                            />
+                            {arr.length > 1 && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const lines = arr.filter((_, idx) => idx !== i);
+                                        handleChange('tagline', lines.join('\n'));
+                                    }}
+                                    className="text-red-400 hover:text-red-600 text-xs px-1 flex-shrink-0"
+                                    title="Remove this line"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                <p className="text-xs text-gray-400 mt-1.5">
+                    Each line renders as a separate line in the hero headline.
                 </p>
             </div>
 

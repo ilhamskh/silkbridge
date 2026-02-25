@@ -121,7 +121,7 @@ function HeroBlockRenderer({ block }: { block: HeroBlock }) {
             >
                 <motion.h1
                     variants={fadeUp}
-                    className="font-heading text-6xl sm:text-8xl lg:text-9xl text-white font-bold leading-[1.0] tracking-tighter"
+                    className="font-heading text-4xl sm:text-5xl lg:text-6xl text-white font-bold leading-[1.1] tracking-tight"
                 >
                     {taglineLines.map((line, i) => (
                         <span key={i} className="block">
