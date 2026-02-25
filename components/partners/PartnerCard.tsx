@@ -150,6 +150,19 @@ export function PartnerCard({ partner, index }: PartnerCardProps) {
                                     {currentImageIndex + 1}/{images.length}
                                 </div>
                             )}
+
+                            {/* Logo Badge — always visible over gallery images */}
+                            {partner.logoUrl && (
+                                <div className="absolute bottom-3 left-3 w-12 h-12 rounded-xl bg-white shadow-lg border border-white/80 overflow-hidden flex items-center justify-center p-1.5">
+                                    <Image
+                                        src={partner.logoUrl}
+                                        alt={`${partner.name} logo`}
+                                        fill
+                                        sizes="48px"
+                                        className="object-contain p-1.5"
+                                    />
+                                </div>
+                            )}
                         </>
                     ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center">
