@@ -290,6 +290,52 @@ export function ValuesBlockRenderer({ block }: { block: ValuesBlock }) {
 // Team Block
 // ============================================
 
+/**
+ * Returns the desktop row distribution for N members.
+ * Max 3 per row. Rows are as balanced as possible.
+ *
+ *  ≤3  → [n]
+ *   4  → [2,2]
+ *   5  → [3,2]
+ *   6  → [3,3]
+ *   7  → [3,2,2]
+ *   8  → [3,3,2]
+ *   9+ → greedy chunks of 3, remainder spread to avoid a lone 1
+ */
+function getDesktopRows(count: number): number[] {
+    if (count <= 3) return [count];
+    if (count === 4) return [2, 2];
+    if (count === 5) return [3, 2];
+    if (count === 6) return [3, 3];
+    if (count === 7) return [3, 2, 2];
+    if (count === 8) return [3, 3, 2];
+
+    // 9+: fill rows of 3; if remainder is 1, steal from last full row to get [3…,2,2]
+    const fullRows = Math.floor(count / 3);
+    const remainder = count % 3;
+
+    if (remainder === 0) return Array(fullRows).fill(3);
+    if (remainder === 1) {
+        // Avoid a lone 1 — convert last [3,1] → [2,2]
+        const rows = Array(fullRows - 1).fill(3);
+        rows.push(2, 2);
+        return rows;
+    }
+    // remainder === 2
+    return [...Array(fullRows).fill(3), 2];
+}
+
+/** Split an array into consecutive chunks of given sizes */
+function chunkByRows<T>(items: T[], rowSizes: number[]): T[][] {
+    const result: T[][] = [];
+    let cursor = 0;
+    for (const size of rowSizes) {
+        result.push(items.slice(cursor, cursor + size));
+        cursor += size;
+    }
+    return result;
+}
+
 export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: true, margin: '-100px' });
@@ -299,7 +345,6 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
         if (typeof rawImage === 'string' && rawImage.trim().length > 0) {
             return { src: rawImage, alt: member.name };
         }
-
         if (rawImage && typeof rawImage === 'object') {
             const imageObj = rawImage as { url?: unknown; alt?: unknown };
             if (typeof imageObj.url === 'string' && imageObj.url.trim().length > 0) {
@@ -311,13 +356,102 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                 };
             }
         }
-
         return null;
     };
 
+    const desktopRows = chunkByRows(block.members, getDesktopRows(block.members.length));
+
+    // Single member card — shared across all layouts
+    const MemberItem = ({
+        member,
+        globalIndex,
+    }: {
+        member: TeamBlock['members'][number];
+        globalIndex: number;
+    }) => {
+        const imageData = getMemberImage(member);
+        const initials = member.name
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase();
+
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: globalIndex * 0.07 }}
+                className="flex flex-col items-center text-center gap-2"
+            >
+                {/* Avatar wrapper — scoped CSS class handles responsive sizing */}
+                <div
+                    className="sb-avatar"
+                    style={{
+                        flexShrink: 0,
+                        margin: '0 auto',
+                        borderRadius: '9999px',
+                        backgroundColor: '#f5f5f5',
+                        padding: '3px',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    {imageData ? (
+                        <img
+                            src={imageData.src}
+                            alt={imageData.alt}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                objectPosition: 'center',
+                                borderRadius: '9999px',
+                                display: 'block',
+                            }}
+                            loading="lazy"
+                        />
+                    ) : (
+                        <div
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: '9999px',
+                                backgroundColor: '#f5f5f5',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <span className="font-heading font-semibold" style={{ color: '#737373', fontSize: '1rem', userSelect: 'none' }}>
+                                {initials}
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                <h4 className="text-base sm:text-lg font-heading font-semibold text-ink leading-snug">
+                    {member.name}
+                </h4>
+                <p className="text-sm sm:text-base text-neutral-500 leading-relaxed max-w-[240px] break-words">
+                    {member.role}
+                </p>
+            </motion.div>
+        );
+    };
+
     return (
-        <section ref={ref} className="py-16 lg:py-24 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section ref={ref} className="py-16 lg:py-20 bg-white">
+            {/* Scoped responsive avatar size — immune to Tailwind purging */}
+            <style>{`
+                .sb-avatar { width: 7rem; height: 7rem; }    /* 112px mobile */
+                @media (min-width: 640px) {
+                    .sb-avatar { width: 8rem; height: 8rem; } /* 128px desktop */
+                }
+            `}</style>
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {(block.title || block.subtitle) && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -326,7 +460,7 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                         className="text-center max-w-2xl mx-auto mb-12"
                     >
                         {block.title && (
-                            <h2 className="font-heading text-3xl text-ink">{block.title}</h2>
+                            <h2 className="font-heading text-3xl sm:text-4xl text-ink">{block.title}</h2>
                         )}
                         {block.subtitle && (
                             <p className="mt-4 text-muted text-lg">{block.subtitle}</p>
@@ -334,39 +468,37 @@ export function TeamBlockRenderer({ block }: { block: TeamBlock }) {
                     </motion.div>
                 )}
 
-                <div className="flex flex-row flex-nowrap justify-center gap-8 overflow-x-auto pb-2">
-                    {block.members.map((member, index) => {
-                        const imageData = getMemberImage(member);
+                {/* ── Mobile: always 2-column CSS grid ──────────────────────────
+                    No JS, no fixed widths, no overflow. Pure CSS grid-cols-2.   */}
+                <div className="grid grid-cols-2 gap-8 sm:hidden">
+                    {block.members.map((member, i) => (
+                        <MemberItem key={i} member={member} globalIndex={i} />
+                    ))}
+                </div>
+
+                {/* ── Desktop: balanced JS-chunked rows ─────────────────────────
+                    Each row is a centered flex row.
+                    Row sizes come from getDesktopRows() — never a stranded 1.   */}
+                <div className="hidden sm:flex flex-col gap-12">
+                    {desktopRows.map((rowMembers, rowIndex) => {
+                        // globalIndex for stagger offset
+                        const startIndex = desktopRows
+                            .slice(0, rowIndex)
+                            .reduce((acc, r) => acc + r.length, 0);
                         return (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="text-center flex-none w-36"
+                            <div
+                                key={rowIndex}
+                                className="flex flex-row flex-wrap justify-center gap-10 lg:gap-16"
                             >
-                                {imageData ? (
-                                    <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border border-border-light">
-                                        <img
-                                            src={imageData.src}
-                                            alt={imageData.alt}
-                                            className="w-full h-full object-cover"
-                                            loading="lazy"
+                                {rowMembers.map((member, colIndex) => (
+                                    <div key={colIndex} className="w-40 lg:w-48 shrink-0">
+                                        <MemberItem
+                                            member={member}
+                                            globalIndex={startIndex + colIndex}
                                         />
                                     </div>
-                                ) : (
-                                    <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-                                        <span className="text-3xl font-heading font-bold text-primary-600">
-                                            {member.name.split(' ').map(n => n[0]).join('')}
-                                        </span>
-                                    </div>
-                                )}
-                                <h4 className="mt-4 font-heading font-semibold text-ink">{member.name}</h4>
-                                <p className="text-sm text-primary-600">{member.role}</p>
-                                {member.bio && (
-                                    <p className="mt-2 text-sm text-muted">{member.bio}</p>
-                                )}
-                            </motion.div>
+                                ))}
+                            </div>
                         );
                     })}
                 </div>
