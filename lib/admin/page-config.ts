@@ -587,6 +587,13 @@ export const PAGE_CONFIGS: PageConfig[] = [
             storylineSection,
             valuesSection,
             teamSection,
+            {
+                ...teamSection,
+                sectionId: 'medical-council',
+                label: 'Medical Scientific Council',
+                description: 'Members of the Medical Scientific Council representing Azerbaijani healthcare internationally.',
+                icon: 'stethoscope',
+            },
             ctaSection,
         ],
     },

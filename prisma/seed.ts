@@ -307,6 +307,18 @@ const aboutBlocksEn: ContentBlock[] = [
         ],
     },
     {
+        type: 'team',
+        title: 'The Leaders of the Medical Scientific Council',
+        subtitle: 'SILKBRIDGE – The leaders of the Medical Scientific Council are a team of professionals who represent Azerbaijani healthcare at the international level.',
+        members: [
+            { name: 'Dr. Khalilzade Rovshan', role: 'Head of the Department of Neurosurgery of the Azerbaijan Medical University, Chairman of the Association of Neurosurgeons, Doctor of Philosophy, Associate Professor' },
+            { name: 'Prof. Dr. Ahmadov Ilham Samidoglu', role: 'Professor of the Department of Urology, Azerbaijan Medical University, Doctor of Medical Sciences, Chairman of the Association of Urologists and Andrologists' },
+            { name: 'Abbasov Eldar Shamkhaloglu', role: 'Professor of the Department of Traumatology, Azerbaijan Medical University, Doctor of Medical Sciences' },
+            { name: 'Babek Salek Gannadi', role: 'Chief Endocrinologist of the Republic of Azerbaijan' },
+            { name: 'Tural Pashayev', role: 'Hematologist at Liv Bona Dea Hospital, Peripheral Specialist' },
+        ],
+    },
+    {
         type: 'insights',
         eyebrow: 'Market Opportunity',
         headline: 'Medical Tourism Growth',
@@ -373,6 +385,18 @@ const aboutBlocksAz: ContentBlock[] = [
             { name: 'Rəşid Məmmədov', role: 'Farma Rəhbəri', bio: 'Farma tənzimləmələri, qeydiyyat və bazara giriş strategiyaları üzrə ekspert.' },
             { name: 'Nigar Həsənova', role: 'Pasiyent Koordinatoru', bio: 'Beynəlxalq pasiyentlər üçün qüsursuz səyahətləri təmin edən çoxdilli mütəxəssis.' },
             { name: 'Elvin Hüseynov', role: 'Korporativ Menecer', bio: 'Biznes logistikası, nümayəndə heyəti səfərləri və MICE tədbirləri üzrə mütəxəssis.' },
+        ],
+    },
+    {
+        type: 'team',
+        title: 'Tibbi Elmi Şüra üzvləri',
+        subtitle: 'SILKBRIDGE – Tibbi Elmi Şüranın liderləri Azərbaycan səhiyyəsini beynəlxalq səviyyədə təmsil edən peşəkarlar komandadır.',
+        members: [
+            { name: 'Dr. Xəlilzadə Rövşən', role: 'Azərbaycan Tibb Universitetinin Neyrocərrahiyyə kafedrasının müdiri, Neyrocərrahlar Assosiasiyasının sədri, Fəlsəfə doktoru, Dosent' },
+            { name: 'Prof. Dr. Əhmədov İlham Samidoğlu', role: 'Azərbaycan Tibb Universitetinin Urologiya kafedrasının professoru, Tibb Elmləri Doktoru, Uroloqlar və Androloqlar Assosiasiyasının sədri' },
+            { name: 'Abbasov Eldar Şamxaloğlu', role: 'Azərbaycan Tibb Universitetinin Travmatologiya kafedrasının professoru, Tibb Elmləri Doktoru' },
+            { name: 'Babək Saleh Gənnadi', role: 'Azərbaycan Respublikasının Baş Endokrinoloqu' },
+            { name: 'Tural Paşayev', role: 'Liv Bona Dea Xəstəxanasının Hematoloqu, Periferik Mütəxəssis' },
         ],
     },
     {
@@ -940,6 +964,18 @@ const aboutBlocksRu: ContentBlock[] = [
             { name: 'Рашид Мамедов', role: 'Глава Фарма направления', bio: 'Эксперт в фармацевтическом регулировании, регистрации и стратегиях выхода на рынок.' },
             { name: 'Нигяр Гасанова', role: 'Координатор пациентов', bio: 'Мультиязычный профессионал, обеспечивающий бесшовные поездки для международных пациентов.' },
             { name: 'Эльвин Гусейнов', role: 'Корпоративный менеджер', bio: 'Специалист по бизнес-логистике, визитам делегаций и MICE мероприятиям.' },
+        ],
+    },
+    {
+        type: 'team',
+        title: 'Члены Медицинского Научного Совета',
+        subtitle: 'SILKBRIDGE – Лидеры Медицинского Научного Совета — команда профессионалов, представляющих азербайджанское здравоохранение на международном уровне.',
+        members: [
+            { name: 'Др. Халилзаде Ровшан', role: 'Заведующий кафедрой нейрохирургии Азербайджанского Медицинского Университета, Председатель Ассоциации нейрохирургов, Доктор философии, Доцент' },
+            { name: 'Проф. Др. Ахмедов Ильхам Самидоглу', role: 'Профессор кафедры урологии Азербайджанского Медицинского Университета, Доктор медицинских наук, Председатель Ассоциации урологов и андрологов' },
+            { name: 'Аббасов Эльдар Шамхалоглу', role: 'Профессор кафедры травматологии Азербайджанского Медицинского Университета, Доктор медицинских наук' },
+            { name: 'Бабек Салех Ганнади', role: 'Главный эндокринолог Азербайджанской Республики' },
+            { name: 'Турал Пашаев', role: 'Гематолог клиники Liv Bona Dea, Специалист по периферии' },
         ],
     },
     {
