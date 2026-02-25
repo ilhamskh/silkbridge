@@ -15,6 +15,7 @@
         "db:seed:real": "npx tsx prisma/seed-real-content.ts",
         "db:seed:contact": "npx tsx prisma/seed-contact.ts",
         "db:seed:partners": "npx dotenv -e .env -- npx tsx scripts/seed-partners.ts",
+        "db:seed:content": "npx dotenv -e .env -- npx tsx scripts/seed-content.ts",
         "db:studio": "prisma studio",
         "db:reset": "prisma migrate reset --force"
     },
