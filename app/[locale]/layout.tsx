@@ -51,6 +51,10 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
         ru: 'Премиум услуги выхода на фармацевтический рынок и оздоровительный туризм, связывающие глобальные рынки.',
     };
 
+    // Fetch favicon from DB settings — falls back to /favicon.ico if not set
+    const settings = await getSiteSettings(locale);
+    const faviconHref = settings?.faviconUrl || '/favicon.ico';
+
     return {
         metadataBase: new URL(BASE_URL),
         title: {
@@ -58,6 +62,13 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
             template: `%s | Silkbridge International`,
         },
         description: descriptions[locale] || descriptions.en,
+        icons: {
+            icon: [
+                { url: faviconHref },
+            ],
+            shortcut: faviconHref,
+            apple: faviconHref,
+        },
         keywords: [
             'pharmaceutical market entry',
             'health tourism',
