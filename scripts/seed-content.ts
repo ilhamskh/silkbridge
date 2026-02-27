@@ -779,7 +779,6 @@ async function main() {
             });
 
             const newCount = merged.length - existingBlocks.length;
-            const mergedCount = merged.length - (newCount > 0 ? newCount : 0);
             console.log(
                 `  ✓  [${localeCode}] Updated — ${existingBlocks.length} → ${merged.length} blocks` +
                 (newCount > 0 ? ` (${newCount} new added)` : ' (blocks merged in-place)')

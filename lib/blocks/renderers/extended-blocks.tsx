@@ -574,89 +574,145 @@ export function CtaBlockRenderer({ block }: { block: CtaBlock }) {
 }
 
 // ============================================
-// Service Details Block
+// Service Details Block — Compact Card
 // ============================================
 
-export function ServiceDetailsBlockRenderer({ block }: { block: ServiceDetailsBlock }) {
-    const ref = useRef<HTMLDivElement>(null);
-    const isInView = useInView(ref, { once: true, margin: '-100px' });
+import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import {
+    Stethoscope, Truck, FlaskConical, Store, Globe, LineChart,
+    ChevronDown, CheckCircle2,
+} from 'lucide-react';
+
+/** Pharma-relevant icon mapping by serviceId */
+const serviceIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    pharmaDistribution: Truck,
+    pharmacyChain: Store,
+    aestheticCenters: FlaskConical,
+    logistics: Truck,
+    medicalMarketing: LineChart,
+    marketEntry: Globe,
+    // Fallbacks for other possible serviceIds
+    healthTourism: Stethoscope,
+    default: Stethoscope,
+};
+
+function getServiceIcon(serviceId: string): React.ComponentType<{ className?: string }> {
+    return serviceIconMap[serviceId] || serviceIconMap.default;
+}
+
+/** Single compact service card with inline expand */
+export function ServiceDetailsBlockRenderer({ block, index = 0 }: { block: ServiceDetailsBlock; index?: number }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const Icon = getServiceIcon(block.serviceId);
 
     return (
-        <section ref={ref} id={block.serviceId} className="py-16 lg:py-24 bg-white scroll-mt-24">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-                    <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ duration: 0.6 }}
-                        className="lg:sticky lg:top-32"
-                    >
-                        {/* Optional service image */}
-                        {block.image && (
-                            <div className="mb-6 rounded-2xl overflow-hidden border border-border-light">
-                                <img
-                                    src={block.image}
-                                    alt={block.imageAlt || block.title}
-                                    className="w-full h-auto object-cover"
-                                    loading="lazy"
-                                />
-                            </div>
+        <motion.div
+            id={block.serviceId}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.45, delay: index * 0.08 }}
+            className="group h-full scroll-mt-24"
+        >
+            <div className="h-full flex flex-col bg-white rounded-card-lg border border-border-light hover:border-primary-200 hover:shadow-card-hover transition-all duration-300">
+                {/* Optional service image */}
+                {block.image && (
+                    <div className="relative h-40 rounded-t-card-lg overflow-hidden">
+                        <img
+                            src={block.image}
+                            alt={block.imageAlt || block.title}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-ink/20 to-transparent" />
+                    </div>
+                )}
+
+                <div className="flex flex-col flex-1 p-6">
+                    {/* Icon + Title */}
+                    <div className="flex items-start gap-4 mb-3">
+                        <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center shadow-button group-hover:shadow-button-hover transition-shadow">
+                            <Icon className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="font-heading text-h3 text-ink group-hover:text-primary-700 transition-colors leading-snug pt-1">
+                            {block.title}
+                        </h3>
+                    </div>
+
+                    {/* Short description */}
+                    <p className={`text-body-sm text-muted leading-relaxed mb-4 flex-1 ${!isExpanded ? 'line-clamp-3' : ''}`}>
+                        {block.description}
+                    </p>
+
+                    {/* Expandable features */}
+                    <AnimatePresence initial={false}>
+                        {isExpanded && block.features && block.features.length > 0 && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                                className="overflow-hidden"
+                            >
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pt-3 pb-4 border-t border-border-light">
+                                    {block.features.map((feature, i) => (
+                                        <div key={i} className="flex items-start gap-2">
+                                            <CheckCircle2 className="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
+                                            <span className="text-body-sm text-muted">{feature}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </motion.div>
                         )}
+                    </AnimatePresence>
 
-                        <h2 className="font-heading text-3xl text-ink">{block.title}</h2>
-                        <p className="mt-4 text-muted text-lg leading-relaxed">{block.description}</p>
-
+                    {/* Action row */}
+                    <div className="flex items-center justify-between mt-auto pt-3 border-t border-border-light">
                         {block.features && block.features.length > 0 && (
-                            <ul className="mt-6 space-y-3">
-                                {block.features.map((feature, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <span className="mt-2 w-1.5 h-1.5 rounded-full bg-primary-500 flex-shrink-0" />
-                                        <span className="text-muted">{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                            <button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="inline-flex items-center gap-1.5 text-body-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                            >
+                                {isExpanded ? 'Show less' : 'View details'}
+                                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                            </button>
                         )}
 
                         {block.ctaText && block.ctaHref && (
-                            <div className="mt-8">
-                                <Link href={block.ctaHref}>
-                                    <Button size="lg">
-                                        {block.ctaText}
-                                        <Icons.arrowRight className="ml-2 w-4 h-4" />
-                                    </Button>
-                                </Link>
-                            </div>
+                            <Link
+                                href={block.ctaHref}
+                                className="inline-flex items-center gap-1 text-body-sm font-medium text-primary-600 hover:text-primary-700 transition-colors group/link"
+                            >
+                                <span className="relative">
+                                    {block.ctaText}
+                                    <span className="absolute left-0 -bottom-0.5 w-0 h-px bg-primary-600 group-hover/link:w-full transition-all duration-300" />
+                                </span>
+                                <Icons.arrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 transition-transform" />
+                            </Link>
                         )}
-                    </motion.div>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
 
-                    {block.details && block.details.length > 0 && (
-                        <div className="space-y-6">
-                            {block.details.map((detail, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="p-8 bg-surface rounded-2xl border border-border-light"
-                                >
-                                    <h3 className="font-heading text-xl text-ink">{detail.title}</h3>
-                                    <p className="mt-3 text-muted">{detail.description}</p>
-                                    {detail.tags && detail.tags.length > 0 && (
-                                        <div className="mt-4 flex flex-wrap gap-2">
-                                            {detail.tags.map((tag, i) => (
-                                                <span
-                                                    key={i}
-                                                    className="px-3 py-1 bg-white text-primary-700 text-sm rounded-full border border-primary-100"
-                                                >
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </motion.div>
-                            ))}
-                        </div>
-                    )}
+/** Wrapper component to display a grid of ServiceDetails cards */
+export function ServiceDetailsGridRenderer({ blocks }: { blocks: ServiceDetailsBlock[] }) {
+    const ref = useRef<HTMLDivElement>(null);
+
+    return (
+        <section ref={ref} className="py-12 lg:py-20 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                    {blocks.map((block, index) => (
+                        <ServiceDetailsBlockRenderer
+                            key={block.serviceId || index}
+                            block={block}
+                            index={index}
+                        />
+                    ))}
                 </div>
             </div>
         </section>
@@ -664,54 +720,87 @@ export function ServiceDetailsBlockRenderer({ block }: { block: ServiceDetailsBl
 }
 
 // ============================================
-// Process Block
+// Process Block — Horizontal Connected Timeline
 // ============================================
+
+
 
 export function ProcessBlockRenderer({ block }: { block: ProcessBlock }) {
     const ref = useRef<HTMLDivElement>(null);
-    const isInView = useInView(ref, { once: true, margin: '-100px' });
 
     return (
-        <section ref={ref} className="py-16 lg:py-24 bg-surface">
+        <section ref={ref} className="py-12 lg:py-16 bg-gradient-to-b from-surface to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {(block.title || block.subtitle) && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ duration: 0.6 }}
-                        className="text-center max-w-2xl mx-auto mb-16"
+                        initial={{ opacity: 0, y: 16 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-60px' }}
+                        transition={{ duration: 0.5 }}
+                        className="text-center max-w-2xl mx-auto mb-10"
                     >
                         {block.title && (
-                            <h2 className="font-heading text-3xl text-ink">{block.title}</h2>
+                            <h2 className="font-heading text-display-sm text-ink">{block.title}</h2>
                         )}
                         {block.subtitle && (
-                            <p className="mt-4 text-muted text-lg">{block.subtitle}</p>
+                            <p className="mt-3 text-body text-muted">{block.subtitle}</p>
                         )}
                     </motion.div>
                 )}
 
-                <div className="flex flex-wrap justify-center gap-6">
-                    {block.steps.map((step, index) => {
-                        const Icon = step.icon ? iconMap[step.icon] || Icons.regulatory : Icons.regulatory;
-                        return (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="relative p-6 bg-white rounded-2xl border border-border-light flex-none w-full sm:w-64"
-                            >
-                                <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold text-sm">
+                {/* Desktop: Horizontal timeline */}
+                <div className="hidden md:grid" style={{ gridTemplateColumns: `repeat(${block.steps.length}, 1fr)` }}>
+                    {block.steps.map((step, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: '-40px' }}
+                            transition={{ duration: 0.4, delay: index * 0.12 }}
+                            className="relative flex flex-col items-center text-center px-4"
+                        >
+                            {/* Connecting line */}
+                            {index < block.steps.length - 1 && (
+                                <div className="absolute top-5 left-[calc(50%+20px)] right-0 h-px bg-gradient-to-r from-primary-300 to-primary-100 z-0" />
+                            )}
+
+                            {/* Step number circle */}
+                            <div className="relative z-10 w-10 h-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 text-white flex items-center justify-center font-heading font-bold text-sm shadow-button mb-4">
+                                {index + 1}
+                            </div>
+
+                            {/* Content */}
+                            <h3 className="font-heading text-h4 text-ink mb-2 leading-snug">{step.title}</h3>
+                            <p className="text-body-sm text-muted leading-relaxed">{step.description}</p>
+                        </motion.div>
+                    ))}
+                </div>
+
+                {/* Mobile: Vertical timeline */}
+                <div className="md:hidden space-y-6">
+                    {block.steps.map((step, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: -16 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4, delay: index * 0.08 }}
+                            className="flex gap-4 items-start"
+                        >
+                            <div className="flex flex-col items-center flex-shrink-0">
+                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 text-white flex items-center justify-center font-heading font-bold text-sm shadow-button">
                                     {index + 1}
                                 </div>
-                                <div className="mt-2">
-                                    <Icon className="w-8 h-8 text-primary-600" />
-                                </div>
-                                <h3 className="mt-4 font-heading text-lg text-ink">{step.title}</h3>
-                                <p className="mt-2 text-sm text-muted">{step.description}</p>
-                            </motion.div>
-                        );
-                    })}
+                                {index < block.steps.length - 1 && (
+                                    <div className="w-px h-full min-h-[24px] bg-primary-200 mt-2" />
+                                )}
+                            </div>
+                            <div className="pb-2">
+                                <h3 className="font-heading text-h4 text-ink mb-1">{step.title}</h3>
+                                <p className="text-body-sm text-muted">{step.description}</p>
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
             </div>
         </section>

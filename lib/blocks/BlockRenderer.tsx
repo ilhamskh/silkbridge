@@ -58,6 +58,9 @@ const LazyCtaBlockRenderer = dynamic(() =>
 const LazyServiceDetailsBlockRenderer = dynamic(() =>
     import('./renderers/extended-blocks').then(m => ({ default: m.ServiceDetailsBlockRenderer }))
 );
+const LazyServiceDetailsGridRenderer = dynamic(() =>
+    import('./renderers/extended-blocks').then(m => ({ default: m.ServiceDetailsGridRenderer }))
+);
 const LazyProcessBlockRenderer = dynamic(() =>
     import('./renderers/extended-blocks').then(m => ({ default: m.ProcessBlockRenderer }))
 );
@@ -589,9 +592,45 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
         return null;
     }
 
+    // Pre-process: group consecutive serviceDetails blocks into grid runs
+    const renderItems: Array<{ type: 'single'; block: ContentBlock; index: number } | { type: 'serviceDetailsGrid'; blocks: ContentBlock[]; startIndex: number }> = [];
+    let i = 0;
+    while (i < blocks.length) {
+        if (blocks[i].type === 'serviceDetails') {
+            // Collect consecutive run
+            const run: ContentBlock[] = [];
+            const startIndex = i;
+            while (i < blocks.length && blocks[i].type === 'serviceDetails') {
+                run.push(blocks[i]);
+                i++;
+            }
+            if (run.length >= 2) {
+                renderItems.push({ type: 'serviceDetailsGrid', blocks: run, startIndex });
+            } else {
+                // Single serviceDetails — still render as card but wrapped in a section
+                renderItems.push({ type: 'serviceDetailsGrid', blocks: run, startIndex });
+            }
+        } else {
+            renderItems.push({ type: 'single', block: blocks[i], index: i });
+            i++;
+        }
+    }
+
     return (
         <>
-            {blocks.map((block, index) => {
+            {renderItems.map((item) => {
+                // Grouped serviceDetails grid
+                if (item.type === 'serviceDetailsGrid') {
+                    return (
+                        <LazyServiceDetailsGridRenderer
+                            key={`service-grid-${item.startIndex}`}
+                            blocks={item.blocks as any}
+                        />
+                    );
+                }
+
+                // Single blocks
+                const { block, index } = item;
                 const key = `block-${index}-${block.type}`;
 
                 switch (block.type) {
@@ -652,6 +691,7 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
                     case 'cta':
                         return <LazyCtaBlockRenderer key={key} block={block} />;
                     case 'serviceDetails':
+                        // Fallback: shouldn't reach here since we pre-group above
                         return <LazyServiceDetailsBlockRenderer key={key} block={block} />;
                     case 'process':
                         return <LazyProcessBlockRenderer key={key} block={block} />;
