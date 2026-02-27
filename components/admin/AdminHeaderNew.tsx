@@ -4,8 +4,10 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import { AdminIcon } from './ui/AdminIcon';
 import { AdminButton } from './ui/AdminButton';
+import { useAdminLayout } from './AdminLayoutContext';
 
 type Role = 'ADMIN' | 'EDITOR';
 
@@ -32,15 +34,25 @@ interface AdminHeaderProps {
     };
 }
 
+const ADMIN_LOCALES = [
+    { code: 'en', flag: '🇺🇸' },
+    { code: 'az', flag: '🇦🇿' },
+    { code: 'ru', flag: '🇷🇺' },
+];
+
 export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
     const pathname = usePathname();
+    const t = useTranslations('Admin');
+    const { adminLocale, setAdminLocale } = useAdminLayout();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const userMenuRef = useRef<HTMLDivElement>(null);
+    const langMenuRef = useRef<HTMLDivElement>(null);
 
     // Handle keyboard shortcut for search
     useEffect(() => {
@@ -65,40 +77,46 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
         }
     }, [isSearchOpen]);
 
-    // Close user menu on outside click
+    // Close menus on outside click
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
                 setIsUserMenuOpen(false);
+            }
+            if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
+                setIsLangMenuOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Get page title from pathname
+    // Get page title from pathname — localized
     const getPageTitle = () => {
         if (pageContext?.title) return pageContext.title;
 
         const segments = pathname.split('/').filter(Boolean);
-        if (segments.length <= 1) return 'Overview';
+        if (segments.length <= 1) return t('header.overview');
 
-        const titles: Record<string, string> = {
-            'content': 'Content Hub',
-            'pages': 'Pages',
-            'settings': 'Global Settings',
-            'analytics': 'Analytics',
-            'locales': 'Languages',
-            'users': 'Users',
+        const titleMap: Record<string, string> = {
+            'pages': t('header.pages'),
+            'settings': t('header.settings'),
+            'locales': t('header.languages'),
+            'users': t('header.users'),
+            'insights': t('header.insights'),
+            'partners': t('header.partners'),
+            'contact': t('header.contact'),
         };
 
-        return titles[segments[segments.length - 1]] || 'Admin';
+        return titleMap[segments[segments.length - 1]] || t('header.admin');
     };
+
+    const currentFlag = ADMIN_LOCALES.find(l => l.code === adminLocale)?.flag || '🇺🇸';
 
     return (
         <>
-            {/* Desktop Header */}
-            <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-border-light/60 lg:ml-64">
+            {/* Desktop Header — margin syncs with sidebar via context */}
+            <header className={`sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-border-light/60 transition-all duration-300`}>
                 <div className="flex items-center justify-between h-16 px-4 lg:px-6">
                     {/* Left: Page Title & Breadcrumb */}
                     <div className="flex items-center gap-4">
@@ -147,13 +165,13 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                             `}>
                                 <span className={`w-1.5 h-1.5 rounded-full ${pageContext.status === 'PUBLISHED' ? 'bg-emerald-500' : 'bg-amber-500'
                                     }`} />
-                                {pageContext.status === 'PUBLISHED' ? 'Published' : 'Draft'}
+                                {pageContext.status === 'PUBLISHED' ? t('status.published') : t('status.draft')}
                             </span>
 
                             {/* Unsaved indicator */}
                             {pageContext.hasChanges && (
                                 <span className="text-xs text-amber-600 font-medium">
-                                    Unsaved changes
+                                    {t('status.unsavedChanges')}
                                 </span>
                             )}
                         </div>
@@ -170,7 +188,7 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                                     onClick={pageContext.onPreview}
                                     leftIcon={<AdminIcon name="eye" className="w-4 h-4" />}
                                 >
-                                    <span className="hidden sm:inline">Preview</span>
+                                    <span className="hidden sm:inline">{t('actions.preview')}</span>
                                 </AdminButton>
                                 <AdminButton
                                     variant="secondary"
@@ -180,7 +198,7 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                                     disabled={!pageContext.hasChanges}
                                     leftIcon={<AdminIcon name="save" className="w-4 h-4" />}
                                 >
-                                    <span className="hidden sm:inline">Save</span>
+                                    <span className="hidden sm:inline">{t('actions.save')}</span>
                                 </AdminButton>
                                 <AdminButton
                                     variant="primary"
@@ -189,7 +207,7 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                                     isLoading={pageContext.isPublishing}
                                     leftIcon={<AdminIcon name="publish" className="w-4 h-4" />}
                                 >
-                                    <span className="hidden sm:inline">Publish</span>
+                                    <span className="hidden sm:inline">{t('actions.publish')}</span>
                                 </AdminButton>
                             </>
                         )}
@@ -201,12 +219,51 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                                 className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface text-muted hover:text-ink transition-colors"
                             >
                                 <AdminIcon name="search" className="w-4 h-4" />
-                                <span className="hidden sm:inline text-sm">Search...</span>
+                                <span className="hidden sm:inline text-sm">{t('actions.search')}...</span>
                                 <kbd className="hidden sm:inline text-[10px] px-1.5 py-0.5 rounded bg-white border border-border-light font-mono">
                                     ⌘K
                                 </kbd>
                             </button>
                         )}
+
+                        {/* Language Switcher */}
+                        <div className="relative" ref={langMenuRef}>
+                            <button
+                                onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                                className="flex items-center gap-1 p-2 rounded-xl hover:bg-surface transition-colors text-sm"
+                                title={t('langSwitcher.label')}
+                            >
+                                <span>{currentFlag}</span>
+                                <AdminIcon name="chevronDown" className="w-3 h-3 text-muted" />
+                            </button>
+
+                            {isLangMenuOpen && (
+                                <div className="absolute right-0 mt-2 w-44 py-1 bg-white rounded-card shadow-card border border-border-light z-50">
+                                    {ADMIN_LOCALES.map((locale) => (
+                                        <button
+                                            key={locale.code}
+                                            onClick={() => {
+                                                setAdminLocale(locale.code);
+                                                setIsLangMenuOpen(false);
+                                            }}
+                                            className={`
+                                                w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors
+                                                ${adminLocale === locale.code
+                                                    ? 'bg-primary-50 text-primary-700 font-medium'
+                                                    : 'text-muted hover:text-ink hover:bg-surface'
+                                                }
+                                            `}
+                                        >
+                                            <span>{locale.flag}</span>
+                                            <span>{t(`langSwitcher.${locale.code}`)}</span>
+                                            {adminLocale === locale.code && (
+                                                <AdminIcon name="check" className="w-4 h-4 ml-auto text-primary-600" />
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
                         {/* User Menu */}
                         <div className="relative" ref={userMenuRef}>
@@ -224,7 +281,7 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
 
                             {/* Dropdown */}
                             {isUserMenuOpen && (
-                                <div className="absolute right-0 mt-2 w-56 py-2 bg-white rounded-xl shadow-card border border-border-light">
+                                <div className="absolute right-0 mt-2 w-56 py-2 bg-white rounded-card shadow-card border border-border-light">
                                     <div className="px-4 py-2 border-b border-border-light">
                                         <p className="text-sm font-medium text-ink">{user.name || 'User'}</p>
                                         <p className="text-xs text-muted">{user.email}</p>
@@ -235,14 +292,14 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                                             className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-ink hover:bg-surface transition-colors"
                                         >
                                             <AdminIcon name="settings" className="w-4 h-4" />
-                                            Settings
+                                            {t('userMenu.settings')}
                                         </Link>
                                         <button
                                             onClick={() => signOut({ callbackUrl: '/admin/login' })}
                                             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                                         >
                                             <AdminIcon name="logout" className="w-4 h-4" />
-                                            Sign out
+                                            {t('userMenu.signOut')}
                                         </button>
                                     </div>
                                 </div>
@@ -259,7 +316,7 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                     onClick={() => setIsSearchOpen(false)}
                 >
                     <div
-                        className="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden animate-fade-up"
+                        className="w-full max-w-lg bg-white/95 backdrop-blur-xl rounded-2xl shadow-card overflow-hidden animate-fade-up"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-center gap-3 px-4 border-b border-border-light">
@@ -267,10 +324,10 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                             <input
                                 ref={searchInputRef}
                                 type="text"
-                                placeholder="Search pages, settings..."
+                                placeholder={t('search.placeholder')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="flex-1 py-4 text-ink placeholder:text-muted/60 bg-transparent border-none focus:outline-none"
+                                className="flex-1 py-4 text-ink placeholder:text-muted/60 bg-transparent border-none focus:outline-none focus:ring-0"
                             />
                             <kbd className="text-xs px-2 py-1 rounded bg-surface text-muted font-mono">
                                 ESC
@@ -280,14 +337,13 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                             {/* Quick Links */}
                             <div className="px-2 py-1.5">
                                 <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
-                                    Quick Links
+                                    {t('search.quickLinks')}
                                 </p>
                                 {[
-                                    { name: 'Home Page', href: '/admin/content/pages/home', icon: 'pages' },
-                                    { name: 'About Page', href: '/admin/content/pages/about', icon: 'pages' },
-                                    { name: 'Services Page', href: '/admin/content/pages/services', icon: 'pages' },
-                                    { name: 'Global Settings', href: '/admin/settings', icon: 'settings' },
-                                    { name: 'Analytics', href: '/admin/analytics', icon: 'analytics' },
+                                    { nameKey: 'homePage', href: '/admin/content/pages/home', icon: 'pages' },
+                                    { nameKey: 'aboutPage', href: '/admin/content/pages/about', icon: 'pages' },
+                                    { nameKey: 'servicesPage', href: '/admin/content/pages/services', icon: 'pages' },
+                                    { nameKey: 'globalSettings', href: '/admin/settings', icon: 'settings' },
                                 ].map((item) => (
                                     <Link
                                         key={item.href}
@@ -296,7 +352,7 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                                         className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted hover:text-ink hover:bg-surface transition-colors"
                                     >
                                         <AdminIcon name={item.icon} className="w-4 h-4" />
-                                        {item.name}
+                                        {t(`search.${item.nameKey}`)}
                                     </Link>
                                 ))}
                             </div>
@@ -313,33 +369,35 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                         onClick={() => setIsMobileMenuOpen(false)}
                     />
                     <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-xl animate-fade-in">
-                        {/* Mobile menu content - similar to sidebar */}
-                        <div className="flex items-center justify-between h-16 px-4 border-b border-border-light">
+                        {/* Mobile menu header — gradient logo area */}
+                        <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-br from-primary-600 to-primary-700">
                             <Link href="/admin" className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-sm">
+                                <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-sm">
                                     <span className="text-white font-heading font-bold text-sm">S</span>
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="font-heading font-semibold text-sm text-ink leading-tight">Silkbridge</span>
-                                    <span className="text-[10px] text-muted uppercase tracking-wider">Admin</span>
+                                    <span className="font-heading font-semibold text-sm text-white leading-tight">Silkbridge</span>
+                                    <span className="text-[10px] text-white/70 uppercase tracking-wider">Admin</span>
                                 </div>
                             </Link>
                             <button
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="p-2 rounded-lg text-muted hover:text-ink hover:bg-surface transition-colors"
+                                className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                             >
                                 <AdminIcon name="close" className="w-5 h-5" />
                             </button>
                         </div>
                         <nav className="p-4 space-y-1">
                             {[
-                                { name: 'Overview', href: '/admin', icon: 'dashboard' },
-                                { name: 'Pages', href: '/admin/content', icon: 'pages' },
-                                { name: 'Settings', href: '/admin/settings', icon: 'settings' },
-                                { name: 'Analytics', href: '/admin/analytics', icon: 'analytics' },
+                                { nameKey: 'overview', href: '/admin', icon: 'dashboard' },
+                                { nameKey: 'pages', href: '/admin/pages', icon: 'pages' },
+                                { nameKey: 'insights', href: '/admin/insights', icon: 'pages' },
+                                { nameKey: 'partners', href: '/admin/partners', icon: 'users' },
+                                { nameKey: 'contactInbox', href: '/admin/contact', icon: 'inbox' },
+                                { nameKey: 'settings', href: '/admin/settings', icon: 'settings' },
                                 ...(user.role === 'ADMIN' ? [
-                                    { name: 'Languages', href: '/admin/locales', icon: 'globe' },
-                                    { name: 'Users', href: '/admin/users', icon: 'users' },
+                                    { nameKey: 'languages', href: '/admin/locales', icon: 'globe' },
+                                    { nameKey: 'users', href: '/admin/users', icon: 'users' },
                                 ] : []),
                             ].map((item) => (
                                 <Link
@@ -349,13 +407,13 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
                                     className={`
                                         flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
                                         ${pathname === item.href || pathname.startsWith(item.href + '/')
-                                            ? 'bg-primary-50 text-primary-700'
-                                            : 'text-muted hover:text-ink hover:bg-surface'
+                                            ? 'bg-primary-50 text-primary-700 border-l-[3px] border-primary-600'
+                                            : 'text-muted hover:text-ink hover:bg-surface border-l-[3px] border-transparent'
                                         }
                                     `}
                                 >
                                     <AdminIcon name={item.icon} className="w-5 h-5" />
-                                    {item.name}
+                                    {t(`nav.${item.nameKey}`)}
                                 </Link>
                             ))}
                         </nav>

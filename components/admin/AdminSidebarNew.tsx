@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 
 import { AdminIcon } from './ui/AdminIcon';
+import { useAdminLayout } from './AdminLayoutContext';
 
 type Role = 'ADMIN' | 'EDITOR';
 
@@ -19,14 +20,14 @@ interface AdminSidebarProps {
 }
 
 interface NavItem {
-    name: string;
+    nameKey: string;
     href: string;
     icon: string;
     badge?: number;
 }
 
 interface NavSection {
-    title?: string;
+    titleKey?: string;
     items: NavItem[];
     adminOnly?: boolean;
 }
@@ -34,38 +35,33 @@ interface NavSection {
 const navigation: NavSection[] = [
     {
         items: [
-            { name: 'Overview', href: '/admin', icon: 'dashboard' },
+            { nameKey: 'overview', href: '/admin', icon: 'dashboard' },
         ],
     },
     {
-        title: 'Content',
+        titleKey: 'content',
         items: [
-            { name: 'Pages', href: '/admin/pages', icon: 'pages' },
-            { name: 'Insights', href: '/admin/insights', icon: 'pages' },
-            { name: 'Partners', href: '/admin/partners', icon: 'users' },
-            { name: 'Contact Inbox', href: '/admin/contact', icon: 'inbox' },
-            { name: 'Global Settings', href: '/admin/settings', icon: 'settings' },
+            { nameKey: 'pages', href: '/admin/pages', icon: 'pages' },
+            { nameKey: 'insights', href: '/admin/insights', icon: 'pages' },
+            { nameKey: 'partners', href: '/admin/partners', icon: 'users' },
+            { nameKey: 'contactInbox', href: '/admin/contact', icon: 'inbox' },
+            { nameKey: 'settings', href: '/admin/settings', icon: 'settings' },
         ],
     },
     {
-        title: 'Analytics',
-        items: [
-            { name: 'Analytics', href: '/admin/analytics', icon: 'analytics' },
-        ],
-    },
-    {
-        title: 'Administration',
+        titleKey: 'administration',
         adminOnly: true,
         items: [
-            { name: 'Languages', href: '/admin/locales', icon: 'globe' },
-            { name: 'Users', href: '/admin/users', icon: 'users' },
+            { nameKey: 'languages', href: '/admin/locales', icon: 'globe' },
+            { nameKey: 'users', href: '/admin/users', icon: 'users' },
         ],
     },
 ];
 
 export default function AdminSidebar({ user }: AdminSidebarProps) {
     const pathname = usePathname();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const { isCollapsed, setIsCollapsed } = useAdminLayout();
+    const t = useTranslations('Admin');
     const isAdmin = user.role === 'ADMIN';
 
     const isActive = (href: string) => {
@@ -83,30 +79,30 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
                 ${isCollapsed ? 'w-[72px]' : 'w-64'}
             `}
         >
-            {/* Logo Area */}
-            <div className="flex items-center justify-between h-16 px-4 border-b border-border-light/60">
+            {/* Logo Area — primary gradient background */}
+            <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-br from-primary-600 to-primary-700">
                 <Link
                     href="/admin"
-                    className="flex items-center gap-3 text-ink transition-opacity hover:opacity-80"
+                    className="flex items-center gap-3 text-white transition-opacity hover:opacity-90"
                 >
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-sm">
+                    <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-sm">
                         <span className="text-white font-heading font-bold text-sm">S</span>
                     </div>
                     {!isCollapsed && (
                         <div className="flex flex-col">
-                            <span className="font-heading font-semibold text-sm text-ink leading-tight">Silkbridge</span>
-                            <span className="text-[10px] text-muted uppercase tracking-wider">Admin</span>
+                            <span className="font-heading font-semibold text-sm text-white leading-tight">Silkbridge</span>
+                            <span className="text-[10px] text-white/70 uppercase tracking-wider">Admin</span>
                         </div>
                     )}
                 </Link>
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className={`
-                        p-1.5 rounded-lg text-muted hover:text-ink hover:bg-surface 
+                        p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10
                         transition-all duration-200
                         ${isCollapsed ? 'ml-auto' : ''}
                     `}
-                    aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                    aria-label={isCollapsed ? t('actions.expandSidebar') : t('actions.collapseSidebar')}
                 >
                     <AdminIcon
                         name={isCollapsed ? 'chevronRight' : 'chevronLeft'}
@@ -125,12 +121,12 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
                         return (
                             <div key={sectionIdx}>
                                 {/* Section Title */}
-                                {section.title && !isCollapsed && (
+                                {section.titleKey && !isCollapsed && (
                                     <p className="px-3 mb-2 text-[10px] font-semibold text-muted uppercase tracking-wider">
-                                        {section.title}
+                                        {t(`sections.${section.titleKey}`)}
                                     </p>
                                 )}
-                                {section.title && isCollapsed && (
+                                {section.titleKey && isCollapsed && (
                                     <div className="h-px bg-border-light mx-3 mb-2" />
                                 )}
 
@@ -143,16 +139,16 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
                                                 key={item.href}
                                                 href={item.href}
                                                 className={`
-                                                    group flex items-center gap-3 px-3 py-2.5 
+                                                    group flex items-center gap-3 px-3 py-2.5
                                                     rounded-xl text-sm font-medium
                                                     transition-all duration-200
                                                     ${active
-                                                        ? 'bg-primary-50 text-primary-700 shadow-sm'
-                                                        : 'text-muted hover:text-ink hover:bg-surface'
+                                                        ? 'bg-primary-50 text-primary-700 shadow-sm border-l-[3px] border-primary-600'
+                                                        : 'text-muted hover:text-ink hover:bg-surface border-l-[3px] border-transparent'
                                                     }
                                                     ${isCollapsed ? 'justify-center' : ''}
                                                 `}
-                                                title={isCollapsed ? item.name : undefined}
+                                                title={isCollapsed ? t(`nav.${item.nameKey}`) : undefined}
                                             >
                                                 <AdminIcon
                                                     name={item.icon}
@@ -162,7 +158,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
                                                     `}
                                                 />
                                                 {!isCollapsed && (
-                                                    <span className="flex-1">{item.name}</span>
+                                                    <span className="flex-1">{t(`nav.${item.nameKey}`)}</span>
                                                 )}
                                                 {!isCollapsed && item.badge !== undefined && (
                                                     <span className={`
@@ -206,7 +202,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
                                 {user.name || 'User'}
                             </p>
                             <p className="text-xs text-muted truncate">
-                                {user.role === 'ADMIN' ? 'Administrator' : 'Editor'}
+                                {user.role === 'ADMIN' ? t('roles.administrator') : t('roles.editor')}
                             </p>
                         </div>
                     )}
@@ -215,7 +211,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
                         <button
                             onClick={() => signOut({ callbackUrl: '/admin/login' })}
                             className="p-1.5 rounded-lg text-muted hover:text-red-600 hover:bg-red-50 transition-colors"
-                            title="Sign out"
+                            title={t('actions.signOut')}
                         >
                             <AdminIcon name="logout" className="w-4 h-4" />
                         </button>
@@ -226,7 +222,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
                     <button
                         onClick={() => signOut({ callbackUrl: '/admin/login' })}
                         className="w-full mt-2 p-2 rounded-lg text-muted hover:text-red-600 hover:bg-red-50 transition-colors flex justify-center"
-                        title="Sign out"
+                        title={t('actions.signOut')}
                     >
                         <AdminIcon name="logout" className="w-4 h-4" />
                     </button>

@@ -529,5 +529,68 @@
         "switchTo": "{language} dilinə keç",
         "externalLink": "Yeni tabda açılır",
         "readingProgress": "Oxu irəliləyişi: {percent}%"
+    },
+    "Admin": {
+        "nav": {
+            "overview": "İcmal",
+            "pages": "Səhifələr",
+            "insights": "Araşdırmalar",
+            "partners": "Tərəfdaşlar",
+            "contactInbox": "Əlaqə Qutisi",
+            "settings": "Ümumi Parametrlər",
+            "languages": "Dillər",
+            "users": "İstifadəçilər"
+        },
+        "sections": {
+            "content": "Məzmun",
+            "administration": "İdarəetmə"
+        },
+        "roles": {
+            "administrator": "Administrator",
+            "editor": "Redaktor"
+        },
+        "actions": {
+            "save": "Yadda Saxla",
+            "publish": "Dərc Et",
+            "preview": "Önizləmə",
+            "signOut": "Çıxış",
+            "search": "Axtar",
+            "expandSidebar": "Paneli genişləndir",
+            "collapseSidebar": "Paneli daralt"
+        },
+        "status": {
+            "published": "Dərc edilib",
+            "draft": "Qaralama",
+            "unsavedChanges": "Saxlanılmamış dəyişikliklər"
+        },
+        "header": {
+            "overview": "İcmal",
+            "pages": "Səhifələr",
+            "settings": "Ümumi Parametrlər",
+            "languages": "Dillər",
+            "users": "İstifadəçilər",
+            "insights": "Araşdırmalar",
+            "partners": "Tərəfdaşlar",
+            "contact": "Əlaqə Qutisi",
+            "admin": "Admin"
+        },
+        "search": {
+            "placeholder": "Səhifələr, parametrlər axtar...",
+            "quickLinks": "Sürətli Keçidlər",
+            "homePage": "Əsas Səhifə",
+            "aboutPage": "Haqqımızda",
+            "servicesPage": "Xidmətlər",
+            "globalSettings": "Ümumi Parametrlər"
+        },
+        "userMenu": {
+            "settings": "Parametrlər",
+            "signOut": "Çıxış"
+        },
+        "langSwitcher": {
+            "label": "Dil",
+            "en": "English",
+            "az": "Azərbaycan",
+            "ru": "Русский"
+        }
     }
 }

@@ -525,5 +525,68 @@
         "switchTo": "Switch to {language}",
         "externalLink": "Opens in new tab",
         "readingProgress": "Reading progress: {percent}%"
+    },
+    "Admin": {
+        "nav": {
+            "overview": "Overview",
+            "pages": "Pages",
+            "insights": "Insights",
+            "partners": "Partners",
+            "contactInbox": "Contact Inbox",
+            "settings": "Global Settings",
+            "languages": "Languages",
+            "users": "Users"
+        },
+        "sections": {
+            "content": "Content",
+            "administration": "Administration"
+        },
+        "roles": {
+            "administrator": "Administrator",
+            "editor": "Editor"
+        },
+        "actions": {
+            "save": "Save",
+            "publish": "Publish",
+            "preview": "Preview",
+            "signOut": "Sign out",
+            "search": "Search",
+            "expandSidebar": "Expand sidebar",
+            "collapseSidebar": "Collapse sidebar"
+        },
+        "status": {
+            "published": "Published",
+            "draft": "Draft",
+            "unsavedChanges": "Unsaved changes"
+        },
+        "header": {
+            "overview": "Overview",
+            "pages": "Pages",
+            "settings": "Global Settings",
+            "languages": "Languages",
+            "users": "Users",
+            "insights": "Insights",
+            "partners": "Partners",
+            "contact": "Contact Inbox",
+            "admin": "Admin"
+        },
+        "search": {
+            "placeholder": "Search pages, settings...",
+            "quickLinks": "Quick Links",
+            "homePage": "Home Page",
+            "aboutPage": "About Page",
+            "servicesPage": "Services Page",
+            "globalSettings": "Global Settings"
+        },
+        "userMenu": {
+            "settings": "Settings",
+            "signOut": "Sign out"
+        },
+        "langSwitcher": {
+            "label": "Language",
+            "en": "English",
+            "az": "Azərbaycan",
+            "ru": "Русский"
+        }
     }
 }

@@ -5,6 +5,8 @@ import { Inter, Sora } from 'next/font/google';
 import AdminSidebar from '@/components/admin/AdminSidebarNew';
 import AdminHeader from '@/components/admin/AdminHeaderNew';
 import { ToastProvider } from '@/components/admin/ui/AdminToast';
+import AdminLocaleProvider from '@/components/admin/AdminLocaleProvider';
+import { AdminShell } from '@/components/admin/AdminShell';
 
 const inter = Inter({
     subsets: ['latin'],
@@ -39,23 +41,26 @@ export default async function AdminDashboardLayout({
 
     return (
         <SessionProvider session={session}>
-            <ToastProvider>
-                <div className={`min-h-screen bg-[#F7FAFF] ${inter.variable} ${sora.variable} font-sans antialiased`}>
-                    {/* Sidebar */}
-                    <AdminSidebar user={session.user} />
+            <AdminLocaleProvider>
+                <ToastProvider>
+                    <div className={`min-h-screen bg-[#F7FAFF] ${inter.variable} ${sora.variable} font-sans antialiased`}>
+                        {/* Sidebar */}
+                        <AdminSidebar user={session.user} />
 
-                    {/* Main Area */}
-                    <div className="lg:pl-64 min-h-screen flex flex-col">
-                        {/* Header */}
-                        <AdminHeader user={session.user} />
+                        {/* Main Area - padding syncs with sidebar via context */}
+                        <AdminShell>
+                            {/* Header */}
+                            <AdminHeader user={session.user} />
 
-                        {/* Main Content */}
-                        <main className="flex-1 p-4 lg:p-6">
-                            {children}
-                        </main>
+                            {/* Main Content */}
+                            <main className="flex-1 p-4 lg:p-6">
+                                {children}
+                            </main>
+                        </AdminShell>
                     </div>
-                </div>
-            </ToastProvider>
+                </ToastProvider>
+            </AdminLocaleProvider>
         </SessionProvider>
     );
 }
+

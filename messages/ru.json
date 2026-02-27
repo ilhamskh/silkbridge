@@ -531,5 +531,68 @@
         "switchTo": "Переключить на {language}",
         "externalLink": "Открывается в новой вкладке",
         "readingProgress": "Прогресс чтения: {percent}%"
+    },
+    "Admin": {
+        "nav": {
+            "overview": "Обзор",
+            "pages": "Страницы",
+            "insights": "Аналитика",
+            "partners": "Партнёры",
+            "contactInbox": "Входящие",
+            "settings": "Настройки",
+            "languages": "Языки",
+            "users": "Пользователи"
+        },
+        "sections": {
+            "content": "Контент",
+            "administration": "Администрирование"
+        },
+        "roles": {
+            "administrator": "Администратор",
+            "editor": "Редактор"
+        },
+        "actions": {
+            "save": "Сохранить",
+            "publish": "Опубликовать",
+            "preview": "Предпросмотр",
+            "signOut": "Выйти",
+            "search": "Поиск",
+            "expandSidebar": "Развернуть панель",
+            "collapseSidebar": "Свернуть панель"
+        },
+        "status": {
+            "published": "Опубликовано",
+            "draft": "Черновик",
+            "unsavedChanges": "Несохранённые изменения"
+        },
+        "header": {
+            "overview": "Обзор",
+            "pages": "Страницы",
+            "settings": "Настройки",
+            "languages": "Языки",
+            "users": "Пользователи",
+            "insights": "Аналитика",
+            "partners": "Партнёры",
+            "contact": "Входящие",
+            "admin": "Админ"
+        },
+        "search": {
+            "placeholder": "Поиск страниц, настроек...",
+            "quickLinks": "Быстрые ссылки",
+            "homePage": "Главная страница",
+            "aboutPage": "О компании",
+            "servicesPage": "Услуги",
+            "globalSettings": "Настройки"
+        },
+        "userMenu": {
+            "settings": "Настройки",
+            "signOut": "Выйти"
+        },
+        "langSwitcher": {
+            "label": "Язык",
+            "en": "English",
+            "az": "Azərbaycan",
+            "ru": "Русский"
+        }
     }
 }
