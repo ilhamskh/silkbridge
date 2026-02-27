@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -91,8 +91,7 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Get page title from pathname — localized
-    const getPageTitle = () => {
+    const getPageTitle = useMemo(() => {
         if (pageContext?.title) return pageContext.title;
 
         const segments = pathname.split('/').filter(Boolean);
@@ -109,9 +108,11 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
         };
 
         return titleMap[segments[segments.length - 1]] || t('header.admin');
-    };
+    }, [pathname, pageContext?.title, t]);
 
-    const currentFlag = ADMIN_LOCALES.find(l => l.code === adminLocale)?.flag || '🇺🇸';
+    const currentFlag = useMemo(() =>
+        ADMIN_LOCALES.find(l => l.code === adminLocale)?.flag || '🇺🇸'
+        , [adminLocale]);
 
     return (
         <>
@@ -130,7 +131,7 @@ export default function AdminHeader({ user, pageContext }: AdminHeaderProps) {
 
                         <div>
                             <h1 className="font-heading font-semibold text-lg text-ink">
-                                {getPageTitle()}
+                                {getPageTitle}
                             </h1>
                         </div>
                     </div>

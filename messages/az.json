@@ -591,6 +591,132 @@
             "en": "English",
             "az": "Azərbaycan",
             "ru": "Русский"
+        },
+        "contact": {
+            "title": "Əlaqə İdarəetməsi",
+            "subtitle": "Müraciətləri, alıcıları və yönləndirmə qaydalarını idarə edin",
+            "tabs": {
+                "submissions": "Müraciətlər",
+                "recipients": "Alıcılar",
+                "routing": "Yönləndirmə"
+            },
+            "submissions": {
+                "title": "Müraciətlər",
+                "empty": "Hələ müraciət yoxdur",
+                "emptyDesc": "Əlaqə formasından gələn müraciətlər burada görünəcək.",
+                "status": {
+                    "new": "Yeni",
+                    "inProgress": "Davam edir",
+                    "archived": "Arxivlənib",
+                    "spam": "Spam"
+                },
+                "columns": {
+                    "name": "Ad",
+                    "email": "E-poçt",
+                    "type": "Növ",
+                    "date": "Tarix",
+                    "status": "Status"
+                },
+                "actions": {
+                    "markInProgress": "Davam edir",
+                    "archive": "Arxivlə",
+                    "markSpam": "Spam",
+                    "reply": "E-poçtla cavab ver"
+                },
+                "detail": {
+                    "phone": "Telefon",
+                    "message": "Mesaj",
+                    "metadata": "Müraciət Məlumatı",
+                    "locale": "Dil",
+                    "page": "Səhifə",
+                    "submitted": "Göndərildi",
+                    "back": "Siyahıya qayıt"
+                },
+                "stats": {
+                    "total": "Cəmi",
+                    "newCount": "Yeni",
+                    "inProgress": "Davam edir",
+                    "archived": "Arxivlənib"
+                },
+                "filters": {
+                    "all": "Hamısı",
+                    "byStatus": "Statusa görə"
+                }
+            },
+            "recipients": {
+                "title": "E-poçt Alıcıları",
+                "subtitle": "Əlaqə forması müraciətlərini kimin alacağını idarə edin",
+                "add": "Alıcı Əlavə Et",
+                "edit": "Redaktə",
+                "addFirst": "İlk Alıcını Əlavə Edin",
+                "empty": "Alıcı konfiqurasiya edilməyib",
+                "routingRules": "{count} yönləndirmə qaydası",
+                "activate": "Aktivləşdir",
+                "deactivate": "Deaktivləşdir",
+                "modal": {
+                    "addTitle": "Alıcı Əlavə Et",
+                    "editTitle": "Alıcını Redaktə Et",
+                    "label": "Etiket",
+                    "labelPlaceholder": "məs. Ümumi Sorğular, Farma Komandası",
+                    "email": "E-poçt Ünvanı",
+                    "emailPlaceholder": "team@silkbridge.az",
+                    "cancel": "Ləğv Et",
+                    "save": "Yadda Saxla",
+                    "saving": "Saxlanılır...",
+                    "labelRequired": "Zəhmət olmasa etiket daxil edin",
+                    "emailRequired": "Zəhmət olmasa e-poçt ünvanı daxil edin",
+                    "saveFailed": "Alıcı saxlanıla bilmədi"
+                }
+            },
+            "routing": {
+                "title": "E-poçt Yönləndirmə Qaydaları",
+                "subtitle": "Sorğuları müəyyən işçi e-poçtlarına yönləndirin",
+                "selectRecipient": "Alıcı seçin...",
+                "saveChanges": "Dəyişiklikləri Saxla",
+                "saving": "Saxlanılır...",
+                "saved": "Saxlanıldı",
+                "error": "Xəta",
+                "noRecipients": "Aktiv alıcı yoxdur",
+                "noRecipientsHelp": "Yönləndirməni konfiqurasiya etməzdən əvvəl Alıcılar tabında alıcı əlavə edin.",
+                "howItWorks": "Yönləndirmə necə işləyir",
+                "howItWorksDetail": "Ziyarətçi əlaqə formasını göndərdikdə, e-poçt bildirişi həmin sorğu növünə təyin edilmiş alıcıya göndərilir. Heç bir yönləndirmə konfiqurasiya edilməyibsə, e-poçt ilk aktiv alıcıya göndərilir.",
+                "types": {
+                    "business": {
+                        "label": "Əczaçılıq və B2B",
+                        "description": "Bazara giriş, tənzimləmə, paylanma sorğuları"
+                    },
+                    "patient": {
+                        "label": "Sağlamlıq və Wellness",
+                        "description": "Tibbi müalicələr, spa kurortları, xəstə xidmətləri"
+                    },
+                    "tour": {
+                        "label": "Turizm və Səyahət",
+                        "description": "Şəhər turları, paketlər, nəqliyyat, hotellər"
+                    }
+                }
+            }
+        },
+        "forms": {
+            "title": "Başlıq",
+            "description": "Təsvir",
+            "image": "Şəkil",
+            "save": "Yadda Saxla",
+            "cancel": "Ləğv Et",
+            "add": "Əlavə Et",
+            "remove": "Sil",
+            "addItem": "Element Əlavə Et",
+            "removeItem": "Elementi Sil",
+            "placeholder": "Mətn daxil edin...",
+            "required": "Məcburi",
+            "subtitle": "Alt başlıq",
+            "content": "Məzmun",
+            "label": "Etiket",
+            "url": "URL",
+            "icon": "İkon",
+            "badge": "Nişan",
+            "items": "Elementlər",
+            "moveUp": "Yuxarı Daşı",
+            "moveDown": "Aşağı Daşı"
         }
     }
 }

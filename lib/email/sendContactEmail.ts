@@ -101,7 +101,7 @@ function buildEmailBody(payload: ContactEmailPayload): string {
  */
 export async function sendContactEmail(payload: ContactEmailPayload): Promise<EmailResult> {
     const apiKey = process.env.RESEND_API_KEY;
-    const fromEmail = process.env.CONTACT_FROM_EMAIL || 'noreply@silkbridge.com';
+    const fromEmail = process.env.CONTACT_FROM_EMAIL || 'noreply@silkbridge.in';
 
     // Check if email sending is configured
     if (!apiKey) {

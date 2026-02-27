@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     GitBranch,
     Briefcase,
@@ -31,29 +32,25 @@ interface RoutingRule {
 
 const inquiryTypeConfig: {
     type: InquiryType;
-    label: string;
-    description: string;
+    translationKey: string;
     icon: typeof Briefcase;
     color: string;
 }[] = [
         {
             type: 'BUSINESS',
-            label: 'Pharmaceutical & B2B',
-            description: 'Market entry, regulatory, distribution inquiries',
+            translationKey: 'business',
             icon: Briefcase,
             color: 'blue',
         },
         {
             type: 'PATIENT',
-            label: 'Health & Wellness',
-            description: 'Medical treatments, spa resorts, patient care',
+            translationKey: 'patient',
             icon: Heart,
             color: 'rose',
         },
         {
             type: 'TOUR',
-            label: 'Tourism & Travel',
-            description: 'City tours, packages, transport, hotels',
+            translationKey: 'tour',
             icon: Sparkles,
             color: 'emerald',
         },
@@ -62,6 +59,7 @@ const inquiryTypeConfig: {
 export default function ContactRouting() {
     const [isPending, startTransition] = useTransition();
     const [recipients, setRecipients] = useState<Recipient[]>([]);
+    const t = useTranslations('Admin');
 
     const [selectedRecipients, setSelectedRecipients] = useState<Record<InquiryType, string>>({
         BUSINESS: '',
@@ -84,9 +82,6 @@ export default function ContactRouting() {
         }
 
         if (rulesResult.success && rulesResult.data) {
-
-
-            // Set initial selected recipients
             const initial: Record<InquiryType, string> = {
                 BUSINESS: '',
                 PATIENT: '',
@@ -103,7 +98,6 @@ export default function ContactRouting() {
         loadData();
     }, []);
 
-    // Handle recipient selection
     const handleSelectRecipient = (type: InquiryType, recipientId: string) => {
         setSelectedRecipients((prev) => ({ ...prev, [type]: recipientId }));
         setOpenDropdown(null);
@@ -111,7 +105,6 @@ export default function ContactRouting() {
         setSaveStatus('idle');
     };
 
-    // Save all routing rules
     const handleSaveAll = async () => {
         setSaveStatus('saving');
 
@@ -147,11 +140,11 @@ export default function ContactRouting() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-semibold text-slate-900">
-                        Email Routing Rules
+                    <h2 className="text-xl font-heading font-semibold text-ink">
+                        {t('contact.routing.title')}
                     </h2>
-                    <p className="mt-1 text-sm text-slate-500">
-                        Configure where each inquiry type should be sent
+                    <p className="mt-1 text-sm text-muted">
+                        {t('contact.routing.subtitle')}
                     </p>
                 </div>
 
@@ -159,7 +152,7 @@ export default function ContactRouting() {
                     <button
                         onClick={handleSaveAll}
                         disabled={isPending}
-                        className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${saveStatus === 'saved'
+                        className={`flex items-center gap-2 rounded-xl px-4 py-2 font-medium transition-colors ${saveStatus === 'saved'
                             ? 'bg-emerald-600 text-white'
                             : saveStatus === 'error'
                                 ? 'bg-red-600 text-white'
@@ -167,21 +160,21 @@ export default function ContactRouting() {
                             }`}
                     >
                         {saveStatus === 'saving' ? (
-                            <>Saving...</>
+                            <>{t('contact.routing.saving')}</>
                         ) : saveStatus === 'saved' ? (
                             <>
                                 <Check className="h-4 w-4" />
-                                Saved
+                                {t('contact.routing.saved')}
                             </>
                         ) : saveStatus === 'error' ? (
                             <>
                                 <AlertCircle className="h-4 w-4" />
-                                Error
+                                {t('contact.routing.error')}
                             </>
                         ) : (
                             <>
                                 <Save className="h-4 w-4" />
-                                Save Changes
+                                {t('contact.routing.saveChanges')}
                             </>
                         )}
                     </button>
@@ -190,15 +183,15 @@ export default function ContactRouting() {
 
             {/* No recipients warning */}
             {activeRecipients.length === 0 && (
-                <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4">
+                <div className="rounded-card border border-amber-200 bg-amber-50 p-4">
                     <div className="flex items-center gap-3">
-                        <AlertCircle className="h-5 w-5 text-yellow-600" />
+                        <AlertCircle className="h-5 w-5 text-amber-600" />
                         <div>
-                            <p className="font-medium text-yellow-800">
-                                No active recipients
+                            <p className="font-medium text-amber-800">
+                                {t('contact.routing.noRecipients')}
                             </p>
-                            <p className="text-sm text-yellow-600">
-                                Add recipients in the Recipients tab before configuring routing.
+                            <p className="text-sm text-amber-600">
+                                {t('contact.routing.noRecipientsHelp')}
                             </p>
                         </div>
                     </div>
@@ -222,7 +215,7 @@ export default function ContactRouting() {
                     return (
                         <div
                             key={config.type}
-                            className="rounded-xl border border-slate-200 bg-white p-5"
+                            className="rounded-card border border-border-light bg-white p-5 shadow-card"
                         >
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 {/* Type Info */}
@@ -233,10 +226,12 @@ export default function ContactRouting() {
                                         <Icon className="h-6 w-6" />
                                     </div>
                                     <div>
-                                        <h3 className="font-medium text-slate-900">
-                                            {config.label}
+                                        <h3 className="font-medium text-ink">
+                                            {t(`contact.routing.types.${config.translationKey}.label`)}
                                         </h3>
-                                        <p className="text-sm text-slate-500">{config.description}</p>
+                                        <p className="text-sm text-muted">
+                                            {t(`contact.routing.types.${config.translationKey}.description`)}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -246,28 +241,28 @@ export default function ContactRouting() {
                                         onClick={() =>
                                             setOpenDropdown(isOpen ? null : config.type)
                                         }
-                                        className="flex w-full items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-left transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                        className="flex w-full items-center justify-between rounded-xl border border-border-light bg-white px-4 py-2.5 text-left transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                                         disabled={activeRecipients.length === 0}
                                     >
                                         {selectedRecipient ? (
                                             <div>
-                                                <p className="font-medium text-slate-900">
+                                                <p className="font-medium text-ink">
                                                     {selectedRecipient.label}
                                                 </p>
-                                                <p className="text-sm text-slate-500">
+                                                <p className="text-sm text-muted">
                                                     {selectedRecipient.email}
                                                 </p>
                                             </div>
                                         ) : (
-                                            <span className="text-slate-400">Select recipient...</span>
+                                            <span className="text-muted">{t('contact.routing.selectRecipient')}</span>
                                         )}
                                         <ChevronDown
-                                            className={`h-5 w-5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                                            className={`h-5 w-5 text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
                                         />
                                     </button>
 
                                     {isOpen && activeRecipients.length > 0 && (
-                                        <div className="absolute z-10 mt-2 w-full rounded-lg border border-slate-200 bg-white shadow-xl">
+                                        <div className="absolute z-10 mt-2 w-full rounded-card border border-border-light bg-white shadow-card">
                                             {activeRecipients.map((recipient) => (
                                                 <button
                                                     key={recipient.id}
@@ -277,7 +272,7 @@ export default function ContactRouting() {
                                                             recipient.id
                                                         )
                                                     }
-                                                    className={`flex w-full items-center justify-between px-4 py-3 text-left transition-colors first:rounded-t-lg last:rounded-b-lg hover:bg-slate-50 ${selectedId === recipient.id
+                                                    className={`flex w-full items-center justify-between px-4 py-3 text-left transition-colors first:rounded-t-xl last:rounded-b-xl hover:bg-surface ${selectedId === recipient.id
                                                         ? 'bg-primary-50'
                                                         : ''
                                                         }`}
@@ -286,12 +281,12 @@ export default function ContactRouting() {
                                                         <p
                                                             className={`font-medium ${selectedId === recipient.id
                                                                 ? 'text-primary-600'
-                                                                : 'text-slate-900'
+                                                                : 'text-ink'
                                                                 }`}
                                                         >
                                                             {recipient.label}
                                                         </p>
-                                                        <p className="text-sm text-slate-500">
+                                                        <p className="text-sm text-muted">
                                                             {recipient.email}
                                                         </p>
                                                     </div>
@@ -310,18 +305,15 @@ export default function ContactRouting() {
             </div>
 
             {/* Help Text */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="rounded-card border border-border-light bg-surface p-4">
                 <div className="flex items-start gap-3">
-                    <GitBranch className="mt-0.5 h-5 w-5 text-slate-400" />
-                    <div className="text-sm text-slate-600">
-                        <p className="font-medium text-slate-900">
-                            How routing works
+                    <GitBranch className="mt-0.5 h-5 w-5 text-muted" />
+                    <div className="text-sm text-muted">
+                        <p className="font-medium text-ink">
+                            {t('contact.routing.howItWorks')}
                         </p>
                         <p className="mt-1">
-                            When a visitor submits the contact form, the email notification is sent
-                            to the recipient assigned to that inquiry type. If no routing is
-                            configured or the assigned recipient is inactive, the email will be
-                            sent to the first active recipient as a fallback.
+                            {t('contact.routing.howItWorksDetail')}
                         </p>
                     </div>
                 </div>

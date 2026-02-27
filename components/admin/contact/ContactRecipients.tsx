@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Users,
     Plus,
@@ -35,6 +36,7 @@ export default function ContactRecipients() {
     const [editingRecipient, setEditingRecipient] = useState<Recipient | null>(null);
     const [formData, setFormData] = useState({ label: '', email: '' });
     const [error, setError] = useState('');
+    const t = useTranslations('Admin');
 
     // Load recipients
     const loadRecipients = async () => {
@@ -48,7 +50,6 @@ export default function ContactRecipients() {
         loadRecipients();
     }, []);
 
-    // Open modal for new recipient
     const handleAddNew = () => {
         setEditingRecipient(null);
         setFormData({ label: '', email: '' });
@@ -56,7 +57,6 @@ export default function ContactRecipients() {
         setIsModalOpen(true);
     };
 
-    // Open modal for editing
     const handleEdit = (recipient: Recipient) => {
         setEditingRecipient(recipient);
         setFormData({ label: recipient.label, email: recipient.email });
@@ -64,7 +64,6 @@ export default function ContactRecipients() {
         setIsModalOpen(true);
     };
 
-    // Toggle active status
     const handleToggleActive = async (recipient: Recipient) => {
         startTransition(async () => {
             const result = await toggleRecipientActive(recipient.id, !recipient.isActive);
@@ -74,17 +73,16 @@ export default function ContactRecipients() {
         });
     };
 
-    // Save recipient
     const handleSave = async () => {
         setError('');
 
         if (!formData.label.trim()) {
-            setError('Please enter a label');
+            setError(t('contact.recipients.modal.labelRequired'));
             return;
         }
 
         if (!formData.email.trim()) {
-            setError('Please enter an email address');
+            setError(t('contact.recipients.modal.emailRequired'));
             return;
         }
 
@@ -100,7 +98,7 @@ export default function ContactRecipients() {
                 setIsModalOpen(false);
                 loadRecipients();
             } else {
-                setError(result.error || 'Failed to save recipient');
+                setError(result.error || t('contact.recipients.modal.saveFailed'));
             }
         });
     };
@@ -110,19 +108,19 @@ export default function ContactRecipients() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-semibold text-slate-900">
-                        Email Recipients
+                    <h2 className="text-xl font-heading font-semibold text-ink">
+                        {t('contact.recipients.title')}
                     </h2>
-                    <p className="mt-1 text-sm text-slate-500">
-                        Manage who receives contact form submissions
+                    <p className="mt-1 text-sm text-muted">
+                        {t('contact.recipients.subtitle')}
                     </p>
                 </div>
                 <button
                     onClick={handleAddNew}
-                    className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700"
+                    className="flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700"
                 >
                     <Plus className="h-4 w-4" />
-                    Add Recipient
+                    {t('contact.recipients.add')}
                 </button>
             </div>
 
@@ -131,41 +129,41 @@ export default function ContactRecipients() {
                 {recipients.map((recipient) => (
                     <div
                         key={recipient.id}
-                        className={`rounded-xl border p-5 transition-all ${recipient.isActive
-                                ? 'border-slate-200 bg-white'
-                                : 'border-slate-200 bg-slate-50 opacity-60'
+                        className={`rounded-card border p-5 transition-all shadow-card ${recipient.isActive
+                            ? 'border-border-light bg-white'
+                            : 'border-border-light bg-surface opacity-60'
                             }`}
                     >
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-3">
                                 <div
-                                    className={`flex h-10 w-10 items-center justify-center rounded-lg ${recipient.isActive
-                                            ? 'bg-primary-100'
-                                            : 'bg-slate-100'
+                                    className={`flex h-10 w-10 items-center justify-center rounded-xl ${recipient.isActive
+                                        ? 'bg-primary-100'
+                                        : 'bg-surface'
                                         }`}
                                 >
                                     <Users
                                         className={`h-5 w-5 ${recipient.isActive
-                                                ? 'text-primary-600'
-                                                : 'text-slate-400'
+                                            ? 'text-primary-600'
+                                            : 'text-muted'
                                             }`}
                                     />
                                 </div>
                                 <div>
-                                    <h3 className="font-medium text-slate-900">
+                                    <h3 className="font-medium text-ink">
                                         {recipient.label}
                                     </h3>
-                                    <p className="text-sm text-slate-500">{recipient.email}</p>
+                                    <p className="text-sm text-muted">{recipient.email}</p>
                                 </div>
                             </div>
 
                             <button
                                 onClick={() => handleToggleActive(recipient)}
                                 className={`transition-colors ${recipient.isActive
-                                        ? 'text-emerald-600 hover:text-emerald-700'
-                                        : 'text-slate-400 hover:text-slate-600'
+                                    ? 'text-emerald-600 hover:text-emerald-700'
+                                    : 'text-muted hover:text-ink'
                                     }`}
-                                title={recipient.isActive ? 'Deactivate' : 'Activate'}
+                                title={recipient.isActive ? t('contact.recipients.deactivate') : t('contact.recipients.activate')}
                             >
                                 {recipient.isActive ? (
                                     <ToggleRight className="h-6 w-6" />
@@ -176,17 +174,17 @@ export default function ContactRecipients() {
                         </div>
 
                         <div className="mt-4 flex items-center justify-between">
-                            <div className="flex items-center gap-1 text-sm text-slate-500">
+                            <div className="flex items-center gap-1 text-sm text-muted">
                                 <Tag className="h-4 w-4" />
                                 {recipient._count.routingRules} routing{' '}
                                 {recipient._count.routingRules === 1 ? 'rule' : 'rules'}
                             </div>
                             <button
                                 onClick={() => handleEdit(recipient)}
-                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-muted transition-colors hover:bg-surface hover:text-ink"
                             >
                                 <Edit2 className="h-3.5 w-3.5" />
-                                Edit
+                                {t('contact.recipients.edit')}
                             </button>
                         </div>
                     </div>
@@ -194,15 +192,17 @@ export default function ContactRecipients() {
 
                 {/* Empty state */}
                 {recipients.length === 0 && (
-                    <div className="col-span-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-12">
-                        <Users className="h-12 w-12 text-slate-300" />
-                        <p className="mt-4 text-slate-500">No recipients configured</p>
+                    <div className="col-span-full flex flex-col items-center justify-center rounded-card border-2 border-dashed border-border-light py-12">
+                        <div className="h-16 w-16 rounded-full bg-surface flex items-center justify-center">
+                            <Users className="h-8 w-8 text-muted" />
+                        </div>
+                        <p className="mt-4 text-ink font-medium">{t('contact.recipients.empty')}</p>
                         <button
                             onClick={handleAddNew}
-                            className="mt-4 flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700"
+                            className="mt-4 flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700"
                         >
                             <Plus className="h-4 w-4" />
-                            Add First Recipient
+                            {t('contact.recipients.addFirst')}
                         </button>
                     </div>
                 )}
@@ -211,20 +211,20 @@ export default function ContactRecipients() {
             {/* Add/Edit Modal */}
             {isModalOpen && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 backdrop-blur-sm p-4"
                     onClick={() => setIsModalOpen(false)}
                 >
                     <div
-                        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+                        className="w-full max-w-md rounded-card bg-white p-6 shadow-card"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-slate-900">
-                                {editingRecipient ? 'Edit Recipient' : 'Add Recipient'}
+                            <h3 className="text-lg font-heading font-semibold text-ink">
+                                {editingRecipient ? t('contact.recipients.modal.editTitle') : t('contact.recipients.modal.addTitle')}
                             </h3>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100"
+                                className="rounded-lg p-2 text-muted transition-colors hover:bg-surface"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -233,9 +233,9 @@ export default function ContactRecipients() {
                         <div className="mt-6 space-y-4">
                             {/* Label */}
                             <div>
-                                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-                                    <Tag className="h-4 w-4" />
-                                    Label
+                                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-ink">
+                                    <Tag className="h-4 w-4 text-muted" />
+                                    {t('contact.recipients.modal.label')}
                                 </label>
                                 <input
                                     type="text"
@@ -243,16 +243,16 @@ export default function ContactRecipients() {
                                     onChange={(e) =>
                                         setFormData((f) => ({ ...f, label: e.target.value }))
                                     }
-                                    placeholder="e.g., General Inquiries, Pharma Team"
-                                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                    placeholder={t('contact.recipients.modal.labelPlaceholder')}
+                                    className="w-full rounded-xl border border-border-light bg-white px-4 py-2.5 text-ink placeholder:text-muted/60 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                                 />
                             </div>
 
                             {/* Email */}
                             <div>
-                                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-                                    <Mail className="h-4 w-4" />
-                                    Email Address
+                                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-ink">
+                                    <Mail className="h-4 w-4 text-muted" />
+                                    {t('contact.recipients.modal.email')}
                                 </label>
                                 <input
                                     type="email"
@@ -260,8 +260,8 @@ export default function ContactRecipients() {
                                     onChange={(e) =>
                                         setFormData((f) => ({ ...f, email: e.target.value }))
                                     }
-                                    placeholder="team@silkbridge.az"
-                                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                    placeholder={t('contact.recipients.modal.emailPlaceholder')}
+                                    className="w-full rounded-xl border border-border-light bg-white px-4 py-2.5 text-ink placeholder:text-muted/60 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                                 />
                             </div>
 
@@ -274,17 +274,17 @@ export default function ContactRecipients() {
                             <div className="flex justify-end gap-3 pt-4">
                                 <button
                                     onClick={() => setIsModalOpen(false)}
-                                    className="rounded-lg px-4 py-2 font-medium text-slate-600 transition-colors hover:bg-slate-100"
+                                    className="rounded-xl px-4 py-2 font-medium text-muted transition-colors hover:bg-surface"
                                 >
-                                    Cancel
+                                    {t('contact.recipients.modal.cancel')}
                                 </button>
                                 <button
                                     onClick={handleSave}
                                     disabled={isPending}
-                                    className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
+                                    className="flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
                                 >
                                     <Save className="h-4 w-4" />
-                                    {isPending ? 'Saving...' : 'Save'}
+                                    {isPending ? t('contact.recipients.modal.saving') : t('contact.recipients.modal.save')}
                                 </button>
                             </div>
                         </div>

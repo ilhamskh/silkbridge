@@ -587,6 +587,132 @@
             "en": "English",
             "az": "Azərbaycan",
             "ru": "Русский"
+        },
+        "contact": {
+            "title": "Contact Management",
+            "subtitle": "Manage submissions, recipients, and routing rules",
+            "tabs": {
+                "submissions": "Submissions",
+                "recipients": "Recipients",
+                "routing": "Routing"
+            },
+            "submissions": {
+                "title": "Submissions",
+                "empty": "No submissions yet",
+                "emptyDesc": "Submissions from the contact form will appear here.",
+                "status": {
+                    "new": "New",
+                    "inProgress": "In Progress",
+                    "archived": "Archived",
+                    "spam": "Spam"
+                },
+                "columns": {
+                    "name": "Name",
+                    "email": "Email",
+                    "type": "Type",
+                    "date": "Date",
+                    "status": "Status"
+                },
+                "actions": {
+                    "markInProgress": "In Progress",
+                    "archive": "Archive",
+                    "markSpam": "Spam",
+                    "reply": "Reply via Email"
+                },
+                "detail": {
+                    "phone": "Phone",
+                    "message": "Message",
+                    "metadata": "Submission Info",
+                    "locale": "Locale",
+                    "page": "Page",
+                    "submitted": "Submitted",
+                    "back": "Back to list"
+                },
+                "stats": {
+                    "total": "Total",
+                    "newCount": "New",
+                    "inProgress": "In Progress",
+                    "archived": "Archived"
+                },
+                "filters": {
+                    "all": "All",
+                    "byStatus": "By status"
+                }
+            },
+            "recipients": {
+                "title": "Email Recipients",
+                "subtitle": "Manage who receives contact form submissions",
+                "add": "Add Recipient",
+                "edit": "Edit",
+                "addFirst": "Add First Recipient",
+                "empty": "No recipients configured",
+                "routingRules": "{count} routing {count, plural, =1 {rule} other {rules}}",
+                "activate": "Activate",
+                "deactivate": "Deactivate",
+                "modal": {
+                    "addTitle": "Add Recipient",
+                    "editTitle": "Edit Recipient",
+                    "label": "Label",
+                    "labelPlaceholder": "e.g., General Inquiries, Pharma Team",
+                    "email": "Email Address",
+                    "emailPlaceholder": "team@silkbridge.az",
+                    "cancel": "Cancel",
+                    "save": "Save",
+                    "saving": "Saving...",
+                    "labelRequired": "Please enter a label",
+                    "emailRequired": "Please enter an email address",
+                    "saveFailed": "Failed to save recipient"
+                }
+            },
+            "routing": {
+                "title": "Email Routing Rules",
+                "subtitle": "Forward inquiries to specific employee emails",
+                "selectRecipient": "Select recipient...",
+                "saveChanges": "Save Changes",
+                "saving": "Saving...",
+                "saved": "Saved",
+                "error": "Error",
+                "noRecipients": "No active recipients",
+                "noRecipientsHelp": "Add recipients in the Recipients tab before configuring routing.",
+                "howItWorks": "How routing works",
+                "howItWorksDetail": "When a visitor submits the contact form, the email notification is sent to the recipient assigned to that inquiry type. If no routing is configured or the assigned recipient is inactive, the email will be sent to the first active recipient as a fallback.",
+                "types": {
+                    "business": {
+                        "label": "Pharmaceutical & B2B",
+                        "description": "Market entry, regulatory, distribution inquiries"
+                    },
+                    "patient": {
+                        "label": "Health & Wellness",
+                        "description": "Medical treatments, spa resorts, patient care"
+                    },
+                    "tour": {
+                        "label": "Tourism & Travel",
+                        "description": "City tours, packages, transport, hotels"
+                    }
+                }
+            }
+        },
+        "forms": {
+            "title": "Title",
+            "description": "Description",
+            "image": "Image",
+            "save": "Save",
+            "cancel": "Cancel",
+            "add": "Add",
+            "remove": "Remove",
+            "addItem": "Add Item",
+            "removeItem": "Remove Item",
+            "placeholder": "Enter text...",
+            "required": "Required",
+            "subtitle": "Subtitle",
+            "content": "Content",
+            "label": "Label",
+            "url": "URL",
+            "icon": "Icon",
+            "badge": "Badge",
+            "items": "Items",
+            "moveUp": "Move Up",
+            "moveDown": "Move Down"
         }
     }
 }

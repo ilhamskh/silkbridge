@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, memo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -58,16 +59,16 @@ const navigation: NavSection[] = [
     },
 ];
 
-export default function AdminSidebar({ user }: AdminSidebarProps) {
+function AdminSidebar({ user }: AdminSidebarProps) {
     const pathname = usePathname();
     const { isCollapsed, setIsCollapsed } = useAdminLayout();
     const t = useTranslations('Admin');
     const isAdmin = user.role === 'ADMIN';
 
-    const isActive = (href: string) => {
+    const isActive = useCallback((href: string) => {
         if (href === '/admin') return pathname === '/admin';
         return pathname.startsWith(href);
-    };
+    }, [pathname]);
 
     return (
         <aside
@@ -115,12 +116,10 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
             <nav className="flex-1 px-3 py-4 overflow-y-auto">
                 <div className="space-y-6">
                     {navigation.map((section, sectionIdx) => {
-                        // Skip admin-only sections for non-admins
                         if (section.adminOnly && !isAdmin) return null;
 
                         return (
                             <div key={sectionIdx}>
-                                {/* Section Title */}
                                 {section.titleKey && !isCollapsed && (
                                     <p className="px-3 mb-2 text-[10px] font-semibold text-muted uppercase tracking-wider">
                                         {t(`sections.${section.titleKey}`)}
@@ -130,7 +129,6 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
                                     <div className="h-px bg-border-light mx-3 mb-2" />
                                 )}
 
-                                {/* Section Items */}
                                 <div className="space-y-1">
                                     {section.items.map((item) => {
                                         const active = isActive(item.href);
@@ -189,7 +187,6 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
                     bg-surface/50 
                     ${isCollapsed ? 'justify-center' : ''}
                 `}>
-                    {/* Avatar */}
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0">
                         <span className="text-white text-sm font-semibold">
                             {user.name?.[0] || user.email[0].toUpperCase()}
@@ -231,3 +228,5 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
         </aside>
     );
 }
+
+export default memo(AdminSidebar);
