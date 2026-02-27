@@ -410,31 +410,7 @@ const howItWorksSection: SectionConfig = {
     ],
 };
 
-const interactiveServicesSection: SectionConfig = {
-    sectionId: 'interactiveServices',
-    blockType: 'interactiveServices',
-    label: 'Service Details (Tabs)',
-    description: 'Interactive service showcase with tabbed navigation.',
-    icon: 'layers',
-    canHide: true,
-    fields: [
-        { key: 'eyebrow', label: 'Eyebrow Text', type: 'text', maxLength: 50 },
-        { key: 'headline', label: 'Headline', type: 'text', required: true },
-        { key: 'description', label: 'Description', type: 'textarea' },
-        {
-            key: 'services', label: 'Services', type: 'array', maxItems: 6, itemFields: [
-                { key: 'id', label: 'ID', type: 'text', required: true },
-                { key: 'title', label: 'Full Title', type: 'text', required: true },
-                { key: 'shortTitle', label: 'Short Title (tab)', type: 'text' },
-                { key: 'description', label: 'Description', type: 'textarea', required: true },
-                { key: 'features', label: 'Features (one per line)', type: 'textarea' },
-                { key: 'icon', label: 'Icon Name', type: 'text' },
-            ]
-        },
-        { key: 'ctaText', label: 'CTA Text', type: 'text' },
-        { key: 'ctaHref', label: 'CTA Link', type: 'url' },
-    ],
-};
+
 
 const faqSection: SectionConfig = {
     sectionId: 'faq',
@@ -604,10 +580,13 @@ export const PAGE_CONFIGS: PageConfig[] = [
         route: '/services',
         sections: [
             introSection,
-            interactiveServicesSection,
-            whyUsSection,
-            howItWorksSection,
-            faqSection,
+            serviceDetailsSection('pharmaDistribution', 'Pharmaceutical Distribution'),
+            serviceDetailsSection('pharmacyChain', 'Pharmacy Chain'),
+            serviceDetailsSection('aestheticCenters', 'Cosmetic & Aesthetic Centers'),
+            serviceDetailsSection('logistics', 'Logistics & Warehousing'),
+            serviceDetailsSection('medicalMarketing', 'Medical Marketing & Promotion'),
+            serviceDetailsSection('marketEntry', 'CIS Market Entry'),
+            processSection,
             ctaSection,
         ],
     },

@@ -25,9 +25,8 @@ function blockKey(b: any): string {
 }
 
 /**
- * Merge strategy: incoming wins on all fields.
- * Preserves extra fields in existing blocks (e.g. image, imageAlt from CMS)
- * while replacing text content with incoming values.
+ * Deep merge: incoming text/array values win, preserving DB-only fields
+ * (e.g. image, imageAlt uploaded via CMS but not in seed data).
  */
 function mergeIncomingWins(existing: any, incoming: any): any {
     if (incoming == null) return existing;
@@ -43,18 +42,17 @@ function mergeIncomingWins(existing: any, incoming: any): any {
     return incoming;
 }
 
-function mergeBlocks(existing: any[], incoming: any[]): any[] {
-    const result = existing.map(b => ({ ...b }));
-    for (const inB of incoming) {
+/**
+ * Replace strategy: output is in exactly the order of `incoming`.
+ * If an existing block matches by key it is merged (preserving CMS-uploaded fields).
+ * Extra blocks in DB that don't appear in incoming are DROPPED.
+ */
+function replaceBlocks(existing: any[], incoming: any[]): any[] {
+    return incoming.map(inB => {
         const key = blockKey(inB);
-        const idx = result.findIndex(b => blockKey(b) === key);
-        if (idx >= 0) {
-            result[idx] = mergeIncomingWins(result[idx], inB);
-        } else {
-            result.push(inB);
-        }
-    }
-    return result;
+        const match = existing.find(b => blockKey(b) === key);
+        return match ? mergeIncomingWins(match, inB) : inB;
+    });
 }
 
 // ── services content ──────────────────────────────────────────
@@ -488,7 +486,7 @@ async function main() {
         }
 
         const existing: any[] = Array.isArray(tr.blocks) ? (tr.blocks as any[]) : [];
-        const merged = mergeBlocks(existing, incoming);
+        const merged = replaceBlocks(existing, incoming);
 
         if (JSON.stringify(existing) === JSON.stringify(merged)) {
             console.log(`  ✓  [${locale}] already up to date`);
