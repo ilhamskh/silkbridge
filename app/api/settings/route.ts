@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
+// Always fetch fresh data from DB — never statically prerender
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/settings
  * Returns public site settings (contact info, social links).
