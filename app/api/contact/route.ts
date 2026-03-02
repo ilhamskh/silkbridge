@@ -270,5 +270,25 @@ export async function POST(request: NextRequest) {
 // ============================================
 
 export async function GET() {
-    return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+    try {
+        const settings = await prisma.siteSettings.findFirst({
+            select: {
+                contactEmail: true,
+                contactPhone: true,
+                contactAddress: true,
+            },
+        });
+
+        return NextResponse.json({
+            contactEmail: settings?.contactEmail ?? null,
+            contactPhone: settings?.contactPhone ?? null,
+            contactAddress: settings?.contactAddress ?? null,
+        });
+    } catch (error) {
+        console.error('[Contact] Failed to fetch contact settings:', error);
+        return NextResponse.json(
+            { contactEmail: null, contactPhone: null, contactAddress: null },
+            { status: 500 }
+        );
+    }
 }

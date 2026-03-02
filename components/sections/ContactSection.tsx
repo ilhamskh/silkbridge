@@ -49,7 +49,7 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
         contactAddress: siteConfig.address,
     });
     useEffect(() => {
-        fetch('/api/settings')
+        fetch('/api/contact')
             .then(res => res.ok ? res.json() : null)
             .then((data: ContactSettings | null) => {
                 if (data) {
