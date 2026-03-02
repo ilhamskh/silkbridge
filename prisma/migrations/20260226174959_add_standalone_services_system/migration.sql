@@ -1,0 +1,2 @@
+-- This migration was intentionally left empty.
+-- The standalone services system was implemented via the existing page_blocks JSON structure instead.

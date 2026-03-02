@@ -1,0 +1,2 @@
+-- This migration was intentionally left empty.
+-- Services data is stored within the existing page_blocks JSON structure.
