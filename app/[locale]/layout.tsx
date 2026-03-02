@@ -51,9 +51,9 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
         ru: 'Премиум услуги выхода на фармацевтический рынок и оздоровительный туризм, связывающие глобальные рынки.',
     };
 
-    // Fetch favicon from DB settings — falls back to /favicon.ico if not set
+    // Fetch favicon from DB settings — falls back to root generated icon if not set
     const settings = await getSiteSettings(locale);
-    const faviconHref = settings?.faviconUrl || '/favicon.ico';
+    const faviconHref = settings?.faviconUrl || '/icon';
 
     return {
         metadataBase: new URL(BASE_URL),

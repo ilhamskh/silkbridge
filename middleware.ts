@@ -42,8 +42,8 @@ export const config = {
         // - api routes
         // - _next/static (static files)
         // - _next/image (image optimization files)
-        // - favicon.ico, sitemap.xml, robots.txt (metadata files)
+        // - favicon.ico, icon, apple-icon, sitemap.xml, robots.txt (metadata files)
         // - Public files with extensions
-        '/((?!api|_next|_vercel|.*\\..*).*)',
+        '/((?!api|_next|_vercel|favicon.ico|icon|apple-icon|.*\\..*).*)',
     ],
 };

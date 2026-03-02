@@ -10,6 +10,11 @@ export const metadata: Metadata = {
         template: '%s | Silkbridge International',
     },
     description: 'Health Tourism, Pharmaceutical Market Entry & Tourism Services in Azerbaijan.',
+    icons: {
+        icon: [{ url: '/icon' }],
+        shortcut: '/icon',
+        apple: '/apple-icon',
+    },
     openGraph: {
         type: 'website',
         siteName: 'Silkbridge International',
