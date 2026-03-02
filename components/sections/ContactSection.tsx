@@ -11,6 +11,12 @@ import Select from '@/components/ui/select';
 import Textarea from '@/components/ui/textarea';
 import { Icons } from '@/components/ui/Icons';
 
+interface ContactSettings {
+    contactEmail: string | null;
+    contactPhone: string | null;
+    contactAddress: string | null;
+}
+
 interface ContactSectionProps {
     eyebrow?: string;
     headline: string;
@@ -35,6 +41,27 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
     });
 
     const [mountedAt] = useState(() => Date.now());
+
+    // Fetch live contact settings from DB
+    const [contactSettings, setContactSettings] = useState<ContactSettings>({
+        contactEmail: siteConfig.email,
+        contactPhone: siteConfig.phone,
+        contactAddress: siteConfig.address,
+    });
+    useEffect(() => {
+        fetch('/api/settings')
+            .then(res => res.ok ? res.json() : null)
+            .then((data: ContactSettings | null) => {
+                if (data) {
+                    setContactSettings({
+                        contactEmail: data.contactEmail || siteConfig.email,
+                        contactPhone: data.contactPhone || siteConfig.phone,
+                        contactAddress: data.contactAddress || siteConfig.address,
+                    });
+                }
+            })
+            .catch(() => { /* keep siteConfig fallback */ });
+    }, []);
 
     // Update type if URL changes
     useEffect(() => {
@@ -263,10 +290,10 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
                                 <Icons.email className="w-6 h-6 text-primary-600" />
                                 <p className="mt-4 text-sm text-muted">Email Us</p>
                                 <a
-                                    href={`mailto:${siteConfig.email}`}
+                                    href={`mailto:${contactSettings.contactEmail}`}
                                     className="mt-1 text-ink font-medium hover:text-primary-600 transition-colors block"
                                 >
-                                    {siteConfig.email}
+                                    {contactSettings.contactEmail}
                                 </a>
                             </div>
 
@@ -274,10 +301,10 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
                                 <Icons.phone className="w-6 h-6 text-primary-600" />
                                 <p className="mt-4 text-sm text-muted">Call Us</p>
                                 <a
-                                    href={`tel:${siteConfig.phone}`}
+                                    href={`tel:${contactSettings.contactPhone}`}
                                     className="mt-1 text-ink font-medium hover:text-primary-600 transition-colors block"
                                 >
-                                    {siteConfig.phone}
+                                    {contactSettings.contactPhone}
                                 </a>
                             </div>
                         </div>
@@ -287,7 +314,7 @@ function ContactSectionContent({ eyebrow, headline, description }: ContactSectio
                             <Icons.mapPin className="w-6 h-6 text-primary-600" />
                             <p className="mt-4 text-sm text-muted">Visit Us</p>
                             <p className="mt-1 text-ink font-medium">
-                                {siteConfig.address}
+                                {contactSettings.contactAddress}
                             </p>
                         </div>
                     </motion.div>
